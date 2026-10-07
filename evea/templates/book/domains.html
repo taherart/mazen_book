@@ -1,0 +1,22 @@
+<section class="py-20 lg:py-28">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="chip chip-gold">ماذا بالداخل؟</span>
+      <h2 class="font-display text-4xl sm:text-5xl mt-4">52 طريقة في 10 مجالات</h2>
+      <p class="text-lg text-ink/70 mt-5">اضغط على المجال لترى طرقه في الجدول.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-14">
+      {% for d in domains %}
+      <button type="button" data-domain-card="{{ d.key }}" class="text-start rounded-3xl bg-white p-6 border-2 border-transparent hover:border-primary shadow-sm hover:shadow-lg transition group">
+        <div class="flex items-center justify-between">
+          <span class="grid place-items-center h-11 w-11 rounded-2xl bg-mint text-primary group-hover:bg-primary group-hover:text-white transition"><i data-lucide="{{ d.icon }}" class="h-5 w-5"></i></span>
+          <span class="font-display text-3xl text-ink/20 group-hover:text-accent transition">{{ d.count }}</span>
+        </div>
+        <h3 class="font-bold text-lg mt-4">{{ d.label }}</h3>
+        <p class="text-sm text-ink/60 mt-2 leading-6">{% for m in d.items|slice:":3" %}{{ m.title }}{% if not forloop.last %} • {% endif %}{% endfor %}…</p>
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,84 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-dark.html' %}
+
+  <section class="relative pt-32 pb-20 bg-[url(/static/images/home/bg-4.svg)] bg-no-repeat bg-cover overflow-hidden"
+           id="home">
+    <div class="absolute top-0 start-0 -ml-8 -mt-10 xl:inline-block hidden">
+      <img src="{% static 'images/shape/circle-wave.svg' %}" alt="">
+    </div>
+
+    <figure class="absolute top-0 end-0 -me-20 -mt-72 xl:inline-block hidden">
+      <img src="{% static 'images/shape/line-wave.svg' %}" alt="">
+    </figure>
+
+    <div class="container">
+      <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-6 gap-y-10 items-center">
+        <div class="">
+          <h1
+            class="text-3xl md:text-5xl/tight lg:text-6xl/tight text-black tracking-normal capitalize leading-normal font-bold max-w-2xl">
+            Manage your finance with Evea app.</h1>
+          <p class="text-base font-medium text-muted mt-3 capitalize">Our app provides a multitude of features tailored
+            to your needs. From personalized recommendations to exclusive offers.</p>
+
+          <div class="flex flex-wrap mt-9 text-center gap-3">
+            <a
+              class="inline-block px-6 py-2 rounded-md text-white text-base border border-primary hover:bg-primaryDark bg-primary hover:border-primaryDark transition-all duration-300 items-center justify-center text-center font-medium"
+              href="javascript:void(0)">
+              <i class="mdi mdi-apple text-base text-white me-1"></i>
+              Download for iOS
+            </a>
+
+            <a
+              class="inline-block py-2 px-6 text-black rounded-md border border-primary text-base hover:border-white hover:bg-white group hover:text-primary transition-all duration-500 font-medium"
+              href="javascript:void(0)">
+              <i class="mdi mdi-play text-base text-black me-1 hover:text-primary transition-all duration-500"></i>
+              Download for Android
+            </a>
+          </div>
+        </div>
+
+        <div class="relative z-10">
+          <img src="{% static 'images/finance.png' %}" class="md:h-[700px] lg:ms-auto mx-auto" alt="">
+          <div
+            class="absolute flex justify-between items-center bottom-16 md:start-2 -start-2 p-4 rounded-lg shadow-md bg-black/40 backdrop-blur-lg w-60 m-3">
+            <div class="items-center">
+              <div class="inline-flex items-center">
+                <h6 class="text-white text-2xl mb-0 me-2">5K+</h6>
+
+                <div class="flex -space-x-2">
+                  <img class="inline-block size-9 rounded-full" src="{% static 'images/user/client-01.jpg' %}"
+                       alt="Image Description">
+                  <img class="inline-block size-9 rounded-full" src="{% static 'images/user/client-02.jpg' %}"
+                       alt="Image Description">
+                  <img class="inline-block size-9 rounded-full" src="{% static 'images/user/client-03.jpg' %}"
+                       alt="Image Description">
+                  <img class="inline-block size-9 rounded-full" src="{% static 'images/user/client-04.jpg' %}"
+                       alt="Image Description">
+                </div>
+              </div>
+              <div class="flex-1 mt-2">
+                <h6 class="text-white">Total visitors per month</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="relative">
+    <div
+      class="shape absolute sm:-bottom-px -bottom-[2px] start-0 end-0 overflow-hidden z-1 text-white dark:text-slate-900">
+      <svg class="w-full h-auto scale-[2.0] origin-top" viewBox="0 0 2880 250" fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M720 125L2160 0H2880V250H0V125H720Z" fill="currentColor"></path>
+      </svg>
+    </div>
+  </div>
+{% endblock page_content %}

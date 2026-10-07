@@ -1,0 +1,52 @@
+{% load static %}
+<section class="py-20 lg:py-28 bg-white" id="author">
+  <div class="container">
+    <div class="grid lg:grid-cols-12 gap-12 items-start max-w-6xl mx-auto">
+
+      <div class="lg:col-span-4">
+        <div class="relative mx-auto max-w-xs">
+          <div class="absolute inset-0 translate-x-3 translate-y-3 rounded-[2rem] bg-accent"></div>
+          <div class="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-primary grid place-items-center text-white">
+            <span class="font-display text-8xl">م ض</span>
+            <!-- Replace: drop evea/static/images/author.jpg -->
+            <img src="{% static 'images/author.jpg' %}" alt="{{ author.name }}" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-8">
+        <span class="chip">عن المؤلف</span>
+        <h2 class="font-display text-4xl sm:text-5xl mt-4">{{ author.name }}</h2>
+        <p class="text-lg text-ink/75 leading-9 mt-5">{{ author.bio }}</p>
+
+        <div class="grid sm:grid-cols-3 gap-4 mt-8">
+          {% for num, label in author.stats %}
+          <div class="rounded-2xl bg-mint p-5">
+            <div class="font-display text-3xl text-primary">{{ num|safe }}</div>
+            <div class="text-sm text-ink/70 mt-1 leading-6">{{ label }}</div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mt-10">
+          <div>
+            <h3 class="font-bold text-xl flex items-center gap-2"><i data-lucide="award" class="h-5 w-5 text-primary"></i> جوائز</h3>
+            <ul class="mt-4 space-y-3">
+              {% for year, text in author.awards %}
+              <li class="flex gap-3"><span class="font-display text-primary text-lg shrink-0 w-12">{{ year }}</span><span class="text-ink/80 leading-7">{{ text }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl flex items-center gap-2"><i data-lucide="graduation-cap" class="h-5 w-5 text-primary"></i> التعليم</h3>
+            <ul class="mt-4 space-y-3">
+              {% for year, text in author.education %}
+              <li class="flex gap-3"><span class="font-display text-primary text-lg shrink-0 w-12">{{ year }}</span><span class="text-ink/80 leading-7">{{ text }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

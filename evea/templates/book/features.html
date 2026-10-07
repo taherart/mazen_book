@@ -1,0 +1,25 @@
+<section class="py-20 lg:py-24 bg-mint/60" id="features">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="chip">لماذا هذا الكتاب</span>
+      <h2 class="font-display text-4xl sm:text-5xl mt-4">طرق، مو نصايح</h2>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
+      {% for icon, title, desc in features %}
+      <div class="rounded-3xl bg-white p-7 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
+        <span class="grid place-items-center h-12 w-12 rounded-2xl bg-primary text-white"><i data-lucide="{{ icon }}" class="h-6 w-6"></i></span>
+        <h3 class="font-bold text-xl mt-5">{{ title }}</h3>
+        <p class="text-ink/70 leading-7 mt-2">{{ desc }}</p>
+      </div>
+      {% endfor %}
+      <a href="#sample" class="rounded-3xl bg-ink text-white p-7 flex flex-col justify-between hover:bg-primaryDark transition">
+        <i data-lucide="gift" class="h-10 w-10 text-accent"></i>
+        <div>
+          <h3 class="font-display text-3xl mt-6">جرّب طريقتين مجانًا</h3>
+          <span class="inline-flex items-center gap-2 mt-3 font-semibold text-accent">حمّل العينة <i data-lucide="arrow-left" class="h-4 w-4"></i></span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>

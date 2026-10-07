@@ -1,0 +1,56 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-dark.html' %}
+
+  <section class="relative pt-32 pb-32 overflow-x-hidden from-slate-500/10 bg-[url(../images/home/bg-1.png)] bg-no-repeat bg-cover" id="home">
+    <div class="container">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 items-center">
+        <div class="text-sm py-20 px-10">
+          <span class="inline-flex py-2 text-lg text-black font-medium items-center justify-center rounded-full">
+              <i data-lucide="minus"></i> The Best Online Furniture Store</span>
+          <h1 class="md:text-6xl/tight text-4xl text-dark tracking-normal leading-normal font-bold mb-4 mt-6">The Best Selection of <span class="text-primary"> Furniture Online </span></h1>
+          <p class="text-base font-medium text-muted leading-7 mt-5 capitalize">Online furniture apps simplify
+            home shopping with convenience, variety, and affordability. Browse easily, compare prices.</p>
+          <div class="flex flex-wrap items-center justify-center gap-3 lg:justify-normal mt-9">
+            <img src="{% static 'images/store.png' %}" class="h-14" alt="apple image">
+            <img src="{% static 'images/google.png' %}" class="h-14" alt="google image">
+          </div>
+        </div>
+
+        <div class="mt-4 pt-2 sm:mt-0 sm:pt-0 relative">
+          <img src="{% static 'images/furniture.png' %}" alt="" class="h-[600px] max-w-full mx-auto">
+
+          <div class="absolute bottom-3/4 -end-14 2xl:end-8 hidden xl:block">
+            <div class="flex items-center gap-2 p-2 pe-6 rounded-full bg-white shadow-2xl">
+              <div class="rounded-full bg-primary h-9 w-9 items-center justify-center flex">
+                <i data-lucide="codesandbox" class="h-6 w-6 text-white"></i>
+              </div>
+              <div class="">
+                <h6 class="text-base font-medium text-default-900">Express Delivery Service</h6>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="absolute bottom-28 start-6 hidden xl:block">
+            <div class="flex items-center gap-2 p-2 pe-6 rounded-full bg-white shadow-2xl">
+              <div class="rounded-full bg-primary h-9 w-9 items-center justify-center flex">
+                <i data-lucide="headset" class="h-6 w-6 text-white"></i>
+              </div>
+              <div class="">
+                <h6 class="text-base font-medium text-default-900">24x7 Customer Support</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+{% endblock page_content %}

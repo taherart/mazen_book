@@ -1,0 +1,13 @@
+<section class="py-20 bg-white">
+  <div class="container">
+    <h2 class="font-display text-4xl text-center">ماذا قالوا عن الكتاب؟</h2>
+    <div class="grid md:grid-cols-3 gap-5 mt-10">
+      {% for t in testimonials %}
+      <figure class="rounded-3xl bg-cream p-7">
+        <blockquote class="leading-8">«{{ t.text }}»</blockquote>
+        <figcaption class="mt-4 font-bold">{{ t.name }} <span class="font-normal text-ink/60">· {{ t.role }}</span></figcaption>
+      </figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>

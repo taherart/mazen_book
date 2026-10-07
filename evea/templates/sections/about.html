@@ -1,0 +1,91 @@
+{% load static i18n %}
+
+<section class="relative py-20 bg-cover bg-no-repeat bg-center"
+         style="background-image: url('/static/images/home/parallax.png');" data-jarallax data-speed="0.20">
+  <div class="absolute inset-0 w-full h-full bg-gray-900/70"></div>
+
+  <div class="container">
+    <div class="pb-10 lg:pb-0 flex flex-col items-center justify-center">
+      <h1 class="text-3xl md:text-4xl/tight font-semibold text-white text-center">A Detailed Examination Of A
+        Specific Case</h1>
+      <p class="text-base font-normal max-w-xl text-center mx-auto text-white mt-6">Together, we manage and
+        empower markets by utilizing both established and emerging channels for potential growth.</p>
+      <div class="flex flex-wrap mt-6 gap-3">
+        <button
+          class="py-2 px-6 rounded-md text-white text-base bg-primary hover:bg-primaryDark border border-primary hover:border-primaryDark transition-all duration-500 font-medium">
+          Join
+          Now
+        </button>
+        <button
+          class="py-2 px-6 rounded-md border border-white text-base hover:border-white hover:bg-white hover:text-primary transition-all duration-500 font-medium text-white ">
+          See
+          Video
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="py-20">
+  <div class="container">
+
+    <div class="grid lg:grid-cols-2 items-center gap-6">
+      <div class="lg:ms-5 ms-8">
+        <div>
+                        <span
+                          class="text-sm text-primary uppercase font-semibold tracking-wider text-default-950">Services</span>
+        </div>
+        <h2 class="text-3xl md:text-4xl/tight font-semibold text-black mt-4">Get Started In Minutes:
+          Download The App, Create Your Profile</h2>
+        <p class="text-base font-normal text-muted mt-6">Digital payment has revolutionized the way we make
+          financial transactions today With Rible you can enjoy the convenience of making secure &
+          hassle-free payments online. Our platform provides you with a quick and eary.</p>
+
+        <div class="grid lg:grid-cols-3 grid-cols-1 gap-8 mt-9">
+
+          <div class="">
+            <div class="flex items-center justify-start">
+              <div
+                class="items-center justify-center flex bg-green-50 rounded-full h-20 w-20 border border-dashed border-green-50">
+                <i data-lucide="smartphone" class="h-8 w-8 text-black"></i>
+              </div>
+            </div>
+            <h1 class="text-xl font-semibold pt-6">1. Download</h1>
+            <p class="text-base text-gray-600 font-normal mt-2">Join the millions already benefitting
+              from.</p>
+          </div>
+
+          <div class="">
+            <div class="flex items-center justify-start">
+              <div
+                class="items-center justify-center flex bg-red-50 rounded-full h-20 w-20 border border-dashed border-red-50">
+                <i data-lucide="file-text" class="h-8 w-8 text-black"></i>
+              </div>
+            </div>
+            <h1 class="text-xl font-semibold  pt-6">2. Set Profile</h1>
+            <p class="text-base text-gray-600 font-normal mt-2">Join the millions already benefitting
+              from.</p>
+          </div>
+
+          <div class="">
+            <div class="flex items-center justify-start">
+              <div
+                class="items-center justify-center flex bg-primary/10 rounded-full h-20 w-20 border border-dashed border-primary/10">
+                <i data-lucide="rocket" class="h-8 w-8 text-black"></i>
+              </div>
+            </div>
+            <h1 class="text-xl font-semibold pt-6">3. Start</h1>
+            <p class="text-base text-gray-600 font-normal mt-2">Join the millions already benefitting
+              from.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        <img src="{% static 'images/feature-iphone.png' %}" class="h-[600px] rounded-xl mx-auto"
+             alt="feature-image">
+      </div>
+
+    </div>
+  </div>
+</section>

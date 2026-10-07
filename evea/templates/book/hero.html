@@ -1,0 +1,93 @@
+{% load static %}
+<section class="relative pt-32 pb-16 lg:pt-40 overflow-hidden bg-dots" id="home">
+  <div class="absolute -top-24 -end-24 h-96 w-96 rounded-full bg-primary/10 blur-3xl"></div>
+  <div class="absolute bottom-0 -start-24 h-80 w-80 rounded-full bg-accent/20 blur-3xl"></div>
+
+  <div class="container relative">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+
+      <div class="lg:col-span-7 text-center lg:text-start">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm">
+          <i data-lucide="book-open" class="h-4 w-4"></i> تأليف {{ author.name }}
+        </span>
+
+        <h1 class="font-display text-5xl sm:text-6xl xl:text-7xl text-ink mt-6">
+          52 طريقة لتزيد دخلك <span class="hl">«من جد»</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-ink/70 leading-8 mt-6 max-w-2xl mx-auto lg:mx-0">
+          دليل عملي لـ52 فرصة دخل حقيقية في السعودية: كم تكسب، كم تحتاج، من أين تبدأ، وما الذي تحذر منه.
+        </p>
+
+        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-9">
+          <a href="{{ order_url }}" class="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-lg font-bold text-white shadow-lg shadow-primary/30 hover:bg-primaryDark transition">
+            <i data-lucide="shopping-bag" class="h-5 w-5"></i> اطلب نسختك الآن
+          </a>
+          <a href="#sample" class="inline-flex items-center gap-2 rounded-full border-2 border-ink/15 bg-white px-8 py-4 text-lg font-bold text-ink hover:border-primary hover:text-primary transition">
+            جرّب طريقتين مجانًا <i data-lucide="arrow-left" class="h-5 w-5"></i>
+          </a>
+        </div>
+
+        <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-12">
+          <div class="rounded-2xl bg-white/80 px-4 py-4 text-center lg:text-start">
+            <dt class="font-display text-3xl text-primary">52</dt>
+            <dd class="text-sm text-ink/70 mt-1">طريقة عملية</dd>
+          </div>
+          <div class="rounded-2xl bg-white/80 px-4 py-4 text-center lg:text-start">
+            <dt class="font-display text-3xl text-primary">{{ zero_capital_count }}</dt>
+            <dd class="text-sm text-ink/70 mt-1">برأس مال صفر أو شبه صفر</dd>
+          </div>
+          <div class="rounded-2xl bg-white/80 px-4 py-4 text-center lg:text-start">
+            <dt class="font-display text-3xl text-primary">أسبوع</dt>
+            <dd class="text-sm text-ink/70 mt-1">لأول ريال في بعض الطرق</dd>
+          </div>
+          <div class="rounded-2xl bg-white/80 px-4 py-4 text-center lg:text-start">
+            <dt class="font-display text-3xl text-primary"><bdi dir="ltr">100+</bdi></dt>
+            <dd class="text-sm text-ink/70 mt-1">صفحة</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="lg:col-span-5">
+        <div class="relative mx-auto max-w-sm book">
+          <div class="book-body bg-primary overflow-hidden">
+            <!-- Replace with the real cover: drop evea/static/images/book-cover.png (3:4.2) -->
+            <div class="absolute inset-0 p-8 flex flex-col text-white">
+              <div class="absolute -top-10 -start-10 h-44 w-44 rounded-full bg-accent/90"></div>
+              <div class="absolute top-40 -end-8 h-28 w-28 rounded-full border-[14px] border-white/15"></div>
+              <div class="absolute bottom-24 start-6 h-16 w-16 rounded-full bg-primaryDark"></div>
+              <div class="relative mt-auto">
+                <div class="font-display text-[7rem] leading-none text-accent">52</div>
+                <div class="font-display text-3xl leading-snug mt-2">طريقة لتزيد دخلك</div>
+                <div class="font-display text-4xl mt-1"><span class="bg-accent text-ink px-3 rounded-lg">«من جد»</span></div>
+                <div class="mt-8 pt-4 border-t border-white/30 text-base font-semibold">{{ author.name }}</div>
+              </div>
+            </div>
+            <img src="{% static 'images/book-cover.png' %}" alt="غلاف كتاب 52 طريقة لتزيد دخلك من جد" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
+          </div>
+
+          <div class="hidden sm:flex absolute -start-6 top-10 items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl">
+            <span class="grid place-items-center h-10 w-10 rounded-full bg-mint text-primary"><i data-lucide="coins" class="h-5 w-5"></i></span>
+            <div><div class="text-xs text-ink/60">الدخل المتوقع</div><div class="font-bold"><bdi dir="ltr">40–80</bdi> ريال للصورة</div></div>
+          </div>
+          <div class="hidden sm:flex absolute -end-4 top-1/2 items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl">
+            <span class="grid place-items-center h-10 w-10 rounded-full bg-mint text-primary"><i data-lucide="wallet" class="h-5 w-5"></i></span>
+            <div><div class="text-xs text-ink/60">رأس المال</div><div class="font-bold">من <bdi dir="ltr">0</bdi> إلى <bdi dir="ltr">300</bdi> ريال</div></div>
+          </div>
+          <div class="hidden sm:flex absolute -start-4 -bottom-6 items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl">
+            <span class="grid place-items-center h-10 w-10 rounded-full bg-mint text-primary"><i data-lucide="timer" class="h-5 w-5"></i></span>
+            <div><div class="text-xs text-ink/60">أول ريال خلال</div><div class="font-bold"><bdi dir="ltr">3–5</bdi> أسابيع</div></div>
+          </div>
+        </div>
+        <p class="hidden sm:block text-center text-xs text-ink/50 mt-12">مثال من الطريقة 1: تصوير المنتجات للمتاجر الإلكترونية</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- marquee of methods -->
+  <div class="marquee mt-16 overflow-hidden" aria-hidden="true">
+    <div class="marquee-track">
+      {% for i in "12" %}{% for m in methods %}<span class="chip bg-white shadow-sm text-ink/80 whitespace-nowrap"><span class="text-primary font-bold">{{ m.n }}</span> {{ m.title }}</span>{% endfor %}{% endfor %}
+    </div>
+  </div>
+</section>

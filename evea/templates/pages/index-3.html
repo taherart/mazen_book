@@ -1,0 +1,40 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-dark.html' %}
+
+  <section class="relative pt-32 pb-20 bg-gray-200/40 bg-[url(/static/images/home/bg-3.png)] bg-no-repeat bg-cover"
+           id="home">
+    <div class="container">
+
+      <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-6 gap-y-10 items-center">
+        <div class="">
+          <h1
+            class="text-3xl md:text-5xl/tight lg:text-6xl/tight text-black tracking-normal capitalize leading-normal font-bold max-w-2xl">
+            The Best Approach To Consent To Interior Design</h1>
+          <p class="text-base font-medium text-muted mt-3 capitalize">You one stop finance empower platform Manage all
+            your business expenses with our supafast app.</p>
+
+          <div class="flex flex-wrap mt-9 text-center gap-3">
+            <button
+              class="py-2 px-6 rounded-md text-white text-base bg-primary hover:bg-primaryDark border border-primary hover:border-primaryDark transition-all duration-500 font-medium">
+              Get A Free Demo
+            </button>
+            <button
+              class="py-2 px-6 text-primary rounded-md border border-primary text-base hover:border-primary hover:bg-primary hover:text-white transition-all duration-500 font-medium">
+              See Pricing
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <img src="{% static 'images/interior.png' %}" class="md:h-[700px] lg:ms-auto mx-auto" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock page_content %}

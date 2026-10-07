@@ -1,0 +1,19 @@
+<section class="py-20 lg:py-28" id="faq">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="chip">الأسئلة الشائعة</span>
+      <h2 class="font-display text-4xl sm:text-5xl mt-4">عندك سؤال؟</h2>
+    </div>
+    <div class="max-w-3xl mx-auto mt-12 space-y-3">
+      {% for q, a in faq %}
+      <details class="faq-item rounded-2xl bg-white shadow-sm" {% if forloop.first %}open{% endif %}>
+        <summary class="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-bold text-lg">
+          {{ q }}
+          <span class="faq-plus grid place-items-center h-8 w-8 shrink-0 rounded-full bg-mint text-primary transition-transform duration-300"><i data-lucide="plus" class="h-5 w-5"></i></span>
+        </summary>
+        <p class="px-6 pb-6 text-ink/75 leading-8">{{ a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>

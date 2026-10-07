@@ -1,0 +1,19 @@
+<section class="py-20 lg:py-28">
+  <div class="container">
+    <div class="grid lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
+      <div>
+        <span class="chip">لمن هذا الكتاب؟</span>
+        <h2 class="font-display text-4xl sm:text-5xl mt-4">كتاب لكل شاب وشابة، <span class="hl">لكل عمر</span></h2>
+        <p class="text-lg text-ink/70 mt-6 leading-8">لغة بسيطة لكل المستويات، وبدون شهادات.</p>
+      </div>
+      <ul class="space-y-3">
+        {% for item in audience %}
+        <li class="flex items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm">
+          <span class="grid place-items-center h-9 w-9 shrink-0 rounded-full bg-primary text-white"><i data-lucide="check" class="h-5 w-5"></i></span>
+          <span class="font-semibold text-lg">{{ item }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>

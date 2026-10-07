@@ -1,0 +1,32 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-dark.html' %}
+
+  <section class="relative pt-40 pb-40 bg-primary/10" id="home">
+    <div class="container">
+
+      <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-6 gap-y-10 items-center">
+        <div class="relative">
+          <h1
+            class="text-3xl md:text-5xl/tight lg:text-6xl/tight text-black tracking-normal capitalize leading-normal font-bold max-w-2xl mt-4">
+            Make Your Life Even Easier with Statistical <span class="text-primary">Progress</span></h1>
+          <p class="text-base text-muted font-medium max-w-lg mt-6 capitalize">Our app provides a multitude of features
+            tailored to your needs. From personalized recommendations to exclusive offers.</p>
+          <div class="flex flex-wrap items-center justify-center lg:justify-normal gap-3 mt-10">
+            <img src="{% static 'images/store.png' %}" class="h-14" alt="apple image">
+            <img src="{% static 'images/google.png' %}" class="h-14" alt="google image">
+          </div>
+        </div>
+
+        <div class="relative">
+          <img src="{% static 'images/dashboard-2.png' %}" class="lg:ms-auto mx-auto rounded-xl" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock page_content %}

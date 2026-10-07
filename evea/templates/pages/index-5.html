@@ -1,0 +1,45 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-dark.html' %}
+
+  <section class="relative pt-32 pb-20 bg-[url(/static/images/home/bg-5.png)] bg-no-repeat bg-cover" id="home">
+    <div class="container">
+
+      <div class="grid lg:grid-cols-2 grid-cols-1 gap-x-6 gap-y-10 items-center">
+        <div class="relative">
+          <span class="absolute end-48 -top-16 text-xl -rotate-45"><img src="{% static 'images/shape/shape-1.png' %}"
+                                                                        alt="image"></span>
+          <span class="absolute end-32 top-40 text-xl rotate-90"><img src="{% static 'images/shape/shape-2.png' %}"
+                                                                      alt="image"></span>
+          <span
+            class="inline-flex py-2 px-5 text-sm text-black font-medium rounded-full border border-primary/30 mb-8 lg:mb-2">App in App Store 😋</span>
+          <h1
+            class="text-3xl md:text-5xl/tight lg:text-6xl/tight text-black tracking-normal capitalize leading-normal font-bold max-w-2xl mt-4">
+            Best Way to Make Online Payments</h1>
+          <p class="text-base text-muted font-medium max-w-lg mt-6 capitalize">Our app provides a multitude of features
+            tailored to your needs. From personalized recommendations to exclusive offers.</p>
+
+          <div class="mt-12">
+            <form class="relative max-w-lg">
+              <input type="email" id="subcribe" name="email"
+                     class="py-4 pe-40 ps-6 w-full h-[50px] outline-none text-black rounded-md bg-white border border-gray-300"
+                     placeholder="Your Email Address :">
+              <button type="submit"
+                      class="py-2 px-5 inline-flex font-semibold items-center justify-center duration-500 text-base text-center absolute top-[2px] end-[3px] h-[46px] bg-primary hover:bg-primaryDark border border-primary hover:border-primaryDark text-white rounded-md">
+                Try it for free <i class="uil uil-arrow-right"></i></button>
+            </form>
+          </div>
+        </div>
+
+        <div class="relative">
+          <img src="{% static 'images/payment.png' %}" class="md:h-[700px] lg:ms-auto mx-auto" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock page_content %}

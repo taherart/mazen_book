@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load static i18n %}
+
+{% block html_attribute %}{% endblock html_attribute %}
+
+{% block title %}{% endblock title %}
+
+{% block extra_css %}{% endblock extra_css %}
+
+{% block body_attribute %}{% endblock body_attribute %}
+
+{% block loder %}{% endblock loder %}
+
+{% block content %}
+
+  {% block page_content %}{% endblock page_content %}
+
+  {% include 'sections/services.html' %}
+  {% include 'sections/features.html' %}
+  {% include 'sections/about.html' %}
+  {% include 'sections/pricing.html' %}
+  {% include 'sections/faqs.html' %}
+  {% include 'sections/testimonials.html' %}
+  {% include 'sections/clients.html' %}
+  {% include 'sections/blogs.html' %}
+  {% include 'sections/contact.html' %}
+
+  {% include 'partials/footer.html' %}
+
+{% endblock content %}
+
+{% block modal %}{% endblock modal %}
+
+{% block extra_javascript %}{% endblock extra_javascript %}

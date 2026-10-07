@@ -1,0 +1,69 @@
+<footer class="bg-ink text-white/80 py-12">
+  <div class="container">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <span class="grid place-items-center h-10 w-10 rounded-xl bg-primary text-white font-display text-xl leading-none pt-1">52</span>
+        <div><div class="font-display text-xl text-white">طريقة لتزيد دخلك «من جد»</div><div class="text-sm">تأليف {{ author.name }}</div></div>
+      </div>
+      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium">
+        <a href="#methods" class="hover:text-accent">الطرق</a>
+        <a href="#sample" class="hover:text-accent">العينة</a>
+        <a href="#author" class="hover:text-accent">المؤلف</a>
+        <a href="#faq" class="hover:text-accent">الأسئلة</a>
+      </nav>
+    </div>
+    <p class="text-center text-xs text-white/50 mt-8">© {% now "Y" %} جميع الحقوق محفوظة.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  /* ---------- methods table: search + filters ---------- */
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#methods-table tbody tr'));
+  var $ = function (id) { return document.getElementById(id); };
+  var els = { q: $('m-search'), d: $('m-domain'), c: $('m-capital'), t: $('m-time'), count: $('m-count'), empty: $('m-empty'), table: $('methods-table') };
+  function norm(s) { return (s || '').toString().toLowerCase().replace(/[ً-ٟـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي'); }
+  rows.forEach(function (r) { r._text = norm(r.dataset.text); });
+  function apply() {
+    var q = norm(els.q.value.trim()), n = 0;
+    rows.forEach(function (r) {
+      var ok = (!q || r._text.indexOf(q) > -1) &&
+               (!els.d.value || r.dataset.domain === els.d.value) &&
+               (!els.c.value || r.dataset.capital === els.c.value) &&
+               (!els.t.value || r.dataset.time === els.t.value);
+      r.style.display = ok ? '' : 'none';
+      if (ok) n++;
+    });
+    els.count.textContent = n;
+    els.empty.classList.toggle('hidden', n !== 0);
+    els.table.classList.toggle('hidden', n === 0);
+  }
+  ['input', 'change'].forEach(function (ev) { [els.q, els.d, els.c, els.t].forEach(function (e) { e.addEventListener(ev, apply); }); });
+  $('m-reset').addEventListener('click', function () { els.q.value = els.d.value = els.c.value = els.t.value = ''; apply(); });
+
+  document.querySelectorAll('[data-domain-card]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      els.d.value = b.dataset.domainCard; apply();
+      document.getElementById('methods').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  /* ---------- sample form ---------- */
+  var form = $('sample-form'), msg = $('sample-msg');
+  function show(text, ok) {
+    msg.textContent = text;
+    msg.className = 'mt-4 rounded-xl px-4 py-3 text-sm font-semibold ' + (ok ? 'bg-mint text-primaryDark' : 'bg-red-50 text-red-700');
+  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = form.name.value.trim(), email = form.email.value.trim();
+    if (!name || !/^\S+@\S+\.\S+$/.test(email)) { show('تأكد من كتابة الاسم والبريد الإلكتروني بشكل صحيح.', false); return; }
+    if (!form.getAttribute('action')) { show('التسجيل غير متاح حاليًا، حاول مرة أخرى لاحقًا.', false); return; }
+    var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
+    fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); form.reset(); show('وصلنا طلبك، وسنرسل لك العينة على بريدك.', true); })
+      .catch(function () { show('تعذّر الإرسال الآن. حاول مرة أخرى بعد قليل.', false); })
+      .finally(function () { btn.disabled = false; });
+  });
+})();
+</script>

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block html_attribute %}dir="rtl"{% endblock html_attribute %}
+
+{% block title %}52 طريقة لتزيد دخلك «من جد» | كتاب مازن الضراب{% endblock title %}
+
+{% block meta %}
+  <meta name="description" content="كتاب عملي بـ52 طريقة لزيادة الدخل في السعودية: كم تكسب، كم تحتاج رأس مال، متى يجيك أول ريال، وما الأنظمة التي تلتزم بها. تأليف مازن الضراب.">
+  <meta property="og:type" content="book">
+  <meta property="og:locale" content="ar_SA">
+  <meta property="og:title" content="52 طريقة لتزيد دخلك «من جد»">
+  <meta property="og:description" content="52 فرصة دخل حقيقية في السعودية، بأرقام واضحة وخطوات تبدأ بها اليوم.">
+  <meta name="theme-color" content="#0b8a5f">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Book","name":"52 طريقة لتزيد دخلك «من جد»","inLanguage":"ar","author":{"@type":"Person","name":"مازن الضراب"},"bookFormat":"https://schema.org/Paperback"}
+  </script>
+{% endblock meta %}
+
+{% block head_css %}
+  <link rel="stylesheet" href="{% static 'css/style.min.css' %}">
+{% endblock head_css %}
+
+{% block scripts %}
+  <script src="{% static 'js/vendors.min.js' %}"></script>
+  <script src="{% static 'js/app.min.js' %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+  {% include 'book/navbar.html' %}
+  {% include 'book/hero.html' %}
+  {% include 'book/problem.html' %}
+  {% include 'book/anatomy.html' %}
+  {% include 'book/features.html' %}
+  {% include 'book/domains.html' %}
+  {% include 'book/methods.html' %}
+  {% include 'book/sample.html' %}
+  {% include 'book/audience.html' %}
+  {% include 'book/honesty.html' %}
+  {% include 'book/author.html' %}
+  {% if partners %}{% include 'book/partners.html' %}{% endif %}
+  {% if testimonials %}{% include 'book/testimonials.html' %}{% endif %}
+  {% include 'book/faq.html' %}
+  {% include 'book/cta.html' %}
+  {% include 'book/footer.html' %}
+{% endblock content %}

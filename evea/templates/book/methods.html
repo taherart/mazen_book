@@ -1,0 +1,69 @@
+{% load book_tags %}
+<section class="py-20 lg:py-28 bg-white" id="methods">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="chip">الجدول الكامل</span>
+      <h2 class="font-display text-4xl sm:text-5xl mt-4">ابحث عن <span class="hl">طريقتك</span></h2>
+      <p class="text-lg text-ink/70 mt-5">بالدخل، بالتكلفة، بالمدة. كل الأرقام من ملخص كل طريقة في الكتاب.</p>
+    </div>
+
+    <div class="mt-12 grid gap-3 md:grid-cols-12" id="methods-controls">
+      <label class="md:col-span-4 relative block">
+        <span class="sr-only">ابحث</span>
+        <i data-lucide="search" class="h-5 w-5 absolute top-1/2 -translate-y-1/2 start-4 text-ink/40 pointer-events-none"></i>
+        <input id="m-search" type="search" placeholder="ابحث باسم الطريقة…" class="form-input-book ps-12">
+      </label>
+      <select id="m-domain" class="form-input-book md:col-span-3" aria-label="المجال">
+        <option value="">كل المجالات</option>
+        {% for d in domains %}<option value="{{ d.key }}">{{ d.label }} ({{ d.count }})</option>{% endfor %}
+      </select>
+      <select id="m-capital" class="form-input-book md:col-span-2" aria-label="رأس المال">
+        <option value="">كل رؤوس الأموال</option>
+        {% for k, v in capital_labels.items %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+      </select>
+      <select id="m-time" class="form-input-book md:col-span-2" aria-label="المدة">
+        <option value="">كل المدد</option>
+        {% for k, v in time_labels.items %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+      </select>
+      <button id="m-reset" type="button" class="md:col-span-1 rounded-xl border-2 border-ink/10 font-semibold hover:border-primary hover:text-primary transition py-3">مسح</button>
+    </div>
+
+    <p class="mt-5 text-sm text-ink/60" aria-live="polite">يعرض <b id="m-count" class="text-primary">52</b> من 52 طريقة</p>
+
+    <div class="mt-4 mt-wrap">
+      <div class="mt-scroll">
+        <table class="mt-table" id="methods-table">
+          <thead>
+            <tr>
+              <th class="w-14">#</th>
+              <th>الطريقة</th>
+              <th>الدخل المتوقع</th>
+              <th>رأس المال (ريال)</th>
+              <th>أول ريال خلال</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in methods %}
+            <tr data-domain="{{ m.domain }}" data-capital="{{ m.cap_bucket }}" data-time="{{ m.time_bucket }}" data-text="{{ m.title }} {{ m.domain_label }}">
+              <td data-label="#" class="font-display text-xl text-primary hidden md:table-cell">{{ m.n }}</td>
+              <td class="mt-title" data-label="الطريقة">
+                <span class="md:hidden text-primary font-display text-lg me-2">{{ m.n }}</span><span class="font-bold">{{ m.title|ltr_nums }}</span>
+                <div class="mt-1"><span class="chip">{{ m.domain_label }}</span></div>
+              </td>
+              <td data-label="الدخل المتوقع" class="font-semibold"><span class="v">{{ m.income|ltr_nums }}</span></td>
+              <td data-label="رأس المال"><span class="v">{{ m.capital|ltr_nums }}</span></td>
+              <td data-label="أول ريال خلال"><span class="chip chip-gold">{{ m.time|ltr_nums }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div id="m-empty" class="hidden text-center py-14 text-ink/60">
+          ما لقينا طريقة بهذه المواصفات. جرّب تخفف الفلاتر.
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-5 text-sm text-ink/60 flex gap-2"><i data-lucide="info" class="h-4 w-4 mt-0.5 shrink-0"></i>
+      الأرقام تقديرية كما وردت في الكتاب، وتختلف بحسب جهدك وخبرتك وموقعك. تصنيف رأس المال والمدة في الفلاتر يعتمد على الحد الأعلى لكل نطاق.</p>
+  </div>
+</section>

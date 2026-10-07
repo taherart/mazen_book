@@ -1,0 +1,45 @@
+<section class="py-20 lg:py-28" id="about">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="chip">كيف يبدو الكتاب من الداخل</span>
+      <h2 class="font-display text-4xl sm:text-5xl mt-4">صفحتان لكل طريقة… <span class="hl">وكل شيء واضح</span></h2>
+      <p class="text-lg text-ink/70 mt-5">الصفحة الأولى تعطيك الصورة بثلاثة أرقام، والثانية تعطيك التفاصيل.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 lg:gap-8 mt-14 max-w-5xl mx-auto">
+
+      <!-- page 1 -->
+      <div class="spread-page p-8 sm:p-10 flex flex-col">
+        <div class="flex items-center justify-between text-sm text-ink/50 font-semibold">
+          <span>الطريقة 1</span><span>الصفحة الأولى</span>
+        </div>
+        <div class="mt-6 rounded-2xl bg-mint grid place-items-center py-10 text-primary flex-1 min-h-[220px]">
+          <i data-lucide="camera" class="h-20 w-20"></i>
+          <span class="text-xs mt-3 text-primary/70">هنا رسمة مرحة</span>
+        </div>
+        <h3 class="font-display text-3xl mt-6">تصوير المنتجات للمتاجر الإلكترونية</h3>
+        <p class="text-primary font-bold mt-1">عدسة تبيع</p>
+        <div class="grid grid-cols-3 gap-3 pt-8">
+          <div class="rounded-xl bg-cream p-3 text-center"><div class="text-xs text-ink/60">الدخل المتوقع</div><div class="font-bold text-sm mt-1"><bdi dir="ltr">40–80</bdi> ريال</div></div>
+          <div class="rounded-xl bg-cream p-3 text-center"><div class="text-xs text-ink/60">رأس المال</div><div class="font-bold text-sm mt-1"><bdi dir="ltr">0–300</bdi> ريال</div></div>
+          <div class="rounded-xl bg-cream p-3 text-center"><div class="text-xs text-ink/60">أول ريال خلال</div><div class="font-bold text-sm mt-1"><bdi dir="ltr">3–5</bdi> أسابيع</div></div>
+        </div>
+      </div>
+
+      <!-- page 2 -->
+      <div class="spread-page p-8 sm:p-10">
+        <div class="flex items-center justify-between text-sm text-ink/50 font-semibold">
+          <span>الصفحة الثانية</span><span>تسعة أجزاء ثابتة</span>
+        </div>
+        <ul class="mt-6 divide-y divide-ink/5">
+          {% for icon, title, desc in page_parts %}
+          <li class="flex items-center gap-4 py-3">
+            <span class="grid place-items-center h-10 w-10 shrink-0 rounded-xl {% if title == 'انتبه' %}bg-accent/30 text-amber-700{% else %}bg-mint text-primary{% endif %}"><i data-lucide="{{ icon }}" class="h-5 w-5"></i></span>
+            <div><div class="font-bold">{{ title }}</div><div class="text-sm text-ink/60">{{ desc }}</div></div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

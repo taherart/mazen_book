@@ -1,0 +1,9 @@
+{% load static %}
+<section class="py-16 bg-cream">
+  <div class="container text-center">
+    <h2 class="font-display text-3xl">بدعم من</h2>
+    <div class="flex flex-wrap items-center justify-center gap-10 mt-8">
+      {% for p in partners %}<img src="{% static p.logo %}" alt="{{ p.name }}" class="h-12 grayscale hover:grayscale-0 transition">{% endfor %}
+    </div>
+  </div>
+</section>

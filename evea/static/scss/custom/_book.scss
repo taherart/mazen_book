@@ -1,0 +1,116 @@
+/*********************************/
+/*   Book landing (RTL, Arabic)  */
+/*===============================*/
+
+html { scroll-padding-top: 5rem; }
+
+body { @apply bg-cream text-ink antialiased; }
+
+.font-display { letter-spacing: 0; line-height: 1.25; }
+
+/* hand-drawn underline behind a highlighted word */
+.hl {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+    &::after {
+        content: "";
+        position: absolute;
+        inset-inline: -0.15em;
+        bottom: 0.02em;
+        height: 0.42em;
+        background: #f6b21b;
+        border-radius: 999px;
+        transform: rotate(-1.2deg);
+        z-index: -1;
+    }
+}
+
+/* paper-grain dots */
+.bg-dots {
+    background-image: radial-gradient(rgba(15, 42, 34, .09) 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+}
+
+/* ---------- book cover mock ---------- */
+.book {
+    perspective: 1400px;
+    .book-body {
+        position: relative;
+        aspect-ratio: 3 / 4.2;
+        border-radius: 6px 18px 18px 6px;
+        transform: rotateY(14deg) rotateX(2deg);
+        transform-style: preserve-3d;
+        transition: transform .6s ease;
+        box-shadow: -22px 26px 50px rgba(15, 42, 34, .28), -4px 4px 0 rgba(0,0,0,.06);
+        &::before { /* spine */
+            content: "";
+            position: absolute; top: 0; bottom: 0; right: 0; width: 16px;
+            background: linear-gradient(270deg, rgba(0,0,0,.28), rgba(255,255,255,.08) 60%, transparent);
+            border-radius: 0 18px 18px 0;
+        }
+    }
+    &:hover .book-body { transform: rotateY(4deg) rotateX(0); }
+}
+
+/* ---------- two-page spread ---------- */
+.spread-page {
+    @apply bg-white rounded-2xl shadow-xl relative overflow-hidden;
+    box-shadow: 0 18px 40px rgba(15, 42, 34, .12), 0 2px 0 rgba(15, 42, 34, .05);
+}
+
+/* ---------- methods table ---------- */
+.mt-wrap { @apply rounded-2xl bg-white overflow-hidden; box-shadow: 0 10px 30px rgba(15,42,34,.08); }
+.mt-table { @apply w-full text-sm; border-collapse: separate; border-spacing: 0; }
+.mt-table thead th {
+    @apply bg-ink text-white font-semibold text-start px-4 py-3.5 whitespace-nowrap;
+    position: sticky; top: 0; z-index: 2;
+}
+.mt-table tbody tr { transition: background .2s; }
+.mt-table tbody tr:hover { background: #f1f8f3; }
+.mt-table tbody td { @apply px-4 py-3.5 align-top border-b border-ink/5; }
+.mt-scroll { max-height: 640px; overflow: auto; }
+
+.chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+    background: #e6f3ea; color: #086b49;
+}
+.chip-gold { background: #fdf0c9; color: #7a5600; }
+
+@media (max-width: 767px) {
+    .mt-table thead { display: none; }
+    .mt-table, .mt-table tbody, .mt-table tr, .mt-table td { display: block; width: 100%; }
+    .mt-table tbody tr {
+        @apply border-b border-ink/10 py-3 px-4;
+    }
+    .mt-table tbody td {
+        @apply border-0 px-0 py-1 flex justify-between gap-4 text-sm;
+        &::before { content: attr(data-label); @apply text-ink/50 font-medium shrink-0; }
+        > .v { text-align: end; }
+        &.mt-title { @apply block text-base font-bold; &::before { content: none; } }
+    }
+    .mt-scroll { max-height: none; }
+}
+
+/* ---------- misc ---------- */
+.marquee-track { display: flex; gap: .75rem; width: max-content; animation: marquee 60s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(50%); } } /* RTL: moves right */
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } html { scroll-behavior: auto; } }
+
+.faq-item[open] summary .faq-plus { transform: rotate(45deg); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary { list-style: none; }
+
+.form-input-book {
+    @apply w-full rounded-xl border-2 border-ink/10 bg-white px-4 py-3 text-base focus:border-primary focus:ring-0 transition;
+}
+
+.back-to-top { inset-inline-end: 2rem; right: auto !important; }
+
+/* select arrow on the left for RTL (forms plugin puts it on the right) */
+select.form-input-book {
+    background-position: left 0.9rem center;
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+}

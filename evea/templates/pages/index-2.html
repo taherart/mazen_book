@@ -1,0 +1,41 @@
+{% extends 'landing_layout.html' %}
+
+{% load static i18n %}
+
+{% block title %}Evea{% endblock title %}
+
+{% block page_content %}
+  {% include 'partials/navbar-light.html' %}
+
+  <section class="relative pt-44 from-slate-500/10 bg-[url(/static/images/home/bg-2.png)] bg-no-repeat bg-cover" id="home">
+    <div class="container">
+
+      <div class="grid grid-cols-1 items-center justify-center">
+        <div class="text-sm max-w-3xl mx-auto text-center">
+          <h1
+            class="text-3xl md:text-5xl/tight lg:text-6xl/tight text-white tracking-normal capitalize leading-normal font-semibold max-w-2xl">
+            All your business expenses in one place.</h1>
+          <div class="max-w-xl mx-auto">
+            <p class="text-base font-medium text-white leading-7 mt-2 capitalize">You one stop finance empower platform
+              Manage all your business expenses with our supafast app.</p>
+          </div>
+          <div class="flex flex-wrap items-center justify-center mt-9 text-center gap-3">
+            <button
+              class="py-2 px-6 rounded-md text-white text-base bg-primary hover:bg-primaryDark border border-primary hover:border-primaryDark transition-all duration-500 font-medium">
+              Get A Free Demo
+            </button>
+            <button
+              class="py-2 px-6 text-white rounded-md border border-white text-base hover:border-white hover:bg-white hover:text-primary transition-all duration-500 font-medium">
+              See Pricing
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white/40 px-4 pt-4 mt-16 rounded-t-xl mx-auto max-w-full">
+          <img src="{% static 'images/dashboard-1.png' %}" class="rounded-t-lg mx-auto w-full lg:min-w-[950px]" alt="">
+        </div>
+      </div>
+
+    </div>
+  </section>
+{% endblock page_content %}

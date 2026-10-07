@@ -1,0 +1,36 @@
+{% load static i18n %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}" {% block html_attribute %}{% endblock html_attribute %}>
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock title %}</title>
+  {% block meta %}
+  <meta name="description" content="">
+  {% endblock meta %}
+
+  <!-- favicon -->
+  <link href="{% static 'images/favicon.ico' %}" rel="shortcut icon">
+
+  {% block extra_css %} {% endblock extra_css %}
+
+  {% block head_css %}{% include 'partials/head-css.html' %}{% endblock head_css %}
+
+</head>
+<body {% block body_attribute %}{% endblock body_attribute %}>
+
+{% block loader %}{% endblock loader %}
+
+{% block content %}{% endblock content %}
+
+{% block modal %}{% endblock modal %}
+
+{% include 'partials/back-to-top.html' %}
+
+{% block scripts %}{% include 'partials/script-files.html' %}{% endblock scripts %}
+
+{% block extra_javascript %} {% endblock extra_javascript %}
+
+</body>
+</html>

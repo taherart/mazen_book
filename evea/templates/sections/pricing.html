@@ -1,0 +1,192 @@
+{% load static i18n %}
+
+<section id="pricing" class="py-20">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <div>
+        <span class="text-sm text-primary uppercase font-semibold tracking-wider text-default-950">Pricing</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl/tight font-semibold text-black mt-4">Get the power of the professional services
+        with the simple price</h2>
+    </div>
+
+    <div class="grid grid-cols-1 mt-8">
+      <div class="flex justify-center">
+        <div id="toggle-count" class="p-1 inline-block border border-gray-200 rounded-lg">
+                        <span class="relative inline-block">
+                            <input id="toggle-count-monthly" name="toggle-count" type="radio"
+                                   class="absolute top-0 end-0 size-full border-transparent bg-transparent bg-none text-white rounded-lg cursor-pointer focus:border-0 focus:ring-transparent focus:ring-offset-transparent"
+                                   checked>
+                            <label for="toggle-count-monthly"
+                                   class="inline-block py-2 px-5 rounded-s-md uppercase text-sm font-semibold">
+                                Monthly
+                            </label>
+                        </span>
+          <span class="relative inline-block">
+                            <input id="toggle-count-annual" name="toggle-count" type="radio"
+                                   class="absolute top-0 end-0 size-full border-transparent bg-transparent bg-none text-white rounded-lg cursor-pointer focus:border-0 focus:ring-transparent focus:ring-offset-transparent">
+                            <label for="toggle-count-annual"
+                                   class="inline-block py-2 px-5 rounded-e-md uppercase text-sm font-semibold">
+                                Annual
+                            </label>
+                        </span>
+        </div>
+      </div>
+
+      <p class="text-muted text-base mx-auto mt-5">Save up to 15% with Annual Plan.</p>
+
+      <div id="StarterContent">
+        <div class="mt-14" id="start-month" role="tabpanel" aria-labelledby="start-month-tab">
+          <div class="grid lg:grid-cols-3 grid-cols-1 gap-10">
+
+            <div class="flex flex-col shadow-2xl rounded-xl bg-white overflow-hidden">
+              <div class="text-center pt-10">
+                <img src="{% static 'images/vector/vector-1.png' %}" class="h-28 w-28 mx-auto" alt="email">
+                <h5 class="text-2xl font-semibold text-black">Standard</h5>
+                <h2 class="text-5xl mt-5 mb-1 items-center align-middle">
+                  <sup class="text-3xl align-middle">$</sup>
+                  <span data-hs-toggle-count='{
+                                            "target": "#toggle-count",
+                                            "min": 49,
+                                            "max": 199
+                                          }'>49</span>
+                </h2>
+                <span class="text-base font-medium text-muted">per month</span>
+              </div>
+
+              <div class="px-5 py-5 mx-auto">
+                <ul class="text-center">
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">1 Gb Storage</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">3 Domain Names</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">5 FTP Users</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="x" class="text-muted text-lg align-middle me-2"></i>
+                    <h5 class="font-medium text-muted">Free Support</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="x" class="text-muted text-lg align-middle me-2"></i>
+                    <h5 class="font-medium text-muted">Free SSI Certificate</h5>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="flex justify-center px-10 pb-10">
+                <button
+                  class="py-2 px-6 inline-flex rounded-md text-base items-center justify-center border border-primary text-white bg-primary hover:bg-primaryDark transition-all duration-500 font-medium w-full">
+                  Buy Standard
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-col shadow-2xl rounded-xl bg-white overflow-hidden">
+              <div class="text-center pt-10">
+                <img src="{% static 'images/vector/vector-2.png' %}" class="h-28 w-28 mx-auto"
+                     alt="vector-2">
+                <h5 class="text-2xl font-semibold text-black">Premium</h5>
+                <h2 class="text-5xl mt-5 mb-1 items-center align-middle">
+                  <sup class="text-3xl align-middle">$</sup>
+                  <span data-hs-toggle-count='{
+                                            "target": "#toggle-count",
+                                            "min": 78,
+                                            "max": 299
+                                          }'>78</span>
+                </h2>
+                <span class="text-base font-medium text-muted">per month</span>
+              </div>
+
+              <div class="px-5 py-5 mx-auto">
+                <ul class="text-center text-black">
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">1 Gb Storage</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">3 Domain Names</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">5 FTP Users</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">Free Support</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="x" class="text-muted text-lg align-middle me-2"></i>
+                    <h5 class="font-medium text-muted">Free SSI Certificate</h5>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="flex justify-center px-10 pb-10">
+                <button
+                  class="py-2 px-6 inline-flex rounded-md text-base items-center justify-center border border-primary text-white bg-primary hover:bg-primaryDark transition-all duration-500 font-medium w-full">
+                  Buy Premium
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-col shadow-2xl rounded-xl bg-white overflow-hidden ">
+              <div class="text-center pt-10">
+                <img src="{% static 'images/vector/vector-3.png' %}" class="h-28 w-28 mx-auto"
+                     alt="vector-3">
+                <h5 class="text-2xl font-semibold text-black">Enterprise</h5>
+                <h2 class="text-5xl mt-5 mb-1 items-center align-middle">
+                  <sup class="text-3xl align-middle">$</sup>
+                  <span data-hs-toggle-count='{
+                                            "target": "#toggle-count",
+                                            "min": 99,
+                                            "max": 399
+                                          }'>99</span>
+                </h2>
+                <span class="text-base font-medium text-muted">per month</span>
+              </div>
+
+              <div class="px-5 py-5 mx-auto">
+                <ul class="text-center text-black">
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">1 Gb Storage</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">3 Domain Names</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">5 FTP Users</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">Free Support</h5>
+                  </li>
+                  <li class="flex items-center justify-start py-2">
+                    <i data-lucide="check" class="text-primary text-lg align-middle me-2"></i>
+                    <h5 class="font-medium">Free SSI Certificate</h5>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="flex justify-center px-10 pb-10">
+                <button
+                  class="py-2 px-6 inline-flex rounded-md text-base items-center justify-center border border-primary text-white bg-primary hover:bg-primaryDark transition-all duration-500 font-medium w-full">
+                  Buy Enterprise
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
