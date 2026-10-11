@@ -1,0 +1,450 @@
+/* Motion, fluid type and surface system.
+ *
+ * Everything here is opt-in: nothing changes on a page until it uses one of these utilities or
+ * data attributes. Behaviour that needs JavaScript (scroll reveal, spotlight, magnetic pull,
+ * count-up) is driven by <MotionRoot/> in components/motion-root.tsx.
+ *
+ * Direction: the site is right-to-left, so "forward" travels leftwards. Horizontal offsets
+ * below are written for RTL on purpose.
+ */
+
+@theme {
+  /* ---------- easing ---------- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  /* damped springs sampled from the closed-form response (zeta 0.5 and 0.75) */
+  --ease-spring: linear(0, 0.099, 0.324, 0.586, 0.823, 1.001, 1.111, 1.158, 1.158, 1.13, 1.088, 1.047, 1.013, 0.989, 0.977, 0.973, 0.976, 0.982, 0.989, 0.995, 1, 1.003, 1.004, 1.004, 1.003, 1.002, 1);
+  --ease-spring-soft: linear(0, 0.076, 0.243, 0.434, 0.611, 0.756, 0.865, 0.941, 0.988, 1.014, 1.026, 1.028, 1.026, 1.021, 1.015, 1.011, 1.007, 1.004, 1.001, 1, 1, 0.999, 1);
+
+  /* ---------- fluid type (Arabic: generous leading, never letter-spaced) ---------- */
+  --text-display: clamp(2.75rem, 1.4rem + 5.6vw, 5.5rem);
+  --text-display--line-height: 1.22;
+  --text-h1: clamp(2.25rem, 1.5rem + 3.2vw, 4rem);
+  --text-h1--line-height: 1.28;
+  --text-h2: clamp(1.75rem, 1.35rem + 1.7vw, 2.75rem);
+  --text-h2--line-height: 1.3;
+  --text-h3: clamp(1.25rem, 1.12rem + 0.55vw, 1.6rem);
+  --text-h3--line-height: 1.4;
+  --text-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --text-lead--line-height: 1.85;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.6;
+
+  /* ---------- rhythm ---------- */
+  --spacing-section: clamp(3.5rem, 2.2rem + 5.5vw, 7.5rem);
+  --spacing-section-tight: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+  --spacing-gutter: clamp(1rem, 0.6rem + 1.8vw, 2rem);
+
+  /* ---------- one radius scale: pill for controls, then tile < card < panel ---------- */
+  --radius-tile: 1rem;
+  --radius-card: 1.5rem;
+  --radius-panel: 2rem;
+
+  --animate-stamp: stamp 520ms var(--ease-spring) both;
+  --animate-land: land 700ms var(--ease-spring-soft) both;
+  --animate-digit: digit 380ms var(--ease-out-expo) both;
+
+  @keyframes stamp {
+    0% {
+      opacity: 0;
+      transform: scale(1.7) rotate(-14deg);
+    }
+    55% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(-6deg);
+    }
+  }
+  /* a sticker being placed: drops, settles, and only then throws its hard shadow */
+  @keyframes land {
+    0% {
+      opacity: 0;
+      transform: translateY(-18px) rotate(2.5deg);
+      box-shadow: 0 0 0 0 var(--color-ink);
+    }
+    60% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 var(--color-ink);
+    }
+    100% {
+      transform: none;
+      box-shadow: var(--shadow-print);
+    }
+  }
+  @keyframes digit {
+    from {
+      opacity: 0;
+      transform: translateY(0.45em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+:root {
+  --dur-1: 120ms; /* press, colour */
+  --dur-2: 200ms; /* hover, small moves */
+  --dur-3: 320ms; /* panels, chips */
+  --dur-4: 560ms; /* reveals */
+  --dur-5: 900ms; /* hero choreography */
+  --stagger: 60ms;
+
+  /* the only stacking contexts the site uses */
+  --z-sticky: 30;
+  --z-header: 40;
+  --z-overlay: 50;
+  --z-grain: 60;
+}
+
+/* ============================================================
+   1. Scroll reveal (time-based, fires once)
+   <MotionRoot/> adds .motion to <html> and data-inview to elements as they enter.
+   Without JavaScript nothing is hidden. Never put data-reveal on above-the-fold hero content.
+   ============================================================ */
+/* In the components layer so an element's own utilities (hover lifts, etc.) still win.
+   Prefer putting data-reveal on a wrapper, not on a control that has its own transition. */
+@layer components {
+  html.motion [data-reveal] {
+    opacity: 0;
+    translate: 0 18px;
+    transition:
+      opacity var(--dur-4) var(--ease-out-expo),
+      translate var(--dur-5) var(--ease-out-expo);
+    transition-delay: calc(var(--i, 0) * var(--stagger));
+  }
+  html.motion [data-reveal="fade"] {
+    translate: none;
+  }
+  html.motion [data-reveal="start"] {
+    translate: 28px 0; /* arrives from the right, where an Arabic line begins */
+  }
+  html.motion [data-reveal="scale"] {
+    translate: none;
+    scale: 0.94;
+    transition:
+      opacity var(--dur-4) var(--ease-out-expo),
+      scale var(--dur-5) var(--ease-spring-soft);
+  }
+  html.motion [data-reveal][data-inview] {
+    opacity: 1;
+    translate: none;
+    scale: none;
+  }
+}
+
+/* children of a [data-stagger] parent take their turn */
+[data-stagger] > :nth-child(2) { --i: 1; }
+[data-stagger] > :nth-child(3) { --i: 2; }
+[data-stagger] > :nth-child(4) { --i: 3; }
+[data-stagger] > :nth-child(5) { --i: 4; }
+[data-stagger] > :nth-child(6) { --i: 5; }
+[data-stagger] > :nth-child(7) { --i: 6; }
+[data-stagger] > :nth-child(8) { --i: 7; }
+[data-stagger] > :nth-child(n + 9) { --i: 8; }
+
+/* ============================================================
+   2. Micro-interactions
+   ============================================================ */
+
+/* Marker pen swipes under the word, right to left. Use together with `marker`. */
+@utility marker-draw {
+  &::after {
+    transform-origin: right center;
+    animation: marker-swipe 700ms var(--ease-out-expo) 350ms both;
+  }
+}
+html.motion [data-reveal]:not([data-inview]) .marker-draw::after,
+html.motion .marker-draw[data-reveal]:not([data-inview])::after {
+  animation-play-state: paused;
+}
+@keyframes marker-swipe {
+  from {
+    transform: rotate(-1.4deg) scaleX(0);
+  }
+  to {
+    transform: rotate(-1.4deg) scaleX(1);
+  }
+}
+
+/* Printed card that rises off the page on hover and presses flat on tap. */
+@utility lift {
+  transition:
+    translate var(--dur-2) var(--ease-out-expo),
+    box-shadow var(--dur-2) var(--ease-out-expo);
+  @media (hover: hover) {
+    &:hover {
+      translate: 2px -3px;
+      box-shadow: -7px 7px 0 0 var(--color-ink);
+    }
+  }
+  &:active {
+    translate: -2px 2px;
+    box-shadow: 0 0 0 0 var(--color-ink);
+    transition-duration: var(--dur-1);
+  }
+}
+
+/* Magnetic pull, written by <MotionRoot/> into --tx/--ty. Uses `transform` so it composes
+   with Tailwind's translate/scale utilities, which use the individual properties. */
+@layer components {
+  [data-magnetic] {
+    transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
+    transition: transform 600ms var(--ease-spring);
+  }
+  [data-magnetic][data-pulling] {
+    transition-duration: 90ms;
+    transition-timing-function: linear;
+  }
+}
+
+/* Border that lights up under the pointer. --mx/--my come from <MotionRoot/>. */
+@utility spotlight {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), var(--color-sun), transparent 62%);
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    opacity: 0;
+    transition: opacity var(--dur-3) ease;
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+}
+
+/* Illustration drifts a few pixels against the pointer inside a [data-spotlight] card. */
+@utility art-drift {
+  transition: transform 500ms var(--ease-out-expo);
+  @media (hover: hover) and (pointer: fine) {
+    [data-spotlight]:hover & {
+      transform: translate3d(calc((var(--px, 0.5) - 0.5) * -14px), calc((var(--py, 0.5) - 0.5) * -10px), 0) scale(1.04);
+    }
+  }
+}
+
+/* 44px minimum touch target without changing how the control looks. */
+@utility tap {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: max(100%, 44px);
+    translate: 0 -50%;
+  }
+}
+
+/* ============================================================
+   3. Scroll-linked (scrubbed) effects. Pure CSS; browsers without
+   scroll-driven animations simply show the resting state.
+   ============================================================ */
+/* reading progress line for long pages (origin right = it starts at the RTL edge) */
+@utility scroll-progress {
+  display: none;
+  transform-origin: right center;
+  @supports (animation-timeline: scroll()) {
+    display: block;
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+/* slow counter-drift for one large background element per page */
+@utility drift {
+  @supports (animation-timeline: view()) {
+    animation: drift-y linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+}
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes drift-y {
+  from {
+    transform: translateY(-6%);
+  }
+  to {
+    transform: translateY(10%);
+  }
+}
+
+/* ============================================================
+   4. Atmosphere
+   ============================================================ */
+
+/* Paper grain. Put it on ONE fixed, pointer-events-none element (see MotionRoot docs),
+   never on something that scrolls. */
+@utility grain {
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .95 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Frosted bar for chrome that floats over content (header, tab bar, sticky join bar).
+   A web approximation of frosted glass, with a solid fallback.
+   Write only the unprefixed property: the build adds -webkit- itself, and if both are written
+   by hand it keeps the prefixed one alone, which Chrome ignores. */
+@utility glass {
+  background: rgb(247 243 234 / 0.78);
+  backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
+  @supports not (backdrop-filter: blur(1px)) {
+    background: var(--color-paper);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background: var(--color-paper);
+    backdrop-filter: none;
+  }
+}
+
+/* Risograph misregistration: the art gets a blue ghost that slips out on hover. */
+@utility misprint {
+  transition: filter var(--dur-3) var(--ease-out-expo);
+  @media (hover: hover) {
+    .group:hover & {
+      filter: drop-shadow(-3px 2px 0 rgb(47 91 211 / 0.35));
+    }
+  }
+}
+
+/* Fade the ends of a horizontal rail so it reads as scrollable. */
+@utility rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to left, transparent, #000 1.25rem, #000 calc(100% - 1.25rem), transparent);
+  & > * {
+    flex: none;
+    scroll-snap-align: start;
+  }
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   5. Page transitions (React <ViewTransition>, built into this Next.js version)
+   ============================================================ */
+::view-transition {
+  pointer-events: none; /* keep the page clickable while a transition runs */
+}
+
+/* shared element: a method's illustration travels from its card to the method page */
+::view-transition-group(.morph) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease-in-out-quart);
+}
+
+/* skeleton hands over to content */
+::view-transition-old(.sink) {
+  animation: 150ms ease-out both vt-fade reverse;
+}
+::view-transition-new(.rise) {
+  animation:
+    220ms ease-out 120ms both vt-fade,
+    460ms var(--ease-out-expo) both vt-rise;
+}
+
+/* directional navigation, mirrored for right-to-left: going deeper moves the page rightwards */
+::view-transition-old(.nav-forward) {
+  --slide: 56px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms var(--ease-in-out-quart) both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide: -56px;
+  animation:
+    220ms ease-out 140ms both vt-fade,
+    400ms var(--ease-in-out-quart) both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide: -56px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms var(--ease-in-out-quart) both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide: 56px;
+  animation:
+    220ms ease-out 140ms both vt-fade,
+    400ms var(--ease-in-out-quart) both vt-slide;
+}
+
+/* the header is the fixed point the content moves under */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes vt-rise {
+  from {
+    translate: 0 16px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--slide) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* ============================================================
+   6. Reduced motion: everything settles to its final state
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.motion [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    transition: none !important;
+  }
+  [data-magnetic] {
+    transform: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
