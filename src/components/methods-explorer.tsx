@@ -38,11 +38,11 @@ function matches(m: MethodSummary, f: Filters) {
   return true;
 }
 
-export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSummary[]; limit?: number; compact?: boolean }) {
+export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
   const params = useSearchParams();
   const [filters, setFilters] = useState<Filters>(() => {
     const init = { ...EMPTY };
-    if (!compact) for (const k of KEYS) init[k] = params.get(k) ?? "";
+    for (const k of KEYS) init[k] = params.get(k) ?? "";
     return init;
   });
   const [panel, setPanel] = useState(false);
@@ -50,7 +50,6 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
   const set = (key: keyof Filters, value: string) => {
     const next = { ...filters, [key]: value };
     setFilters(next);
-    if (compact) return;
     // keep the address shareable without a navigation
     const qs = new URLSearchParams();
     for (const k of KEYS) if (next[k]) qs.set(k, next[k]);
@@ -58,24 +57,20 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
   };
   const clear = () => {
     setFilters(EMPTY);
-    if (!compact) window.history.replaceState(null, "", window.location.pathname);
+    window.history.replaceState(null, "", window.location.pathname);
   };
 
   const result = useMemo(() => methods.filter((m) => matches(m, filters)), [methods, filters]);
   const active = KEYS.filter((k) => k !== "q" && filters[k]).length;
-  const shown = limit ? result.slice(0, limit) : result;
-  const groups = compact ? GROUPS.slice(0, 4) : GROUPS;
 
   return (
     <div>
       <div className="flex flex-wrap items-center gap-3">
-        {!compact ? (
-          <label className="relative block min-w-0 flex-1 basis-64">
-            <span className="sr-only">ابحث في الطرق</span>
-            <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-mute" />
-            <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border-2 border-ink bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
-          </label>
-        ) : null}
+        <label className="relative block min-w-0 flex-1 basis-64">
+          <span className="sr-only">ابحث في الطرق</span>
+          <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-mute" />
+          <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border-2 border-ink bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
+        </label>
         <Button variant="white" className="lg:hidden" onClick={() => setPanel((v) => !v)} aria-expanded={panel}>
           <SlidersHorizontal aria-hidden className="size-4" />
           تصفية
@@ -89,8 +84,8 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
         </p>
       </div>
 
-      <div className={cx("mt-4 gap-x-6 gap-y-4 rounded-3xl border-2 border-ink bg-white p-4 lg:grid", compact ? "lg:grid-cols-4" : "lg:grid-cols-3", panel ? "grid" : "hidden")}>
-        {groups.map((g) => (
+      <div className={cx("mt-4 gap-x-6 gap-y-4 rounded-3xl border-2 border-ink bg-white p-4 lg:grid", "lg:grid-cols-3", panel ? "grid" : "hidden")}>
+        {GROUPS.map((g) => (
           <fieldset key={g.key} className="min-w-0">
             <legend className="mb-2 text-xs font-bold text-ink-mute">{g.label}</legend>
             <div className="flex flex-wrap gap-1.5">
@@ -113,9 +108,9 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
         ) : null}
       </div>
 
-      {shown.length ? (
+      {result.length ? (
         <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {shown.map((m, i) => (
+          {result.map((m, i) => (
             <li key={m.n} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
               <MethodCard method={m} className="h-full" priority={i < 4} />
             </li>

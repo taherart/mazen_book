@@ -355,7 +355,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <p className="mt-2 max-w-md text-lg text-white/85">المعرفة وحدها لا تزيد الدخل. انضم للتحدي، أنجز المهام واحدة واحدة، ووثّق ما يحدث.</p>
             <JoinButton method={n} variant="sun" className="mt-6" />
           </div>
-          <ol data-reveal="start" className="grid gap-2 rounded-[2rem] border-2 border-ink bg-white p-4 shadow-print">
+          <ol data-reveal="start" className="grid grid-cols-[minmax(0,1fr)] gap-2 rounded-[2rem] border-2 border-ink bg-white p-4 shadow-print">
             {tasks.map((t, i) => (
               <li key={i} className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-2.5">
                 <span aria-hidden className="size-5 shrink-0 rounded-md border-2 border-ink bg-white" />

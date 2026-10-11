@@ -32,11 +32,11 @@ export function StoryFigures({ story, className }: { story: Story; className?: s
   );
 }
 
-export function StoryCard({ story, method, className }: { story: Story; method?: MethodSummary; className?: string }) {
+export function StoryCard({ story, method, featured, className }: { story: Story; method?: MethodSummary; featured?: boolean; className?: string }) {
   return (
     <Link href={`/stories/${story.id}`} className={cx("group flex h-full flex-col overflow-hidden rounded-3xl border-2 border-ink bg-white transition hover:-translate-y-1 hover:shadow-print", className)}>
       <div className="relative flex aspect-[16/10] items-end overflow-hidden bg-brand blue-dots">
-        <Image src={methodImage(story.method)} alt="" width={320} height={320} sizes="240px" className="absolute -bottom-6 end-2 w-44 opacity-95 transition duration-300 group-hover:scale-105" />
+        <Image src={methodImage(story.method)} alt="" width={featured ? 480 : 320} height={featured ? 480 : 320} sizes={featured ? "320px" : "240px"} className={cx("absolute end-2 opacity-95 transition duration-300 group-hover:scale-105", featured ? "-bottom-10 w-[58%] max-w-80" : "-bottom-6 w-44")} />
         <div className="relative z-10 flex w-full items-center justify-between p-3">
           {story.media === "video" ? (
             <span className="grid size-11 place-items-center rounded-full border-2 border-ink bg-sun text-ink shadow-print-sm">
@@ -73,6 +73,28 @@ export function StoryCard({ story, method, className }: { story: Story; method?:
             <ArrowLeft aria-hidden className="size-4 transition group-hover:-translate-x-1" />
           </span>
         </div>
+      </div>
+    </Link>
+  );
+}
+
+/** A story on one line, beside the featured one on the home page. */
+export function StoryRow({ story, method, className }: { story: Story; method?: MethodSummary; className?: string }) {
+  return (
+    <Link href={`/stories/${story.id}`} className={cx("lift group flex h-full gap-4 rounded-card border-2 border-ink bg-white p-3", className)}>
+      <div className="relative w-24 shrink-0 overflow-hidden rounded-tile bg-brand blue-dots sm:w-28">
+        <Image src={methodImage(story.method)} alt="" width={160} height={160} sizes="112px" className="absolute -bottom-3 inset-x-0 w-full" />
+      </div>
+      <div className="min-w-0 flex-1 py-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <OutcomeChip outcome={story.outcome} />
+          {story.sample ? <SampleTag /> : null}
+        </div>
+        <h3 className="mt-2 line-clamp-2 font-display text-lg leading-snug text-ink">{story.title}</h3>
+        {method ? <p className="truncate text-xs font-semibold text-brand">{method.title}</p> : null}
+        <p className="mt-1 text-sm text-ink-soft">
+          {story.duration} · <b className={story.income ? "text-ok" : "font-semibold"}>{story.income ? riyal(story.income) : "لا دخل بعد"}</b>
+        </p>
       </div>
     </Link>
   );

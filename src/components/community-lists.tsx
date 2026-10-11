@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Flag, HandHeart, MessageSquareHeart, Rocket } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Flag, HandHeart, MessageSquareHeart, PenLine, Rocket } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";
@@ -8,7 +8,7 @@ import { useDemo, useProviders, useStories } from "@/lib/demo/hooks";
 import { methodHref } from "@/lib/methods";
 import { OUTCOMES } from "@/lib/taxonomy";
 import type { MethodSummary, Outcome } from "@/lib/types";
-import { ProviderCard, StoryCard } from "./community";
+import { ProviderCard, StoryCard, StoryRow } from "./community";
 import { EmptyState, SampleTag, Select, buttonClass, cx } from "./ui";
 
 function MethodFilter({ methods, value, onChange, used }: { methods: MethodSummary[]; value: number; onChange: (n: number) => void; used: Set<number> }) {
@@ -128,7 +128,81 @@ export function ProvidersGrid({ methods, method, limit, filter, className }: { m
   );
 }
 
-/** Live community counters. They are never padded: with the examples switched off they read zero. */
+/** Home page community block: one featured story, two beside it, and providers on a rail. */
+export function CommunityBento({ methods }: { methods: MethodSummary[] }) {
+  const stories = useStories();
+  const providers = useProviders();
+  const [featured, ...rest] = stories;
+  return (
+    // minmax(0, 1fr): without it the providers rail would widen the column to fit every card
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-10">
+      {featured ? (
+        <div data-reveal className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+          <StoryCard story={featured} method={methods[featured.method - 1]} featured />
+          <ul data-stagger className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-rows-[auto_auto_1fr]">
+            {rest.slice(0, 2).map((s) => (
+              <li key={s.id} data-reveal>
+                <StoryRow story={s} method={methods[s.method - 1]} />
+              </li>
+            ))}
+            {/* the invitation fills what the two rows leave beside the featured story */}
+            <li data-reveal>
+              <Link href="/methods" className="group flex h-full items-center gap-4 rounded-card border-2 border-dashed border-ink/35 bg-white/60 p-4 transition hover:border-ink">
+                <span className="grid size-12 shrink-0 place-items-center rounded-tile bg-sun-wash text-ink">
+                  <PenLine aria-hidden className="size-6" />
+                </span>
+                <span className="min-w-0">
+                  <b className="block font-display text-lg text-ink">جرّبت طريقة؟</b>
+                  <span className="text-sm text-ink-soft">شارك ما حدث معك، نجحت أو لم تنجح: افتح الطريقة من الدليل ثم «شارك تجربتك».</span>
+                </span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      ) : (
+        <EmptyState
+          icon={<MessageSquareHeart className="size-6" />}
+          title="لم تُنشر أي تجربة بعد"
+          action={
+            <Link href="/methods" className={buttonClass("primary")}>
+              اختر طريقة وابدأ
+            </Link>
+          }
+        >
+          التجارب تظهر هنا بعد مراجعتها، الناجحة منها وغير الناجحة، فالهدف أن نتعلّم من بعض.
+        </EmptyState>
+      )}
+
+      <div data-reveal>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+          <div>
+            <h3 className="font-display text-h3 text-ink">تحتاج من ينفّذها لك؟</h3>
+            <p className="text-sm text-ink-soft">أشخاص يقدّمون خدمات مرتبطة بالطرق. تواصل معهم مباشرة، بلا وسيط ولا عمولة.</p>
+          </div>
+          <Link href="/providers" className="tap inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:underline">
+            دليل أصحاب المهارات
+            <ArrowLeft aria-hidden className="size-4" />
+          </Link>
+        </div>
+        {providers.length ? (
+          <ul className="rail mt-4 gap-4 pb-1">
+            {providers.map((p) => (
+              <li key={p.id} className="w-72">
+                <ProviderCard provider={p} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <EmptyState className="mt-4" icon={<HandHeart className="size-6" />} title="دليل أصحاب المهارات فارغ حتى الآن">
+            إن كنت تتقن مهارة من الطرق فاعرض خدماتك من صفحتها، وسيظهر ملفك هنا بعد موافقة الإدارة.
+          </EmptyState>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Live community counters, as a flat row. They are never padded: with the examples switched off they read zero. */
 export function CommunityStats({ methods }: { methods: MethodSummary[] }) {
   const { challenges, showSamples } = useDemo();
   const stories = useStories().length;
@@ -145,21 +219,23 @@ export function CommunityStats({ methods }: { methods: MethodSummary[] }) {
   const empty = items.every((i) => i.value === 0);
   return (
     <div>
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl data-stagger className="grid grid-cols-2 gap-y-6 lg:grid-cols-4">
         {items.map(({ label, value, icon: Icon }) => (
-          <div key={label} className="rounded-3xl border-2 border-white/25 bg-white/10 p-5 text-white">
-            <Icon aria-hidden className="size-6 text-sun" />
-            <dd data-countup={value} className="mt-3 font-display text-5xl leading-none tabular-nums">
+          <div key={label} data-reveal className="flex flex-col-reverse border-s border-line ps-4">
+            <dt className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
+              <Icon aria-hidden className="size-4 shrink-0 text-brand" />
+              {label}
+            </dt>
+            <dd data-countup={value} className="font-display text-h1 leading-none text-ink tabular-nums">
               {value}
             </dd>
-            <dt className="mt-2 text-sm font-semibold text-white/80">{label}</dt>
           </div>
         ))}
       </dl>
-      <p className="mt-4 flex flex-wrap items-center gap-2 text-sm text-white/70">
+      <p className="mt-5 flex flex-wrap items-center gap-2 text-sm text-ink-soft">
         {showSamples ? (
           <>
-            <SampleTag className="border-white/50 text-white/80" />
+            <SampleTag />
             هذه الأرقام من الأمثلة التوضيحية في النسخة الأولية، وتُستبدل بالأرقام الفعلية عند الإطلاق.
           </>
         ) : empty ? (

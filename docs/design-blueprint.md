@@ -299,7 +299,7 @@ Rules for using it:
 |---|---|---|---|---|
 | 0. Defects | Contrast (done), 44px targets, one join label, trim the hero, drop four eyebrow labels | Small | None | **Done** |
 | 1. Motion layer | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive | **Done**, book page included |
-| 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest | Waiting for sign-off |
+| 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest | **Home and chrome diet done** (with torn edges); method page, phone list and sticky join bar wait for sign-off on home |
 | 3. Atmosphere | Grain, frosted chrome, misprint, torn edges | Small | Low | **Done** except torn edges, which move to phase 2 with the year band they frame |
 | 4. Optional | Phosphor icons to match the book; night edition | Medium | Low | Not started |
 
@@ -309,6 +309,8 @@ Rules for using it:
 - **MotionRoot waits for hydration.** It used to mark on-screen elements as soon as the root layout mounted, before the page's Suspense boundaries hydrated, and React reported attribute mismatches. It now starts after `load` and an idle callback; until then nothing is hidden.
 - **Count-up writes into React's text node** instead of replacing it, so a counter whose value later changes (the community stats react to the sample toggle) stays correct.
 - **Chip reflow through a view transition was left out.** Naming all 52 cards for one transition costs a snapshot per card, too much memory on a mid-range phone. Chips press on a spring and the result count rolls instead.
+- **Home bento picks follow rules, not taste.** Each of the five cells is chosen by a rule (start here, no capital, first riyal in two weeks, from home, for the experienced), preferring domains not yet shown and skipping this week's method, which already leads the hero. The label on the card is the rule, so it is always true.
+- **The prototype bar becomes a pill after the first visit.** A tiny script in `<head>` reads the choice before first paint, so a returning visitor never sees the page jump (CLS 0).
 - **Fixed in passing:** `divide-x-reverse` drew the dividers on the wrong side (Tailwind 4 dividers are already logical); story cards showed a blank method number; a long task title made phone method pages scroll sideways; `data-scroll-behavior="smooth"` added so route changes don't smooth-scroll.
 
 ### Acceptance checks

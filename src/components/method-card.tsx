@@ -105,6 +105,36 @@ export function MethodCard({ method, className, priority }: { method: MethodSumm
   );
 }
 
+/** A cell of the home page's method bento: the large one leads, the small ones sit around it. */
+export function MethodTile({ method, reason, large, className }: { method: MethodSummary; reason: string; large?: boolean; className?: string }) {
+  return (
+    <Link href={methodHref(method.n)} prefetch data-spotlight className={cx("spotlight lift group flex h-full flex-col rounded-card border-2 border-ink bg-white", large && "shadow-print", className)}>
+      <div className={cx("relative overflow-hidden rounded-t-[calc(var(--radius-card)-2px)] bg-paper paper-dots", large && "grid flex-1 place-items-center")}>
+        <MethodNumberMorph n={method.n}>
+          <MethodNumber n={method.n} size={large ? "lg" : "sm"} className="absolute start-3 top-3 z-10 shadow-print-sm" />
+        </MethodNumberMorph>
+        <MethodArtMorph n={method.n}>
+          <MethodArt n={method.n} title={method.title} sizes={large ? "(min-width: 1024px) 400px, 90vw" : "(min-width: 1024px) 220px, 45vw"} className={cx("art-drift misprint mx-auto", large ? "max-w-[22rem] p-4" : "max-w-[10rem] p-2")} />
+        </MethodArtMorph>
+      </div>
+      <div className={cx("border-t-2 border-ink", large ? "p-5" : "flex flex-1 flex-col p-3")}>
+        <Chip tone="sun" className="self-start">
+          {reason}
+        </Chip>
+        <h3 className={cx("mt-2 font-display leading-snug text-ink", large ? "text-h3" : "text-lg")}>{method.title}</h3>
+        {large && method.tagline ? <p className="mt-1 text-ink-soft">{method.tagline}</p> : null}
+        {large ? (
+          <p className="mt-3 flex items-center gap-2 text-sm font-bold text-ink">
+            <Banknote aria-hidden className="size-4 shrink-0 text-brand" />
+            <span className="sr-only">الدخل المتوقع:</span>
+            <T>{method.stats.income}</T>
+          </p>
+        ) : null}
+      </div>
+    </Link>
+  );
+}
+
 /** One line of a method, for pickers and dense lists. */
 export function MethodRow({ method, trailing, className }: { method: MethodSummary; trailing?: React.ReactNode; className?: string }) {
   return (

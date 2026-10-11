@@ -27,7 +27,7 @@ export function SiteHeader() {
   return (
     // anchored: content slides under it during page transitions
     <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:h-16">
         <Logo />
         <nav aria-label="التنقل الرئيسي" className="mx-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
@@ -87,7 +87,7 @@ export function SiteHeader() {
 export function SiteHeaderShell() {
   return (
     <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
-      <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6 lg:h-16">
         <Logo />
       </div>
     </header>

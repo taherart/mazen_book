@@ -10,6 +10,7 @@ import { actions } from "@/lib/demo/store";
 import { methodHref } from "@/lib/methods";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { MethodArt, MethodNumber } from "./method-card";
+import { STRIP } from "./week-strip-tones";
 import { T } from "./text";
 import { SampleTag, buttonClass, cx } from "./ui";
 
@@ -163,16 +164,17 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
 }
 
 /** The year at a glance: one cell per method, lit for this week and for what the member has tried. */
-export function WeekStrip({ week, methods, className }: { week: WeekInfo; methods: MethodSummary[]; className?: string }) {
+export function WeekStrip({ week, methods, tone = "paper", className }: { week: WeekInfo; methods: MethodSummary[]; tone?: keyof typeof STRIP; className?: string }) {
   const current = useWeekMethod(week);
   const { challenges } = useDemo();
+  const look = STRIP[tone];
   return (
     // the cells stamp onto the page one after another as the strip scrolls in
     <ol className={cx("grid grid-cols-7 gap-1.5 [--stagger:14ms] sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2", className)}>
       {methods.map((m, i) => {
         const mine = challenges[m.n];
         const done = !!mine && mine.done.length >= m.tasks;
-        const state = m.n === current ? "bg-sun text-ink border-ink shadow-print-sm scale-110 z-10" : done ? "bg-ink text-white border-ink" : mine ? "bg-brand text-white border-ink" : "bg-white text-ink-soft border-line hover:border-ink hover:text-ink";
+        const state = m.n === current ? cx(look.current, "z-10 scale-110") : done ? look.done : mine ? look.mine : look.rest;
         return (
           <li key={m.n} data-reveal="scale" style={{ "--i": i } as CSSProperties}>
             <Link href={methodHref(m.n)} title={`${m.n}. ${m.title}`} aria-label={`الطريقة ${m.n}: ${m.title}${m.n === current ? " (تحدي هذا الأسبوع)" : ""}`} className={cx("relative grid aspect-square place-items-center rounded-xl border-2 pt-[0.12em] font-display text-lg leading-none transition sm:text-xl", state)}>
