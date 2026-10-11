@@ -82,7 +82,10 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
           {active ? <span className="grid size-5 place-items-center rounded-full bg-brand text-xs text-white">{active}</span> : null}
         </Button>
         <p aria-live="polite" className="ms-auto text-sm text-ink-soft">
-          <b className="font-display text-xl text-brand">{result.length}</b> من {methods.length} طريقة
+          <b key={result.length} className="inline-block animate-digit font-display text-xl text-brand">
+            {result.length}
+          </b>{" "}
+          من {methods.length} طريقة
         </p>
       </div>
 
@@ -94,7 +97,7 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
               {Object.entries(g.options).map(([value, label]) => {
                 const on = filters[g.key] === value;
                 return (
-                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("rounded-full border-2 px-3 py-1.5 text-sm font-semibold leading-none transition", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
+                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("tap rounded-full border-2 px-3 py-1.5 text-sm font-semibold leading-none transition duration-300 ease-spring active:scale-96", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
                     {label}
                   </button>
                 );
@@ -103,7 +106,7 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
           </fieldset>
         ))}
         {active || filters.q ? (
-          <button type="button" onClick={clear} className="inline-flex items-center gap-1.5 self-end justify-self-start text-sm font-bold text-bad hover:underline">
+          <button type="button" onClick={clear} className="tap inline-flex items-center gap-1.5 self-end justify-self-start text-sm font-bold text-bad hover:underline">
             <X aria-hidden className="size-4" />
             مسح التصفية
           </button>

@@ -1,15 +1,16 @@
 import { ArrowLeft, Banknote, Clock3, Home, MapPin, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { methodHref, methodImage } from "@/lib/methods";
 import { DOMAINS, LEVELS, PLACES } from "@/lib/taxonomy";
 import type { Level, MethodSummary } from "@/lib/types";
 import { T } from "./text";
 import { Chip, cx } from "./ui";
 
-export function MethodNumber({ n, size = "md", className }: { n: number; size?: "sm" | "md" | "lg" | "xl"; className?: string }) {
+export function MethodNumber({ n, size = "md", inverted, className }: { n: number; size?: "sm" | "md" | "lg" | "xl"; inverted?: boolean; className?: string }) {
   const box = { sm: "size-9 text-xl rounded-lg", md: "size-12 text-3xl rounded-xl", lg: "size-16 text-4xl rounded-2xl", xl: "size-24 text-6xl rounded-3xl" }[size];
-  return <span className={cx("grid shrink-0 place-items-center border-2 border-ink bg-brand pt-[0.12em] font-display leading-none text-white", box, className)}>{n}</span>;
+  return <span className={cx("grid shrink-0 place-items-center border-2 border-ink pt-[0.12em] font-display leading-none", inverted ? "bg-white text-brand" : "bg-brand text-white", box, className)}>{n}</span>;
 }
 
 export function LevelDots({ level }: { level: Level }) {
@@ -29,12 +30,37 @@ export function MethodArt({ n, title, className, priority, sizes = "(min-width: 
   return <Image src={methodImage(n)} alt={`رسمة توضيحية: ${title}`} width={640} height={640} sizes={sizes} priority={priority} className={cx("h-auto w-full select-none", className)} />;
 }
 
+/**
+ * The illustration and number travel from a card into the method page hero on navigation.
+ * Each name must be unique on a page, so only the card and the method hero use these.
+ */
+export function MethodArtMorph({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <ViewTransition name={`method-art-${n}`} share="morph" default="none">
+      {children}
+    </ViewTransition>
+  );
+}
+export function MethodNumberMorph({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <ViewTransition name={`method-num-${n}`} share="morph" default="none">
+      {children}
+    </ViewTransition>
+  );
+}
+
 export function MethodCard({ method, className, priority }: { method: MethodSummary; className?: string; priority?: boolean }) {
   return (
-    <Link href={methodHref(method.n)} className={cx("group relative flex flex-col overflow-hidden rounded-3xl border-2 border-ink bg-white transition duration-200 hover:-translate-y-1 hover:shadow-print", className)}>
-      <div className="relative bg-paper paper-dots">
-        <MethodNumber n={method.n} className="absolute start-3 top-3 z-10 shadow-print-sm" />
-        <MethodArt n={method.n} title={method.title} priority={priority} className="mx-auto max-w-[15rem] p-3 transition duration-300 group-hover:scale-[1.04]" />
+    // prefetch={true}: the App Shell alone stops at the page's Suspense boundary, and the art can
+    // only travel into the method page if its hero is already on the client when the click lands
+    <Link href={methodHref(method.n)} prefetch data-spotlight className={cx("spotlight lift group flex flex-col rounded-3xl border-2 border-ink bg-white", className)}>
+      <div className="relative overflow-hidden rounded-t-[calc(1.5rem-2px)] bg-paper paper-dots">
+        <MethodNumberMorph n={method.n}>
+          <MethodNumber n={method.n} className="absolute start-3 top-3 z-10 shadow-print-sm" />
+        </MethodNumberMorph>
+        <MethodArtMorph n={method.n}>
+          <MethodArt n={method.n} title={method.title} priority={priority} className="art-drift misprint mx-auto max-w-[15rem] p-3" />
+        </MethodArtMorph>
       </div>
       <div className="flex flex-1 flex-col border-t-2 border-ink p-4">
         <Chip tone="brand" className="self-start">

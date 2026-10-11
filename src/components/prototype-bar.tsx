@@ -19,7 +19,7 @@ export function PrototypeBar() {
         <p className="min-w-0 flex-1 truncate">
           <span className="font-bold">نسخة أولية للمعاينة.</span> <span className="text-white/70">المحتوى المجتمعي أمثلة توضيحية، وما تفعله يُحفظ على جهازك فقط.</span>
         </p>
-        <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/25 px-2.5 py-1 font-semibold hover:bg-white/10">
+        <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="tap inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/25 px-2.5 py-1 font-semibold hover:bg-white/10">
           {open ? <X className="size-3.5" /> : <SlidersHorizontal className="size-3.5" />}
           خيارات العرض
         </button>

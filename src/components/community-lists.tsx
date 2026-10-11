@@ -62,7 +62,7 @@ export function StoriesGrid({ methods, method, limit, filter, className }: { met
           <MethodFilter methods={methods} value={pick} onChange={setPick} used={new Set(all.map((s) => s.method))} />
           <div className="flex flex-wrap gap-1.5">
             {(Object.keys(OUTCOMES) as Outcome[]).map((o) => (
-              <button key={o} type="button" aria-pressed={outcome === o} onClick={() => setOutcome(outcome === o ? "" : o)} className={cx("rounded-full border-2 px-3 py-2 text-sm font-semibold leading-none transition", outcome === o ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink")}>
+              <button key={o} type="button" aria-pressed={outcome === o} onClick={() => setOutcome(outcome === o ? "" : o)} className={cx("tap rounded-full border-2 px-3 py-2 text-sm font-semibold leading-none transition duration-300 ease-spring active:scale-96", outcome === o ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink")}>
                 {OUTCOMES[o]}
               </button>
             ))}
@@ -149,7 +149,9 @@ export function CommunityStats({ methods }: { methods: MethodSummary[] }) {
         {items.map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-3xl border-2 border-white/25 bg-white/10 p-5 text-white">
             <Icon aria-hidden className="size-6 text-sun" />
-            <dd className="mt-3 font-display text-5xl leading-none tabular-nums">{value}</dd>
+            <dd data-countup={value} className="mt-3 font-display text-5xl leading-none tabular-nums">
+              {value}
+            </dd>
             <dt className="mt-2 text-sm font-semibold text-white/80">{label}</dt>
           </div>
         ))}

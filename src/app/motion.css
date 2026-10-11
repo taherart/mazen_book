@@ -43,6 +43,10 @@
   --animate-stamp: stamp 520ms var(--ease-spring) both;
   --animate-land: land 700ms var(--ease-spring-soft) both;
   --animate-digit: digit 380ms var(--ease-out-expo) both;
+  /* first-paint choreography for hero content: CSS only, never waits for JavaScript.
+     Stagger with an inline animation-delay. */
+  --animate-enter: enter 900ms var(--ease-out-expo) both;
+  --animate-fade-in: fade-in 900ms ease-out both;
 
   @keyframes stamp {
     0% {
@@ -71,6 +75,21 @@
     100% {
       transform: none;
       box-shadow: var(--shadow-print);
+    }
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
     }
   }
   @keyframes digit {
@@ -150,16 +169,28 @@
    2. Micro-interactions
    ============================================================ */
 
-/* Marker pen swipes under the word, right to left. Use together with `marker`. */
+/* Marker pen swipes under the word, right to left. Use together with `marker` or `marker-white`.
+   Set --marker-delay on the element to time it with a hero sequence. */
 @utility marker-draw {
   &::after {
     transform-origin: right center;
-    animation: marker-swipe 700ms var(--ease-out-expo) 350ms both;
+    animation: marker-swipe 700ms var(--ease-out-expo) var(--marker-delay, 350ms) both;
   }
 }
+/* On blue, the word is blue on a white marker: keep it white until the marker is under it. */
+.marker-white.marker-draw {
+  animation: marker-ink 500ms var(--ease-out-expo) calc(var(--marker-delay, 350ms) + 120ms) both;
+}
+html.motion [data-reveal]:not([data-inview]) .marker-draw,
 html.motion [data-reveal]:not([data-inview]) .marker-draw::after,
+html.motion .marker-draw[data-reveal]:not([data-inview]),
 html.motion .marker-draw[data-reveal]:not([data-inview])::after {
   animation-play-state: paused;
+}
+@keyframes marker-ink {
+  from {
+    color: #fff;
+  }
 }
 @keyframes marker-swipe {
   from {

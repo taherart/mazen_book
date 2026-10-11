@@ -25,7 +25,8 @@ export function SiteHeader() {
   const hydrated = useHydrated();
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
+    // anchored: content slides under it during page transitions
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Logo />
         <nav aria-label="التنقل الرئيسي" className="mx-auto hidden items-center gap-1 lg:flex">
@@ -39,7 +40,7 @@ export function SiteHeader() {
           {!hydrated ? (
             <span className="skeleton block h-10 w-24" />
           ) : user ? (
-            <Link href="/dashboard" className="flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
+            <Link href="/dashboard" className="tap flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
               <span className="max-w-28 truncate">{user.name.split(" ")[0]}</span>
               <Avatar name={user.name} size="sm" className="size-8 border-0" />
             </Link>
@@ -53,7 +54,7 @@ export function SiteHeader() {
               </Link>
             </>
           )}
-          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="grid size-10 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
+          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="tap grid size-10 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -85,7 +86,7 @@ export function SiteHeader() {
 /** Non-interactive stand-in while the header's route state resolves. */
 export function SiteHeaderShell() {
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95">
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
       <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6">
         <Logo />
       </div>
@@ -105,7 +106,7 @@ const TABS = [
 export function TabBar() {
   const pathname = usePathname();
   return (
-    <nav aria-label="التنقل السريع" className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav aria-label="التنقل السريع" className="glass fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink pb-[env(safe-area-inset-bottom)] lg:hidden">
       <ul className="mx-auto grid max-w-lg grid-cols-5">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);

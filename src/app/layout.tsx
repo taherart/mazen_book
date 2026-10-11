@@ -45,11 +45,13 @@ export const viewport: Viewport = { themeColor: "#2f5bd3", width: "device-width"
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" className={`${plexArabic.variable} ${plexLatin.variable} ${lalezarArabic.variable} ${lalezarLatin.variable} h-full antialiased`}>
+    <html lang="ar" dir="rtl" data-scroll-behavior="smooth" className={`${plexArabic.variable} ${plexLatin.variable} ${lalezarArabic.variable} ${lalezarLatin.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <MotionRoot />
         <PrototypeBar />
         {children}
+        {/* paper grain: one fixed, non-interactive layer for the whole site */}
+        <div aria-hidden className="grain fixed inset-0 z-[var(--z-grain)]" />
       </body>
     </html>
   );

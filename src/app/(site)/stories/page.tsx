@@ -17,7 +17,7 @@ export default function StoriesPage() {
           <div className="max-w-2xl">
             <Eyebrow>تجارب المجتمع</Eyebrow>
             <h1 className="mt-4 font-display text-4xl text-ink sm:text-6xl">
-              ماذا حدث حين <span className="marker">جرّبوها؟</span>
+              ماذا حدث حين <span className="marker marker-draw">جرّبوها؟</span>
             </h1>
             <p className="mt-3 text-lg text-ink-soft">كل تجربة توثّق المدة والتكلفة والدخل وأبرز التحديات. ننشر الناجح وغير الناجح، لأن الهدف التعلّم لا استعراض الأرباح.</p>
           </div>

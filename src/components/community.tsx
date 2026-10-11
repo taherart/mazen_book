@@ -15,7 +15,7 @@ export function OutcomeChip({ outcome }: { outcome: Outcome }) {
 
 export function StoryFigures({ story, className }: { story: Story; className?: string }) {
   return (
-    <dl className={cx("grid grid-cols-3 divide-x divide-x-reverse divide-line rounded-2xl border border-line bg-paper/60 text-center", className)}>
+    <dl className={cx("grid grid-cols-3 divide-x divide-line rounded-2xl border border-line bg-paper/60 text-center", className)}>
       <div className="px-2 py-2.5">
         <dt className="text-[0.7rem] text-ink-mute">المدة</dt>
         <dd className="mt-0.5 text-sm font-bold text-ink">{story.duration}</dd>
@@ -49,7 +49,7 @@ export function StoryCard({ story, method, className }: { story: Story; method?:
           ) : (
             <span />
           )}
-          <MethodNumber n={story.method} size="sm" className="bg-white text-brand" />
+          <MethodNumber n={story.method} size="sm" inverted />
         </div>
       </div>
       <div className="flex flex-1 flex-col border-t-2 border-ink p-4">

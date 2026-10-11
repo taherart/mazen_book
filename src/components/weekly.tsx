@@ -3,7 +3,7 @@
 import { ArrowLeft, Check, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { type CSSProperties, useSyncExternalStore } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
@@ -45,7 +45,12 @@ export function Countdown({ endsAt, tone = "light", className }: { endsAt: strin
     <div role="timer" aria-label="الوقت المتبقي لنهاية التحدي" className={cx("grid max-w-xs grid-cols-4 gap-2", className)}>
       {parts.map((p) => (
         <div key={p.label} className={cx("min-w-0 rounded-2xl border-2 px-1 py-1.5 text-center", tone === "dark" ? "border-white/25 bg-white/10 text-white" : "border-ink bg-white text-ink")}>
-          <div className="font-display text-2xl leading-none tabular-nums">{p.value === null ? "--" : String(p.value).padStart(2, "0")}</div>
+          {/* keyed so each new value rolls up from below; only the bottom edge clips */}
+          <div className="font-display text-2xl leading-none tabular-nums [clip-path:inset(-1em_-1em_0_-1em)]">
+            <span key={p.value ?? "-"} className={cx("block", p.value !== null && "animate-digit")}>
+              {p.value === null ? "--" : String(p.value).padStart(2, "0")}
+            </span>
+          </div>
           <div className={cx("mt-1 text-[0.68rem] font-semibold", tone === "dark" ? "text-white/70" : "text-ink-mute")}>{p.label}</div>
         </div>
       ))}
@@ -53,8 +58,12 @@ export function Countdown({ endsAt, tone = "light", className }: { endsAt: strin
   );
 }
 
-/** "I'll try this method": sends guests to sign in first, members straight to their checklist. */
-export function JoinButton({ method, size = "lg", variant = "primary", className, label = "سأجرّب هذه الطريقة" }: { method: number; size?: "md" | "lg"; variant?: "primary" | "sun"; className?: string; label?: string }) {
+/** One label for one intent, wherever it appears. */
+export const JOIN_LABEL = "سأجرّب هذه الطريقة";
+
+/** "I'll try this method": sends guests to sign in first, members straight to their checklist.
+ *  `magnetic` marks the single primary action in view (desktop pointer only). */
+export function JoinButton({ method, size = "lg", variant = "primary", className, magnetic }: { method: number; size?: "md" | "lg"; variant?: "primary" | "sun"; className?: string; magnetic?: boolean }) {
   const router = useRouter();
   const { user, challenges } = useDemo();
   const hydrated = useHydrated();
@@ -62,7 +71,7 @@ export function JoinButton({ method, size = "lg", variant = "primary", className
 
   if (hydrated && user && challenges[method]) {
     return (
-      <Link href={target} className={buttonClass("white", size, className)}>
+      <Link href={target} data-magnetic={magnetic ? "0.3" : undefined} className={buttonClass("white", size, className)}>
         <Check aria-hidden className="size-5 text-ok" />
         أنت في التحدي · تابع مهامك
       </Link>
@@ -71,6 +80,7 @@ export function JoinButton({ method, size = "lg", variant = "primary", className
   return (
     <button
       type="button"
+      data-magnetic={magnetic ? "0.3" : undefined}
       className={buttonClass(variant, size, className)}
       onClick={() => {
         if (!user) {
@@ -81,7 +91,7 @@ export function JoinButton({ method, size = "lg", variant = "primary", className
         router.push(target);
       }}
     >
-      {label}
+      {JOIN_LABEL}
       <ArrowLeft aria-hidden className="size-5" />
     </button>
   );
@@ -145,7 +155,7 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
             <Countdown endsAt={week.endsAt} />
           </div>
           <Participants method={n} />
-          <JoinButton method={n} label="انضم للتحدي" className="mt-auto w-full" />
+          <JoinButton method={n} size="md" magnetic className="mt-auto w-full" />
         </div>
       </div>
     </article>
@@ -157,13 +167,14 @@ export function WeekStrip({ week, methods, className }: { week: WeekInfo; method
   const current = useWeekMethod(week);
   const { challenges } = useDemo();
   return (
-    <ol className={cx("grid grid-cols-7 gap-1.5 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2", className)}>
-      {methods.map((m) => {
+    // the cells stamp onto the page one after another as the strip scrolls in
+    <ol className={cx("grid grid-cols-7 gap-1.5 [--stagger:14ms] sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2", className)}>
+      {methods.map((m, i) => {
         const mine = challenges[m.n];
         const done = !!mine && mine.done.length >= m.tasks;
         const state = m.n === current ? "bg-sun text-ink border-ink shadow-print-sm scale-110 z-10" : done ? "bg-ink text-white border-ink" : mine ? "bg-brand text-white border-ink" : "bg-white text-ink-soft border-line hover:border-ink hover:text-ink";
         return (
-          <li key={m.n}>
+          <li key={m.n} data-reveal="scale" style={{ "--i": i } as CSSProperties}>
             <Link href={methodHref(m.n)} title={`${m.n}. ${m.title}`} aria-label={`الطريقة ${m.n}: ${m.title}${m.n === current ? " (تحدي هذا الأسبوع)" : ""}`} className={cx("relative grid aspect-square place-items-center rounded-xl border-2 pt-[0.12em] font-display text-lg leading-none transition sm:text-xl", state)}>
               {done ? <Check aria-hidden className="size-5" /> : m.n}
             </Link>

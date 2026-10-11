@@ -19,7 +19,7 @@ export default function MethodsPage() {
         <Container className="py-10 text-white sm:py-14">
           <Eyebrow className="border-white/40 bg-white/10 text-white">الدليل الكامل</Eyebrow>
           <h1 className="mt-4 font-display text-4xl sm:text-6xl">
-            ابحث عن <span className="marker-white">طريقتك</span>
+            ابحث عن <span className="marker-white marker-draw">طريقتك</span>
           </h1>
           <p className="mt-3 max-w-2xl text-lg text-white/85">52 طريقة من الكتاب، بأرقامها كما وردت فيه. اختر ما يناسب وقتك ورأس مالك وخبرتك، ثم افتح الطريقة وابدأ تحدّيها.</p>
         </Container>

@@ -155,7 +155,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <JoinButton method={method.n} variant="sun" size="md" label="ابدأ التحدي" />
+            <JoinButton method={method.n} variant="sun" size="md" />
             <Link href={methodHref(method.n)} className="inline-flex items-center gap-1 font-bold underline underline-offset-4">
               صفحة الطريقة
               <ArrowLeft aria-hidden className="size-4" />

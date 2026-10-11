@@ -2,9 +2,9 @@ import { AlertTriangle, ArrowLeft, Banknote, BookOpen, ChevronLeft, Clock3, Hand
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, ViewTransition } from "react";
 import { ProvidersGrid, StoriesGrid } from "@/components/community-lists";
-import { LevelDots, MethodArt, MethodNumber } from "@/components/method-card";
+import { LevelDots, MethodArt, MethodArtMorph, MethodNumber, MethodNumberMorph } from "@/components/method-card";
 import { RafflePanel, WeekRibbon } from "@/components/method-week";
 import { Qr } from "@/components/qr";
 import { ShareButtons } from "@/components/share-buttons";
@@ -45,10 +45,22 @@ function fitLines(m: Method) {
   ];
 }
 
+// Previous/next links tag their navigation so the page slides the right way (mirrored for RTL).
+// Without a tag (any other way in) the content rises into place as the skeleton sinks away.
+const SLIDE = { "nav-forward": "nav-forward", "nav-back": "nav-back" };
+
 export default function MethodPage({ params }: PageProps<"/method/[n]">) {
   return (
-    <Suspense fallback={<PageSkeleton />}>
-      <MethodContent params={params} />
+    <Suspense
+      fallback={
+        <ViewTransition exit="sink" default="none">
+          <PageSkeleton />
+        </ViewTransition>
+      }
+    >
+      <ViewTransition enter={{ ...SLIDE, default: "rise" }} exit={{ ...SLIDE, default: "none" }} default="none">
+        <MethodContent params={params} />
+      </ViewTransition>
     </Suspense>
   );
 }
@@ -76,6 +88,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
   return (
     <article>
+      {/* reading progress: the page runs to many screens */}
+      <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-[var(--z-overlay)] h-1 bg-sun" />
+
       {/* ---------- hero ---------- */}
       <header className="border-b-2 border-ink paper-dots">
         <Container className="pb-10 pt-6">
@@ -90,15 +105,17 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </nav>
 
           <div className="mt-5 grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
-            <div className="animate-rise">
+            <div className="animate-enter">
               <div className="flex items-center gap-3">
-                <MethodNumber n={m.n} size="lg" className="shadow-print-sm" />
+                <MethodNumberMorph n={m.n}>
+                  <MethodNumber n={m.n} size="lg" className="shadow-print-sm" />
+                </MethodNumberMorph>
                 <p className="text-sm font-bold text-ink-soft">
                   الطريقة {m.n} من 52
                   <span className="block font-normal text-ink-mute">{DOMAINS[m.domain]}</span>
                 </p>
               </div>
-              <h1 className="mt-4 font-display text-4xl leading-[1.3] text-ink sm:text-5xl lg:text-6xl">{m.title}</h1>
+              <h1 className="mt-4 font-display text-h1 text-ink">{m.title}</h1>
               {m.tagline ? <p className="mt-3 font-display text-2xl leading-snug text-brand sm:text-3xl">«{m.tagline}»</p> : null}
               <ul className="mt-5 flex flex-wrap gap-2">
                 <li>
@@ -127,17 +144,19 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
                 ))}
               </dl>
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <JoinButton method={n} />
+                <JoinButton method={n} magnetic />
                 <a href="#paths" className="text-sm font-bold text-ink-soft underline underline-offset-4 hover:text-brand">
                   أو اعرض خدماتك · شارك تجربتك
                 </a>
               </div>
             </div>
-            <div className="relative mx-auto w-full max-w-md animate-rise [animation-delay:120ms]">
+            <div className="relative mx-auto w-full max-w-md animate-enter [animation-delay:120ms]">
               <div className="rounded-[2.5rem] border-2 border-ink bg-white p-4 shadow-print">
-                <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
+                <MethodArtMorph n={m.n}>
+                  <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
+                </MethodArtMorph>
               </div>
-              <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] rounded-2xl border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm">
+              <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] animate-land rounded-2xl border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm [animation-delay:600ms]">
                 جرّبها هذا الأسبوع
               </span>
             </div>
@@ -150,9 +169,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
       {/* ---------- the three ways in (what the book's QR code opens onto) ---------- */}
       <section id="paths" className="scroll-mt-20 border-b-2 border-ink bg-white">
-        <Container className="grid gap-4 py-8 md:grid-cols-3">
+        <Container data-stagger className="grid gap-4 py-8 md:grid-cols-3">
           <PathCard icon={<Rocket className="size-6" />} tone="bg-brand text-white" title="أريد تجربة هذه الطريقة" text={`${count(tasks.length, TASKS)} تتابع إنجازها خلال الأسبوع، خطوة بخطوة.`}>
-            <JoinButton method={n} size="md" variant="sun" className="w-full" label="ابدأ التحدي" />
+            <JoinButton method={n} size="md" variant="sun" className="w-full" />
           </PathCard>
           <PathCard icon={<HandHeart className="size-6" />} tone="bg-white text-ink" title="أمتلك المهارة وأريد تقديم خدماتي" text="أنشئ ملفك واظهر في دليل مقدمي الخدمات لهذه الطريقة.">
             <LinkButton href={`${base}/offer`} variant="white" className="w-full">
@@ -170,8 +189,8 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       {/* ---------- A. about the method ---------- */}
       <Container className="grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0 space-y-12">
-          <section aria-labelledby="why">
-            <h2 id="why" className="font-display text-3xl text-ink">
+          <section aria-labelledby="why" data-reveal>
+            <h2 id="why" className="font-display text-h2 text-ink">
               ليش هذي الفرصة؟
             </h2>
             <p className="mt-3 text-lg leading-9 text-ink-soft">
@@ -188,8 +207,8 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </div>
           </section>
 
-          <section aria-labelledby="facts">
-            <h2 id="facts" className="font-display text-3xl text-ink">
+          <section aria-labelledby="facts" data-reveal>
+            <h2 id="facts" className="font-display text-h2 text-ink">
               بعض الأرقام
             </h2>
             <ul className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -202,12 +221,12 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </section>
 
           <section aria-labelledby="steps">
-            <h2 id="steps" className="font-display text-3xl text-ink">
+            <h2 id="steps" data-reveal className="font-display text-h2 text-ink">
               من أين تبدأ؟ <span className="text-ink-mute">خطواتك إلى أول عميل</span>
             </h2>
-            <ol className="mt-5 grid gap-3">
+            <ol data-stagger className="mt-5 grid gap-3">
               {m.steps.map((s) => (
-                <li key={s.n} className="flex gap-4 rounded-3xl border-2 border-ink bg-white p-4 sm:p-5">
+                <li key={s.n} data-reveal className="flex gap-4 rounded-3xl border-2 border-ink bg-white p-4 sm:p-5">
                   <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink bg-sun pt-[0.12em] font-display text-2xl leading-none text-ink">{s.n}</span>
                   <p className="leading-8 text-ink-soft">
                     {s.label ? (
@@ -223,8 +242,8 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </section>
 
           {m.earn.length ? (
-            <section aria-labelledby="earn" className="rounded-[2rem] border-2 border-ink bg-brand-wash p-5 sm:p-7">
-              <h2 id="earn" className="font-display text-3xl text-ink">
+            <section aria-labelledby="earn" data-reveal className="rounded-[2rem] border-2 border-ink bg-brand-wash p-5 sm:p-7">
+              <h2 id="earn" className="font-display text-h2 text-ink">
                 كم تكسب؟
               </h2>
               <ul className="mt-3 grid gap-2.5">
@@ -241,7 +260,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           ) : null}
 
           {/* a taste of the two sections that stay in the book */}
-          <section aria-labelledby="craft" className="overflow-hidden rounded-[2rem] border-2 border-ink bg-brand-deep text-white blue-dots">
+          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-[2rem] border-2 border-ink bg-brand-deep text-white blue-dots">
             <div className="grid gap-6 p-5 sm:p-7 md:grid-cols-2">
               <div>
                 <h2 id="craft" className="flex items-center gap-2 font-display text-2xl">
@@ -274,7 +293,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </div>
           </section>
 
-          <blockquote className="relative rounded-[2rem] border-2 border-ink bg-sun p-6 shadow-print sm:p-8">
+          <blockquote data-reveal="scale" className="relative rounded-[2rem] border-2 border-ink bg-sun p-6 shadow-print sm:p-8">
             <p className="text-sm font-bold text-ink/70">الخلاصة</p>
             <p className="mt-2 font-display text-2xl leading-[1.6] text-ink sm:text-3xl">
               <T>{m.summary}</T>
@@ -283,7 +302,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
         </div>
 
         {/* ---------- sidebar ---------- */}
-        <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+        <aside data-reveal="fade" className="space-y-5 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-3xl border-2 border-ink bg-white p-5">
             <h2 className="font-display text-xl text-ink">لمن تناسب؟</h2>
             <ul className="mt-3 grid gap-2.5 text-sm leading-6 text-ink-soft">
@@ -330,13 +349,13 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
       {/* ---------- B. start the challenge ---------- */}
       <section className="border-y-2 border-ink bg-brand blue-dots">
-        <Container className="grid items-center gap-8 py-12 lg:grid-cols-[1fr_1.1fr]">
-          <div className="text-white">
-            <h2 className="font-display text-4xl">ابدأ التجربة</h2>
+        <Container className="grid grid-cols-[minmax(0,1fr)] items-center gap-8 py-12 lg:grid-cols-[1fr_1.1fr]">
+          <div data-reveal className="text-white">
+            <h2 className="font-display text-h2">ابدأ التجربة</h2>
             <p className="mt-2 max-w-md text-lg text-white/85">المعرفة وحدها لا تزيد الدخل. انضم للتحدي، أنجز المهام واحدة واحدة، ووثّق ما يحدث.</p>
             <JoinButton method={n} variant="sun" className="mt-6" />
           </div>
-          <ol className="grid gap-2 rounded-[2rem] border-2 border-ink bg-white p-4 shadow-print">
+          <ol data-reveal="start" className="grid gap-2 rounded-[2rem] border-2 border-ink bg-white p-4 shadow-print">
             {tasks.map((t, i) => (
               <li key={i} className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-2.5">
                 <span aria-hidden className="size-5 shrink-0 rounded-md border-2 border-ink bg-white" />
@@ -354,6 +373,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       <section>
         <Container className="py-14">
           <SectionHead
+            reveal
             title="تجارب الآخرين مع هذه الطريقة"
             lead="قصص موثّقة بالمدة والتكلفة والدخل، تُنشر بعد المراجعة."
             action={
@@ -362,7 +382,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
               </LinkButton>
             }
           />
-          <StoriesGrid methods={methods} method={n} limit={3} className="mt-8" />
+          <div data-reveal className="mt-8">
+            <StoriesGrid methods={methods} method={n} limit={3} />
+          </div>
         </Container>
       </section>
 
@@ -370,6 +392,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       <section className="border-y-2 border-ink bg-white">
         <Container className="py-14">
           <SectionHead
+            reveal
             title="مقدمو الخدمات"
             lead="أشخاص يقدمون خدمات مرتبطة بهذه الطريقة. التواصل مباشر معهم."
             action={
@@ -378,15 +401,19 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
               </LinkButton>
             }
           />
-          <ProvidersGrid methods={methods} method={n} limit={4} className="mt-8" />
+          <div data-reveal className="mt-8">
+            <ProvidersGrid methods={methods} method={n} limit={4} />
+          </div>
         </Container>
       </section>
 
       {/* ---------- G. weekly prize ---------- */}
       <section>
         <Container className="py-14">
-          <SectionHead title="تحدي وجائزة الأسبوع" />
-          <RafflePanel method={n} week={week} className="mt-6" />
+          <SectionHead reveal title="تحدي وجائزة الأسبوع" />
+          <div data-reveal className="mt-6">
+            <RafflePanel method={n} week={week} />
+          </div>
         </Container>
       </section>
 
@@ -394,7 +421,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       <nav aria-label="طرق أخرى" className="border-t-2 border-ink bg-white">
         <Container className="grid grid-cols-2 gap-3 py-6">
           {prev ? (
-            <Link href={methodHref(prev.n)} className="group rounded-2xl border-2 border-line p-3 transition hover:border-ink">
+            <Link href={methodHref(prev.n)} prefetch transitionTypes={["nav-back"]} className="group rounded-2xl border-2 border-line p-3 transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة السابقة</span>
               <span className="block truncate font-bold text-ink group-hover:text-brand">
                 {prev.n}. {prev.title}
@@ -404,7 +431,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <span />
           )}
           {next ? (
-            <Link href={methodHref(next.n)} className="group rounded-2xl border-2 border-line p-3 text-end transition hover:border-ink">
+            <Link href={methodHref(next.n)} prefetch transitionTypes={["nav-forward"]} className="group rounded-2xl border-2 border-line p-3 text-end transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة التالية</span>
               <span className="flex items-center justify-end gap-1 truncate font-bold text-ink group-hover:text-brand">
                 {next.n}. {next.title}
@@ -420,7 +447,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
 function PathCard({ icon, tone, title, text, children }: { icon: React.ReactNode; tone: string; title: string; text: string; children: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-3 rounded-3xl border-2 border-ink p-5 shadow-print-sm ${tone}`}>
+    <div data-reveal className={`flex flex-col gap-3 rounded-3xl border-2 border-ink p-5 shadow-print-sm ${tone}`}>
       <span className="grid size-11 place-items-center rounded-2xl border-2 border-ink bg-white text-brand">{icon}</span>
       <h2 className="font-display text-xl leading-snug">{title}</h2>
       <p className="text-sm leading-6 opacity-80">{text}</p>
