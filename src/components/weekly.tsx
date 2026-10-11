@@ -3,7 +3,7 @@
 import { ArrowLeft, Check, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type CSSProperties, useSyncExternalStore } from "react";
+import { type CSSProperties, useEffect, useState, useSyncExternalStore } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
@@ -95,6 +95,55 @@ export function JoinButton({ method, size = "lg", variant = "primary", className
       {JOIN_LABEL}
       <ArrowLeft aria-hidden className="size-5" />
     </button>
+  );
+}
+
+/**
+ * Phones: once the hero's join button has scrolled away, a frosted bar keeps it in reach. It steps
+ * aside while the try path's own button is on screen, and at the end of the page. The elements it
+ * watches carry the ids join-hero, join-path and method-end, plus the site footer.
+ */
+export function StickyJoin({ method, title }: { method: number; title: string }) {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const hero = document.getElementById("join-hero");
+    const others = [document.getElementById("join-path"), document.getElementById("method-end"), document.querySelector("footer")].filter((el): el is HTMLElement => !!el);
+    if (!hero) return;
+    const visible = new Map<Element, boolean>();
+    let heroPassed = false;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === hero) heroPassed = !e.isIntersecting && e.boundingClientRect.top < 0;
+        else visible.set(e.target, e.isIntersecting);
+      }
+      const on = heroPassed && ![...visible.values()].some(Boolean);
+      setShow(on);
+      // lets the prototype pill step out of the way
+      if (on) root.dataset.joinbar = "";
+      else delete root.dataset.joinbar;
+    });
+    io.observe(hero);
+    others.forEach((el) => io.observe(el));
+    return () => {
+      io.disconnect();
+      delete root.dataset.joinbar;
+    };
+  }, []);
+
+  return (
+    <div
+      inert={!show}
+      className={cx(
+        "glass fixed inset-x-3 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] z-[var(--z-sticky)] flex items-center gap-2.5 rounded-full border-2 border-ink py-1.5 pe-1.5 ps-2 shadow-print-sm transition duration-300 ease-out-expo lg:hidden",
+        show ? "opacity-100" : "pointer-events-none translate-y-[calc(100%+1.5rem)] opacity-0",
+      )}
+    >
+      <MethodNumber n={method} size="xs" />
+      <p className="min-w-0 flex-1 truncate text-sm font-bold text-ink">{title}</p>
+      <JoinButton method={method} size="md" className="shrink-0" />
+    </div>
   );
 }
 

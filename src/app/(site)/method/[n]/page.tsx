@@ -11,7 +11,7 @@ import { ShareButtons } from "@/components/share-buttons";
 import { PageSkeleton } from "@/components/skeletons";
 import { T } from "@/components/text";
 import { Chip, Container, LinkButton, SectionHead } from "@/components/ui";
-import { JoinButton } from "@/components/weekly";
+import { JoinButton, StickyJoin } from "@/components/weekly";
 import { SITE } from "@/lib/config";
 import { challengeTasks, getMethod, getMethods, getSummaries, methodHref, parseMethodParam } from "@/lib/methods";
 import { getCurrentWeek } from "@/lib/server/current-week";
@@ -81,9 +81,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
   const base = methodHref(n);
 
   const stats = [
-    { icon: Banknote, label: "الدخل المتوقع", value: m.stats.income, tone: "bg-brand text-white" },
-    { icon: Wallet, label: "رأس المال المبدئي", value: m.stats.capital, tone: "bg-white text-ink" },
-    { icon: Clock3, label: "أول ريال خلال", value: m.stats.firstRiyal, tone: "bg-white text-ink" },
+    { icon: Banknote, label: "الدخل المتوقع", value: m.stats.income, tone: "text-brand-dark" },
+    { icon: Wallet, label: "رأس المال المبدئي", value: m.stats.capital, tone: "text-ink" },
+    { icon: Clock3, label: "أول ريال خلال", value: m.stats.firstRiyal, tone: "text-ink" },
   ];
 
   return (
@@ -130,20 +130,21 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
                   </Chip>
                 </li>
               </ul>
-              <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+              {/* one grouped fact panel: the print shadow is kept for the art and the join button */}
+              <dl className="mt-6 grid divide-y divide-line rounded-card border-2 border-ink bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0">
                 {stats.map(({ icon: Icon, label, value, tone }) => (
-                  <div key={label} className={`rounded-3xl border-2 border-ink p-4 shadow-print-sm ${tone}`}>
-                    <dt className="flex items-center gap-1.5 text-xs font-bold opacity-80">
-                      <Icon aria-hidden className="size-4" />
+                  <div key={label} className="flex items-baseline justify-between gap-3 px-4 py-3 sm:block">
+                    <dt className="flex shrink-0 items-center gap-1.5 text-xs font-bold text-ink-soft">
+                      <Icon aria-hidden className="size-4 text-brand" />
                       {label}
                     </dt>
-                    <dd className="mt-1.5 font-display text-xl leading-snug">
+                    <dd className={`text-end font-display text-xl leading-snug sm:mt-1.5 sm:text-start ${tone}`}>
                       <T>{value}</T>
                     </dd>
                   </div>
                 ))}
               </dl>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
+              <div id="join-hero" className="mt-7 flex flex-wrap items-center gap-3">
                 <JoinButton method={n} magnetic />
                 <a href="#paths" className="text-sm font-bold text-ink-soft underline underline-offset-4 hover:text-brand">
                   أو اعرض خدماتك · شارك تجربتك
@@ -151,12 +152,12 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
               </div>
             </div>
             <div className="relative mx-auto w-full max-w-md animate-enter [animation-delay:120ms]">
-              <div className="rounded-[2.5rem] border-2 border-ink bg-white p-4 shadow-print">
+              <div className="rounded-panel border-2 border-ink bg-white p-4 shadow-print">
                 <MethodArtMorph n={m.n}>
                   <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
                 </MethodArtMorph>
               </div>
-              <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] animate-land rounded-2xl border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm [animation-delay:600ms]">
+              <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] animate-land rounded-tile border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm [animation-delay:600ms]">
                 جرّبها هذا الأسبوع
               </span>
             </div>
@@ -167,22 +168,45 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
         </Container>
       </header>
 
-      {/* ---------- the three ways in (what the book's QR code opens onto) ---------- */}
+      {/* ---------- the three ways in (what the book's QR code opens onto) ----------
+          Trying it leads, with this week's tasks in view; offering and sharing sit beside it. */}
       <section id="paths" className="scroll-mt-20 border-b-2 border-ink bg-white">
-        <Container data-stagger className="grid gap-4 py-8 md:grid-cols-3">
-          <PathCard icon={<Rocket className="size-6" />} tone="bg-brand text-white" title="أريد تجربة هذه الطريقة" text={`${count(tasks.length, TASKS)} تتابع إنجازها خلال الأسبوع، خطوة بخطوة.`}>
-            <JoinButton method={n} size="md" variant="sun" className="w-full" />
-          </PathCard>
-          <PathCard icon={<HandHeart className="size-6" />} tone="bg-white text-ink" title="أمتلك المهارة وأريد تقديم خدماتي" text="أنشئ ملفك واظهر في دليل مقدمي الخدمات لهذه الطريقة.">
-            <LinkButton href={`${base}/offer`} variant="white" className="w-full">
-              اعرض خدماتك
-            </LinkButton>
-          </PathCard>
-          <PathCard icon={<MessageSquareHeart className="size-6" />} tone="bg-white text-ink" title="لدي تجربة وأريد مشاركتها" text="نجحت أو لم تنجح: المدة، التكلفة، وما تعلّمته يفيد من بعدك.">
-            <LinkButton href={`${base}/share`} variant="white" className="w-full">
-              شارك تجربتك
-            </LinkButton>
-          </PathCard>
+        <Container data-stagger className="grid gap-4 py-section-tight lg:grid-cols-3">
+          <div data-reveal className="grid items-start gap-5 rounded-panel border-2 border-ink bg-brand p-5 text-white shadow-print blue-dots sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:col-span-2">
+            <div>
+              <span className="grid size-11 place-items-center rounded-tile border-2 border-ink bg-white text-brand">
+                <Rocket aria-hidden className="size-6" />
+              </span>
+              <h2 className="mt-3 font-display text-h3">أريد تجربة هذه الطريقة</h2>
+              <p className="mt-1 text-sm leading-6 text-white/85">{count(tasks.length, TASKS)} تتابع إنجازها خلال الأسبوع، خطوة بخطوة، ثم توثّق ما حدث.</p>
+              <div id="join-path" className="mt-5">
+                <JoinButton method={n} size="md" variant="sun" className="w-full sm:w-auto" />
+              </div>
+            </div>
+            <ol aria-label="مهام التحدي" className="grid grid-cols-[minmax(0,1fr)] gap-2 rounded-card bg-white p-3 text-ink">
+              {tasks.map((t, i) => (
+                <li key={i} className="flex items-center gap-3 rounded-tile bg-paper px-3 py-2.5">
+                  <span aria-hidden className="size-5 shrink-0 rounded-md border-2 border-ink bg-white" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-bold">
+                    <T>{t.title}</T>
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold text-ink-mute">مهمة {i + 1}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="grid gap-4">
+            <PathCard icon={<HandHeart className="size-5" />} title="أمتلك المهارة وأريد تقديم خدماتي" text="أنشئ ملفك واظهر في دليل مقدمي الخدمات لهذه الطريقة.">
+              <LinkButton href={`${base}/offer`} variant="white" size="sm">
+                اعرض خدماتك
+              </LinkButton>
+            </PathCard>
+            <PathCard icon={<MessageSquareHeart className="size-5" />} title="لدي تجربة وأريد مشاركتها" text="نجحت أو لم تنجح: المدة، التكلفة، وما تعلّمته يفيد من بعدك.">
+              <LinkButton href={`${base}/share`} variant="white" size="sm">
+                شارك تجربتك
+              </LinkButton>
+            </PathCard>
+          </div>
         </Container>
       </section>
 
@@ -196,8 +220,8 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <p className="mt-3 text-lg leading-9 text-ink-soft">
               <T>{m.why}</T>
             </p>
-            <div className="mt-6 flex items-center gap-4 rounded-3xl border-2 border-dashed border-line bg-white/70 p-4">
-              <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand-wash text-brand">
+            <div className="mt-6 flex items-center gap-4 rounded-card border-2 border-dashed border-line bg-white/70 p-4">
+              <span className="grid size-14 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">
                 <PlayCircle aria-hidden className="size-7" />
               </span>
               <div>
@@ -211,9 +235,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <h2 id="facts" className="font-display text-h2 text-ink">
               بعض الأرقام
             </h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+            <ul className="mt-4 grid divide-y divide-line border-y border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
               {m.facts.map((f) => (
-                <li key={f} className="rounded-3xl border-2 border-ink bg-white p-4 text-sm leading-7 text-ink-soft">
+                <li key={f} className="py-4 text-sm leading-7 text-ink-soft sm:px-4 sm:first:ps-0 sm:last:pe-0">
                   <T>{f}</T>
                 </li>
               ))}
@@ -224,11 +248,11 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <h2 id="steps" data-reveal className="font-display text-h2 text-ink">
               من أين تبدأ؟ <span className="text-ink-mute">خطواتك إلى أول عميل</span>
             </h2>
-            <ol data-stagger className="mt-5 grid gap-3">
+            <ol data-stagger className="relative mt-6 grid gap-6 before:absolute before:inset-y-5 before:start-[1.375rem] before:border-s-2 before:border-dashed before:border-ink/35">
               {m.steps.map((s) => (
-                <li key={s.n} data-reveal className="flex gap-4 rounded-3xl border-2 border-ink bg-white p-4 sm:p-5">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink bg-sun pt-[0.12em] font-display text-2xl leading-none text-ink">{s.n}</span>
-                  <p className="leading-8 text-ink-soft">
+                <li key={s.n} data-reveal className="flex gap-4">
+                  <span className="relative grid size-11 shrink-0 rotate-[-6deg] place-items-center rounded-full border-2 border-ink bg-sun pt-[0.12em] font-display text-2xl leading-none text-ink shadow-print-sm">{s.n}</span>
+                  <p className="pt-1.5 leading-8 text-ink-soft">
                     {s.label ? (
                       <b className="text-ink">
                         <T>{s.label}</T>:{" "}
@@ -242,7 +266,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </section>
 
           {m.earn.length ? (
-            <section aria-labelledby="earn" data-reveal className="rounded-[2rem] border-2 border-ink bg-brand-wash p-5 sm:p-7">
+            <section aria-labelledby="earn" data-reveal className="rounded-panel border-2 border-ink bg-brand-wash p-5 sm:p-7">
               <h2 id="earn" className="font-display text-h2 text-ink">
                 كم تكسب؟
               </h2>
@@ -260,7 +284,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           ) : null}
 
           {/* a taste of the two sections that stay in the book */}
-          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-[2rem] border-2 border-ink bg-brand-deep text-white blue-dots">
+          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-panel border-2 border-ink bg-brand-deep text-white blue-dots">
             <div className="grid gap-6 p-5 sm:p-7 md:grid-cols-2">
               <div>
                 <h2 id="craft" className="flex items-center gap-2 font-display text-2xl">
@@ -293,7 +317,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </div>
           </section>
 
-          <blockquote data-reveal="scale" className="relative rounded-[2rem] border-2 border-ink bg-sun p-6 shadow-print sm:p-8">
+          <blockquote data-reveal="scale" className="relative rounded-panel border-2 border-ink bg-sun p-6 shadow-print sm:p-8">
             <p className="text-sm font-bold text-ink/70">الخلاصة</p>
             <p className="mt-2 font-display text-2xl leading-[1.6] text-ink sm:text-3xl">
               <T>{m.summary}</T>
@@ -303,7 +327,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
         {/* ---------- sidebar ---------- */}
         <aside data-reveal="fade" className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-3xl border-2 border-ink bg-white p-5">
+          <div className="rounded-card border border-line bg-white p-5">
             <h2 className="font-display text-xl text-ink">لمن تناسب؟</h2>
             <ul className="mt-3 grid gap-2.5 text-sm leading-6 text-ink-soft">
               {fitLines(m).map((line) => (
@@ -329,13 +353,13 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </dl>
           </div>
 
-          <div className="rounded-3xl border-2 border-ink bg-white p-5">
+          <div className="rounded-card border border-line bg-white p-5">
             <h2 className="font-display text-xl text-ink">شارك هذه الطريقة</h2>
             <p className="mt-1 text-sm text-ink-soft">أرسلها لمن تعرف أنها تناسبه.</p>
             <ShareButtons path={base} title={`الطريقة ${m.n}: ${m.title}`} className="mt-3" />
           </div>
 
-          <div className="flex items-center gap-4 rounded-3xl border-2 border-ink bg-white p-5">
+          <div className="flex items-center gap-4 rounded-card border border-line bg-white p-5">
             <Qr value={`${SITE.url}${base}`} title={`رمز QR لصفحة ${m.title}`} className="size-24 shrink-0 rounded-lg border border-line" />
             <div className="text-sm">
               <p className="font-bold text-ink">رمز هذه الصفحة في الكتاب</p>
@@ -346,28 +370,6 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </div>
         </aside>
       </Container>
-
-      {/* ---------- B. start the challenge ---------- */}
-      <section className="border-y-2 border-ink bg-brand blue-dots">
-        <Container className="grid grid-cols-[minmax(0,1fr)] items-center gap-8 py-12 lg:grid-cols-[1fr_1.1fr]">
-          <div data-reveal className="text-white">
-            <h2 className="font-display text-h2">ابدأ التجربة</h2>
-            <p className="mt-2 max-w-md text-lg text-white/85">المعرفة وحدها لا تزيد الدخل. انضم للتحدي، أنجز المهام واحدة واحدة، ووثّق ما يحدث.</p>
-            <JoinButton method={n} variant="sun" className="mt-6" />
-          </div>
-          <ol data-reveal="start" className="grid grid-cols-[minmax(0,1fr)] gap-2 rounded-[2rem] border-2 border-ink bg-white p-4 shadow-print">
-            {tasks.map((t, i) => (
-              <li key={i} className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-2.5">
-                <span aria-hidden className="size-5 shrink-0 rounded-md border-2 border-ink bg-white" />
-                <span className="min-w-0 flex-1 truncate font-bold text-ink">
-                  <T>{t.title}</T>
-                </span>
-                <span className="text-xs font-semibold text-ink-mute">مهمة {i + 1}</span>
-              </li>
-            ))}
-          </ol>
-        </Container>
-      </section>
 
       {/* ---------- E. stories ---------- */}
       <section>
@@ -418,10 +420,10 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       </section>
 
       {/* ---------- prev / next ---------- */}
-      <nav aria-label="طرق أخرى" className="border-t-2 border-ink bg-white">
+      <nav id="method-end" aria-label="طرق أخرى" className="border-t-2 border-ink bg-white">
         <Container className="grid grid-cols-2 gap-3 py-6">
           {prev ? (
-            <Link href={methodHref(prev.n)} prefetch transitionTypes={["nav-back"]} className="group rounded-2xl border-2 border-line p-3 transition hover:border-ink">
+            <Link href={methodHref(prev.n)} prefetch transitionTypes={["nav-back"]} className="group rounded-tile border-2 border-line p-3 transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة السابقة</span>
               <span className="block truncate font-bold text-ink group-hover:text-brand">
                 {prev.n}. {prev.title}
@@ -431,7 +433,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <span />
           )}
           {next ? (
-            <Link href={methodHref(next.n)} prefetch transitionTypes={["nav-forward"]} className="group rounded-2xl border-2 border-line p-3 text-end transition hover:border-ink">
+            <Link href={methodHref(next.n)} prefetch transitionTypes={["nav-forward"]} className="group rounded-tile border-2 border-line p-3 text-end transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة التالية</span>
               <span className="flex items-center justify-end gap-1 truncate font-bold text-ink group-hover:text-brand">
                 {next.n}. {next.title}
@@ -441,16 +443,20 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           ) : null}
         </Container>
       </nav>
+
+      <StickyJoin method={n} title={m.title} />
     </article>
   );
 }
 
-function PathCard({ icon, tone, title, text, children }: { icon: React.ReactNode; tone: string; title: string; text: string; children: React.ReactNode }) {
+function PathCard({ icon, title, text, children }: { icon: React.ReactNode; title: string; text: string; children: React.ReactNode }) {
   return (
-    <div data-reveal className={`flex flex-col gap-3 rounded-3xl border-2 border-ink p-5 shadow-print-sm ${tone}`}>
-      <span className="grid size-11 place-items-center rounded-2xl border-2 border-ink bg-white text-brand">{icon}</span>
-      <h2 className="font-display text-xl leading-snug">{title}</h2>
-      <p className="text-sm leading-6 opacity-80">{text}</p>
+    <div data-reveal className="flex flex-col gap-2 rounded-card border-2 border-ink bg-white p-4 sm:p-5">
+      <h2 className="flex items-center gap-2 font-display text-lg leading-snug text-ink">
+        <span className="grid size-9 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">{icon}</span>
+        {title}
+      </h2>
+      <p className="text-sm leading-6 text-ink-soft">{text}</p>
       <div className="mt-auto pt-1">{children}</div>
     </div>
   );

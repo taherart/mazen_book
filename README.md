@@ -26,7 +26,7 @@ Optional environment variables (`.env.local`):
 
 | Route | Page |
 | --- | --- |
-| `/` | Home: hero, challenge of the week, method explorer, stories, providers, community counters |
+| `/` | Home: hero with the challenge of the week, five suggested methods, the year at a glance, stories, providers and community counters |
 | `/methods` | The 52 methods with search and filters (shareable through the query string) |
 | `/method/07` | Method detail, the template behind every QR code. `/method/7` redirects here |
 | `/method/07/challenge` | Join the challenge, tick tasks, write up the week, send the raffle entry |

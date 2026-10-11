@@ -8,8 +8,8 @@ import type { Level, MethodSummary } from "@/lib/types";
 import { T } from "./text";
 import { Chip, cx } from "./ui";
 
-export function MethodNumber({ n, size = "md", inverted, className }: { n: number; size?: "sm" | "md" | "lg" | "xl"; inverted?: boolean; className?: string }) {
-  const box = { sm: "size-9 text-xl rounded-lg", md: "size-12 text-3xl rounded-xl", lg: "size-16 text-4xl rounded-2xl", xl: "size-24 text-6xl rounded-3xl" }[size];
+export function MethodNumber({ n, size = "md", inverted, className }: { n: number; size?: "xs" | "sm" | "md" | "lg" | "xl"; inverted?: boolean; className?: string }) {
+  const box = { xs: "size-7 text-base rounded-md", sm: "size-9 text-xl rounded-lg", md: "size-12 text-3xl rounded-xl", lg: "size-16 text-4xl rounded-2xl", xl: "size-24 text-6xl rounded-3xl" }[size];
   return <span className={cx("grid shrink-0 place-items-center border-2 border-ink pt-[0.12em] font-display leading-none", inverted ? "bg-white text-brand" : "bg-brand text-white", box, className)}>{n}</span>;
 }
 
@@ -101,6 +101,39 @@ export function MethodCard({ method, className, priority }: { method: MethodSumm
           </span>
         </div>
       </div>
+    </Link>
+  );
+}
+
+/** The guide's compact row for phones: about 112px tall, so five methods fit on a screen. */
+export function MethodListItem({ method, className }: { method: MethodSummary; className?: string }) {
+  return (
+    <Link href={methodHref(method.n)} prefetch className={cx("group flex items-center gap-3 rounded-card border-2 border-ink bg-white p-2.5 pe-3 transition active:scale-[0.99]", className)}>
+      <div className="relative size-[4.5rem] shrink-0 overflow-hidden rounded-tile bg-paper paper-dots">
+        <MethodArtMorph n={method.n}>
+          <MethodArt n={method.n} title={method.title} sizes="72px" className="p-1" />
+        </MethodArtMorph>
+      </div>
+      <div className="min-w-0 flex-1">
+        <h3 className="flex items-start gap-2">
+          <MethodNumberMorph n={method.n}>
+            <MethodNumber n={method.n} size="xs" />
+          </MethodNumberMorph>
+          <span className="line-clamp-2 pt-0.5 font-display text-lg leading-snug text-ink">{method.title}</span>
+        </h3>
+        <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-ink">
+          <Banknote aria-hidden className="size-4 shrink-0 text-brand" />
+          <span className="sr-only">الدخل المتوقع:</span>
+          <span className="truncate">
+            <T>{method.stats.income}</T>
+          </span>
+        </p>
+        <p className="mt-1.5 flex flex-wrap gap-1.5">
+          <Chip tone="brand">{DOMAINS[method.domain]}</Chip>
+          <Chip>{PLACES[method.place]}</Chip>
+        </p>
+      </div>
+      <ArrowLeft aria-hidden className="size-5 shrink-0 text-brand transition group-hover:-translate-x-1" />
     </Link>
   );
 }

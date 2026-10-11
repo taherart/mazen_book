@@ -65,7 +65,7 @@ export function PrototypeBar() {
         ) : null}
       </div>
 
-      <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] start-3 z-50 hidden lg:bottom-4 [html[data-bar=min]_&]:block">
+      <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] start-3 z-50 hidden lg:bottom-4 max-lg:[html[data-joinbar]_&]:bottom-[calc(10.25rem+env(safe-area-inset-bottom))] [html[data-bar=min]_&]:block">
         {open ? (
           <div className="absolute bottom-full start-0 mb-2 w-[min(22rem,calc(100vw-1.5rem))] rounded-card border-2 border-ink bg-white p-3 text-ink shadow-print">
             <PrototypeOptions onDone={() => setOpen(false)} />
