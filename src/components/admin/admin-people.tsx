@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Flag, Inbox, Users } from "lucide-react";
+import { Check, Flag, Inbox, Users } from "@/components/icons";
 import Link from "next/link";
 import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo } from "@/lib/demo/hooks";

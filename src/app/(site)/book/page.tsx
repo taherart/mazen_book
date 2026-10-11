@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Banknote, BookOpen, FileCheck2, Footprints, Laugh, QrCode, Scale, ShoppingBag } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Banknote, BookOpen, FileCheck2, Footprints, Laugh, QrCode, Scale, ShoppingBag } from "@/components/icons";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Container, Eyebrow, LinkButton } from "@/components/ui";

@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "@/components/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { methodHref } from "@/lib/methods";

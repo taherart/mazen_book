@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Medal, ScrollText, Trophy } from "lucide-react";
+import { CalendarDays, Medal, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useDemo, useEntries } from "@/lib/demo/hooks";
 import { methodHref } from "@/lib/methods";
@@ -78,7 +78,9 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
             <Participants method={n} className="mt-4 text-ink" />
           </div>
           <Link href={methodHref(n)} className="mx-auto block w-full max-w-sm animate-land rounded-[2.5rem] border-2 border-ink bg-white p-4 shadow-print [animation-delay:200ms]">
-            <MethodArt n={n} title={m.title} priority sizes="(min-width: 1024px) 380px, 80vw" />
+            <div className="plate rounded-tile">
+              <MethodArt n={n} title={m.title} priority sizes="(min-width: 1024px) 380px, 80vw" />
+            </div>
           </Link>
         </Container>
       </section>

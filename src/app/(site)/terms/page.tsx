@@ -1,4 +1,4 @@
-import { FileWarning } from "lucide-react";
+import { FileWarning } from "@/components/icons";
 import type { Metadata } from "next";
 import { Container, Notice } from "@/components/ui";
 

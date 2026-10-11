@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheckBig, ExternalLink, Link2, Mail, MapPin, MessageCircle, SearchX, Send, Wifi } from "lucide-react";
+import { CircleCheckBig, ExternalLink, Link2, Mail, MapPin, MessageCircle, SearchX, Send, Wifi } from "@/components/icons";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { SAMPLE_PROVIDERS } from "@/data/samples";

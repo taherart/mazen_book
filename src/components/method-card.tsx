@@ -1,4 +1,4 @@
-import { ArrowLeft, Banknote, Clock3, Home, MapPin, Wallet } from "lucide-react";
+import { ArrowLeft, Banknote, Clock3, Home, MapPin, Wallet } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { ViewTransition } from "react";
@@ -54,7 +54,7 @@ export function MethodCard({ method, className, priority }: { method: MethodSumm
     // prefetch={true}: the App Shell alone stops at the page's Suspense boundary, and the art can
     // only travel into the method page if its hero is already on the client when the click lands
     <Link href={methodHref(method.n)} prefetch data-spotlight className={cx("spotlight lift group flex flex-col rounded-3xl border-2 border-ink bg-white", className)}>
-      <div className="relative overflow-hidden rounded-t-[calc(1.5rem-2px)] bg-paper paper-dots">
+      <div className="plate relative overflow-hidden rounded-t-[calc(1.5rem-2px)] bg-paper paper-dots">
         <MethodNumberMorph n={method.n}>
           <MethodNumber n={method.n} className="absolute start-3 top-3 z-10 shadow-print-sm" />
         </MethodNumberMorph>
@@ -109,7 +109,7 @@ export function MethodCard({ method, className, priority }: { method: MethodSumm
 export function MethodListItem({ method, className }: { method: MethodSummary; className?: string }) {
   return (
     <Link href={methodHref(method.n)} prefetch className={cx("group flex items-center gap-3 rounded-card border-2 border-ink bg-white p-2.5 pe-3 transition active:scale-[0.99]", className)}>
-      <div className="relative size-[4.5rem] shrink-0 overflow-hidden rounded-tile bg-paper paper-dots">
+      <div className="plate relative size-[4.5rem] shrink-0 overflow-hidden rounded-tile bg-paper paper-dots">
         <MethodArtMorph n={method.n}>
           <MethodArt n={method.n} title={method.title} sizes="72px" className="p-1" />
         </MethodArtMorph>
@@ -142,7 +142,7 @@ export function MethodListItem({ method, className }: { method: MethodSummary; c
 export function MethodTile({ method, reason, large, className }: { method: MethodSummary; reason: string; large?: boolean; className?: string }) {
   return (
     <Link href={methodHref(method.n)} prefetch data-spotlight className={cx("spotlight lift group flex h-full flex-col rounded-card border-2 border-ink bg-white", large && "shadow-print", className)}>
-      <div className={cx("relative overflow-hidden rounded-t-[calc(var(--radius-card)-2px)] bg-paper paper-dots", large && "grid flex-1 place-items-center")}>
+      <div className={cx("plate relative overflow-hidden rounded-t-[calc(var(--radius-card)-2px)] bg-paper paper-dots", large && "grid flex-1 place-items-center")}>
         <MethodNumberMorph n={method.n}>
           <MethodNumber n={method.n} size={large ? "lg" : "sm"} className="absolute start-3 top-3 z-10 shadow-print-sm" />
         </MethodNumberMorph>

@@ -27,7 +27,7 @@ Audit of the current build and the plan to raise it, written against the running
 | 11 | Radius drift | 8 different radii in use (6, 8, 10, 12, 16, 24, 32, 40px) plus pill | One scale, phase 2 |
 | 12 | Method page is long and flat | About 9 screens tall at tablet width, 15 second-level headings, every block weighted the same | Method recomposition, phase 2 |
 | 13 | Type jumps at breakpoints | Sizes step at `sm`/`lg` instead of scaling | **Fixed** on home, method, challenge and book headings |
-| 14 | Icon family differs from the book | Site uses Lucide; the book's PDF embeds Phosphor Light | Swap to `@phosphor-icons/react`, phase 4 |
+| 14 | Icon family differs from the book | Site uses Lucide; the book's PDF embeds Phosphor Light | **Fixed**: Phosphor through `components/icons.tsx`; Light from 24px up, Regular below |
 
 **What is already right and stays:** brand tokens taken from the book, real illustrations instead of stock, a hero that shows a real working component, full empty/loading/error/pending states, correct right-to-left behaviour, a global reduced-motion guard.
 
@@ -301,7 +301,7 @@ Rules for using it:
 | 1. Motion layer | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive | **Done**, book page included |
 | 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest | **Done**: home signed off, then method page, phone list with grid/list toggle and filter sheet, sticky join bar |
 | 3. Atmosphere | Grain, frosted chrome, misprint, torn edges | Small | Low | **Done** except torn edges, which move to phase 2 with the year band they frame |
-| 4. Optional | Phosphor icons to match the book; night edition | Medium | Low | Not started |
+| 4. Optional | Phosphor icons to match the book; night edition | Medium | Low | **Done**: night edition is opt-in from the header |
 
 ### Notes from phases 0, 1 and 3
 
@@ -313,6 +313,9 @@ Rules for using it:
 - **The prototype bar becomes a pill after the first visit.** A tiny script in `<head>` reads the choice before first paint, so a returning visitor never sees the page jump (CLS 0).
 - **The sticky join bar floats above the tab bar's raised challenge button** rather than under it, and steps aside while the try path's own button, the end of the article or the footer is on screen. The prototype pill moves up while it shows.
 - **The phone list is the default only on phones**, decided on the first render: the guide renders in the browser because it reads the query string, so the width is known before anything paints.
+- **Icons: Light where the book is, Regular where the screen needs it.** Phosphor Light at 14–20px draws a stroke under a pixel wide and breaks up on ordinary screens, so `components/icons.tsx` uses Light only from `size-6` up. Components keep their old icon names; only the import path changed.
+- **The night edition is opt-in**, from the header (the menu on phones), and remembered; a script in `<head>` applies it before first paint. Following the system setting instead is a one-line change in `lib/pre-paint.ts`, left off because the print look is the brand's default.
+- **Night is a token swap plus three role fixes** (`app/night.css`): white surfaces, dark ink fills and blue text each switch through their own variable, because in day mode one colour plays two parts. Yellow surfaces and the plates behind illustrations stay day-printed islands, since the drawings are transparent line art made for light paper.
 - **Fixed in passing:** `divide-x-reverse` drew the dividers on the wrong side (Tailwind 4 dividers are already logical); story cards showed a blank method number; a long task title made phone method pages scroll sideways; `data-scroll-behavior="smooth"` added so route changes don't smooth-scroll.
 
 ### Acceptance checks

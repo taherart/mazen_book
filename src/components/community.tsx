@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock3, Images, MapPin, Play, Wifi } from "lucide-react";
+import { ArrowLeft, Clock3, Images, MapPin, Play, Wifi } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { methodImage } from "@/lib/methods";
@@ -40,7 +40,7 @@ export function StoryCard({ story, method, featured, className }: { story: Story
         <div className="relative z-10 flex w-full items-center justify-between p-3">
           {story.media === "video" ? (
             <span className="grid size-11 place-items-center rounded-full border-2 border-ink bg-sun text-ink shadow-print-sm">
-              <Play aria-hidden className="size-5 translate-x-[-1px] fill-current" />
+              <Play aria-hidden weight="fill" className="size-5 translate-x-[-1px]" />
             </span>
           ) : story.media === "images" ? (
             <span className="grid size-11 place-items-center rounded-full border-2 border-ink bg-white text-ink shadow-print-sm">

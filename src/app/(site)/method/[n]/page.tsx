@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Banknote, BookOpen, ChevronLeft, Clock3, HandHeart, Lock, MessageSquareHeart, PlayCircle, Rocket, Sparkles, Wallet } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Banknote, BookOpen, ChevronLeft, Clock3, HandHeart, Lock, MessageSquareHeart, PlayCircle, Rocket, Sparkles, Wallet } from "@/components/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -153,9 +153,11 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </div>
             <div className="relative mx-auto w-full max-w-md animate-enter [animation-delay:120ms]">
               <div className="rounded-panel border-2 border-ink bg-white p-4 shadow-print">
-                <MethodArtMorph n={m.n}>
-                  <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
-                </MethodArtMorph>
+                <div className="plate rounded-tile">
+                  <MethodArtMorph n={m.n}>
+                    <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
+                  </MethodArtMorph>
+                </div>
               </div>
               <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] animate-land rounded-tile border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm [animation-delay:600ms]">
                 جرّبها هذا الأسبوع

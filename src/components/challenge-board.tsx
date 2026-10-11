@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CircleCheckBig, FileUp, PartyPopper, Send, Trophy } from "lucide-react";
+import { Check, CircleCheckBig, FileUp, PartyPopper, Send, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useDemo } from "@/lib/demo/hooks";
@@ -97,7 +97,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
                     </span>
                   ) : null}
                   <span aria-hidden className={cx("mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl border-2 transition peer-focus-visible:outline-3 peer-focus-visible:outline-sun-deep", checked ? "border-ok bg-ok text-white" : "border-ink bg-white text-transparent")}>
-                    <Check className="size-5" strokeWidth={3} />
+                    <Check weight="bold" className="size-5" />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-xs font-bold text-ink-mute">المهمة {i + 1}</span>

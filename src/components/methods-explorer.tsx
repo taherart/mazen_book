@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react";
+import { LayoutGrid, List, Search, SlidersHorizontal, X } from "@/components/icons";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { CAPITAL, DOMAINS, KINDS, LEVELS, PLACES, TIME } from "@/lib/taxonomy";

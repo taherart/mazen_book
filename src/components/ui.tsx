@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/icons";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import type { ReviewStatus } from "@/lib/types";

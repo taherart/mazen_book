@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { CommunityBento, CommunityStats } from "@/components/community-lists";

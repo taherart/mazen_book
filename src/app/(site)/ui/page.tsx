@@ -1,4 +1,4 @@
-import { CircleCheckBig, Inbox, TriangleAlert } from "lucide-react";
+import { CircleCheckBig, Inbox, TriangleAlert } from "@/components/icons";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { OutcomeChip, ProviderCard, StoryCard } from "@/components/community";
@@ -94,7 +94,7 @@ export default function UiPage() {
       </Block>
 
       <Block title="البطاقات" note="بطاقة الطريقة، بطاقة التجربة، وبطاقة مقدم الخدمة.">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <MethodCard method={methods[6]} />
           <StoryCard story={SAMPLE_STORIES[0]} method={methods[0]} />
           <ProviderCard provider={SAMPLE_PROVIDERS[0]} />
@@ -127,7 +127,7 @@ export default function UiPage() {
       </Block>
 
       <Block title="حالات الواجهة" note="كل قائمة ونموذج في المنصة يمرّ بهذه الحالات الخمس.">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
           <State name="فارغة">
             <EmptyState icon={<Inbox className="size-6" />} title="لا توجد تجارب منشورة بعد" action={<Button>كن أول من يشارك تجربته</Button>}>
               تشرح الحالة الفارغة ماذا سيظهر هنا، وتقترح الخطوة التالية.
@@ -162,7 +162,7 @@ export default function UiPage() {
       {/* ---------- proposed motion layer: live samples of app/motion.css ---------- */}
       <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-(--z-overlay) h-1 bg-sun" />
       <Block title="الحركة والتأثيرات (مقترح)" note="عيّنات حيّة من نظام الحركة في app/motion.css. لم تُطبَّق على صفحات الموقع بعد. الخط الأصفر أعلى الصفحة هو مؤشر التقدّم في القراءة.">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
           <State name="كشف عند التمرير + قلم التظليل (data-reveal · marker-draw)">
             <div data-reveal className="rounded-panel border-2 border-ink bg-white p-6">
               <p className="font-display text-h2 text-ink">
@@ -181,7 +181,7 @@ export default function UiPage() {
           <State name="بطاقة مطبوعة: رفع عند المرور، حافة مضيئة، وانزياح الرسمة (lift · spotlight · art-drift)">
             <div data-reveal>
               <div data-spotlight className="spotlight lift group flex items-center gap-4 rounded-card border-2 border-ink bg-white p-4 shadow-print-sm">
-                <div className="w-28 shrink-0 overflow-hidden rounded-tile bg-paper paper-dots">
+                <div className="plate w-28 shrink-0 overflow-hidden rounded-tile bg-paper paper-dots">
                   <MethodArt n={7} title={methods[6].title} sizes="112px" className="art-drift misprint" />
                 </div>
                 <div>

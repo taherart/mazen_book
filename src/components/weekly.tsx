@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check, Users } from "lucide-react";
+import { ArrowLeft, Check, Users } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type CSSProperties, useEffect, useState, useSyncExternalStore } from "react";
@@ -177,11 +177,11 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
         </span>
       </header>
       <div className="grid sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <Link href={methodHref(n)} className="relative block bg-paper paper-dots sm:border-e-2 sm:border-ink">
+        <Link href={methodHref(n)} className="plate relative block bg-paper paper-dots">
           <MethodNumber n={n} size="lg" className="absolute start-4 top-4 z-10 shadow-print-sm" />
           <MethodArt n={n} title={m.title} priority sizes="(min-width: 640px) 320px, 80vw" className="mx-auto max-w-[17rem] p-4 sm:max-w-none" />
         </Link>
-        <div className="flex flex-col gap-4 border-t-2 border-ink p-5 sm:border-t-0">
+        <div className="flex flex-col gap-4 border-t-2 border-ink p-5 sm:border-s-2 sm:border-t-0">
           <div>
             <h3 className="font-display text-2xl leading-snug text-ink sm:text-3xl">
               <Link href={methodHref(n)} className="hover:text-brand">

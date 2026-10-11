@@ -56,6 +56,8 @@ src/lib/demo       browser-only state that stands in for the backend
 src/lib/server     server-only helpers (current week, cached hourly)
 src/data           methods.json (generated) and samples.ts (illustrative)
 src/app/motion.css motion, fluid type and surface utilities (opt-in; samples at /ui)
+src/app/night.css  the night edition (opt-in from the header)
+src/components/icons.tsx  every icon, from Phosphor (the book's icon family)
 docs               design-blueprint.md: UI audit and the plan to raise it
 scripts            data pipeline, see below
 ```

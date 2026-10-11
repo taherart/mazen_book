@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, RotateCcw } from "lucide-react";
+import { CalendarClock, RotateCcw } from "@/components/icons";
 import { useDemo } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
 import { formatDay } from "@/lib/week";
@@ -25,7 +25,7 @@ export function AdminWeek({ methods, week }: AdminProps) {
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <Panel title={`الأسبوع ${week.week} من 52`}>
           <div className="grid items-center gap-5 sm:grid-cols-[10rem_1fr]">
-            <div className="rounded-3xl border-2 border-ink bg-paper p-2">
+            <div className="plate rounded-3xl border-2 border-ink bg-paper p-2">
               <MethodArt n={m.n} title={m.title} sizes="160px" />
             </div>
             <div className="space-y-4">

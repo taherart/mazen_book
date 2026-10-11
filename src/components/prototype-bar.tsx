@@ -1,11 +1,11 @@
 "use client";
 
-import { Eraser, FlaskConical, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { Eraser, FlaskConical, ShieldCheck, SlidersHorizontal, X } from "@/components/icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { PROTO_BAR_KEY } from "@/lib/prototype-bar";
+import { PROTO_BAR_KEY } from "@/lib/pre-paint";
 import { cx } from "./ui";
 
 /** Remember the choice and apply it now. The attribute on <html> drives which form shows, and the

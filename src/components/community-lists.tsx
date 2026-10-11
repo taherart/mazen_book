@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, BadgeCheck, Flag, HandHeart, MessageSquareHeart, PenLine, Rocket } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Flag, HandHeart, MessageSquareHeart, PenLine, Rocket } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";

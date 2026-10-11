@@ -1,0 +1,99 @@
+/* Night edition: navy paper, cream ink, the same blue and yellow.
+ *
+ * Opt-in from the header (html[data-theme="night"], set before first paint). Nearly everything is a
+ * token swap. Three roles need more than that, because one colour plays two parts in day mode:
+ *   - white is both a card surface and text on blue: surfaces switch through --surface, text stays;
+ *   - ink is both text and a dark fill (footer, active pills): fills switch through --ink-fill;
+ *   - blue text sits on paper: it lightens through --brand-text so it keeps its contrast.
+ *
+ * Islands stay printed on day paper: yellow surfaces (dark ink reads on yellow, cream does not) and
+ * the plates behind the illustrations, which are transparent line drawings made for light paper.
+ */
+
+html[data-theme="night"] {
+  color-scheme: dark;
+  --color-paper: #0e1630;
+  --color-paper-deep: #0a1126;
+  --color-line: #2b3a6b;
+  --color-ink: #f3ecdd;
+  --color-ink-soft: #cfc8b8;
+  --color-ink-mute: #a7a397;
+  --color-brand-wash: #18275a;
+  --color-sun-wash: #3a3215;
+  --color-ok: #34c48b;
+  --color-ok-wash: #0f3328;
+  --color-bad: #ff7378;
+  --color-bad-wash: #3d1a20;
+  --surface: #16214a;
+  --ink-fill: #060b1d;
+  --brand-text: #a3bcff;
+  --dots: rgb(255 255 255 / 0.07);
+}
+
+html[data-theme="night"] :is(.bg-sun, .plate) {
+  --color-paper: #f7f3ea;
+  --color-paper-deep: #efe8d8;
+  --color-line: #e2dbc9;
+  --color-ink: #1d1f26;
+  --color-ink-soft: #4a4d57;
+  --color-ink-mute: #63666f;
+  --color-brand-wash: #eef2fd;
+  --color-sun-wash: #fff3cf;
+  --color-ok: #0f9d68;
+  --color-ok-wash: #e2f6ee;
+  --color-bad: #d93b41;
+  --color-bad-wash: #fde9ea;
+  --surface: #fff;
+  --ink-fill: #1d1f26;
+  --brand-text: #2f5bd3;
+  --dots: rgb(29 31 38 / 0.1);
+}
+
+/* Utility overrides live in the utilities layer with zero-specificity scoping, so they replace the
+   base utility (same specificity, later in the layer) while hover and state variants still win. */
+@layer utilities {
+  :where(html[data-theme="night"]) {
+    .plate {
+      background-color: var(--color-paper);
+    }
+    .bg-white {
+      background-color: var(--surface);
+    }
+    .bg-white\/60 {
+      background-color: color-mix(in oklab, var(--surface) 60%, transparent);
+    }
+    .bg-white\/70 {
+      background-color: color-mix(in oklab, var(--surface) 70%, transparent);
+    }
+    .bg-white\/90 {
+      background-color: color-mix(in oklab, var(--surface) 90%, transparent);
+    }
+    .bg-ink {
+      background-color: var(--ink-fill);
+    }
+    .bg-ink\/40 {
+      background-color: rgb(0 0 0 / 0.55);
+    }
+    .text-brand,
+    .text-brand-dark {
+      color: var(--brand-text);
+    }
+    .paper-dots {
+      background-image: radial-gradient(var(--dots) 1.1px, transparent 0);
+    }
+    /* the marker sits under cream letters: soften it so they still read */
+    .marker::after {
+      opacity: 0.5;
+    }
+    .glass {
+      background: rgb(14 22 48 / 0.8);
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+      @supports not (backdrop-filter: blur(1px)) {
+        background: var(--color-paper);
+      }
+    }
+    .skeleton {
+      background-image: linear-gradient(90deg, var(--color-paper-deep) 25%, #1a2550 37%, var(--color-paper-deep) 63%);
+    }
+  }
+}

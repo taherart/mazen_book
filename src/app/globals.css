@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./motion.css";
+@import "./night.css";
 
 /* Palette lifted from the book interior: royal blue ink on cream paper, one warm accent. */
 @theme {
