@@ -1,0 +1,53 @@
+# Production stack for the VPS, deployed through Hostinger's Docker Manager (see deploy/README.md).
+# The app image is built on the server straight from GitHub at GIT_REF; Caddy terminates HTTPS.
+#
+# Environment (set on the Docker Manager project, never committed):
+#   GITHUB_TOKEN  read-only token for this private repository (Contents: read)
+#   GIT_REF       branch, tag or commit to deploy
+#   SITE_HOST     public host name, served over HTTPS
+#   SITE_IP       the server's IP, served over plain HTTP until a domain is connected
+
+name: mazen-book
+
+services:
+  web:
+    build:
+      context: https://x-access-token:${GITHUB_TOKEN}@github.com/taherart/mazen_book.git#${GIT_REF}
+      args:
+        NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
+    image: mazen-book:${GIT_REF}
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+configs:
+  caddyfile:
+    content: |
+      ${SITE_HOST} {
+        encode zstd gzip
+        reverse_proxy web:3000
+      }
+      http://${SITE_IP} {
+        encode zstd gzip
+        reverse_proxy web:3000
+      }
+
+volumes:
+  caddy_data:
+  caddy_config:

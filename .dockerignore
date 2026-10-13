@@ -1,0 +1,8 @@
+.git
+.next
+node_modules
+docs
+scripts/book/*.py
+*.md
+!README.md
+.env*
