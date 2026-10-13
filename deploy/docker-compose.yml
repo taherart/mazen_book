@@ -1,54 +1,125 @@
 # Production stack for the VPS, deployed through Hostinger's Docker Manager (see deploy/README.md).
-# The app image is built on the server straight from GitHub at GIT_REF; Caddy terminates HTTPS.
-#
-# Environment (set on the Docker Manager project, never committed):
-#   GIT_REPO_URL  clone URL; for the private repo, https://x-access-token:<token>@github.com/taherart/mazen_book.git
-#                 with a read-only token (Contents: read); the plain URL works while the repo is public
-#   GIT_REF       commit SHA to deploy (it also tags the image, so each SHA is a fresh build)
-#   SITE_HOST     public host name, served over HTTPS
-#   SITE_IP       the server's IP, served over plain HTTP until a domain is connected
+# builder: one-off; downloads GIT_REF from GitHub, builds it into the releases volume, exits.
+# web:   runs the built release as a non-root user on a read-only filesystem.
+# caddy: HTTPS for SITE_HOST, plain HTTP on SITE_IP, security headers and timeouts.
+# Env: GIT_REF (commit SHA), SITE_HOST, SITE_IP, GITHUB_TOKEN (read-only; only for a private repo).
 
 name: mazen-book
 
+x-base: &base
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
 services:
+  builder:
+    <<: *base
+    image: node:22-alpine
+    restart: "no"
+    working_dir: /work
+    environment:
+      GIT_REF: ${GIT_REF}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_OPTIONS: --max-old-space-size=2048
+    volumes: ["releases:/releases"]
+    command:
+      - sh
+      - -ec
+      - |
+        case "$$GIT_REF" in ""|*[!0-9a-f]*) echo "GIT_REF must be a commit SHA"; exit 1;; esac
+        OUT="/releases/$$GIT_REF"
+        if [ -f "$$OUT/server.js" ]; then echo "release $$GIT_REF already built"; exit 0; fi
+        URL="https://api.github.com/repos/taherart/mazen_book/tarball/$$GIT_REF"
+        if [ -n "$$GITHUB_TOKEN" ]; then wget -q --header "Authorization: Bearer $$GITHUB_TOKEN" -O src.tgz "$$URL"
+        else wget -q -O src.tgz "$$URL"; fi
+        mkdir src && tar xzf src.tgz -C src --strip-components=1 --no-same-owner && cd src
+        corepack enable && pnpm install --frozen-lockfile && pnpm build
+        rm -rf "$$OUT.tmp" && mkdir -p "$$OUT.tmp/.next"
+        cp -r .next/standalone/. "$$OUT.tmp/" && cp -r .next/static "$$OUT.tmp/.next/static" && cp -r public "$$OUT.tmp/public"
+        rm -rf "$$OUT.tmp/.next/cache" && ln -s /tmp/next-cache "$$OUT.tmp/.next/cache"
+        mv "$$OUT.tmp" "$$OUT"
+        ls -dt /releases/*/ | tail -n +4 | xargs -r rm -rf
+        echo "release $$GIT_REF built"
+
   web:
-    build:
-      context: ${GIT_REPO_URL:-https://github.com/taherart/mazen_book.git}#${GIT_REF}
-      args:
-        NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
-    image: mazen-book:${GIT_REF}
-    restart: unless-stopped
-    expose:
-      - "3000"
+    <<: *base
+    image: node:22-alpine
+    user: "1000:1000"
+    read_only: true
+    tmpfs: ["/tmp:size=256m"]
+    environment:
+      GIT_REF: ${GIT_REF}
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes: ["releases:/releases:ro"]
+    working_dir: /releases
+    command: ["sh", "-c", "mkdir -p /tmp/next-cache && cd /releases/$$GIT_REF && exec node server.js"]
+    depends_on:
+      builder: { condition: service_completed_successfully }
+    mem_limit: 1g
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/robots.txt').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   caddy:
+    <<: *base
     image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - web
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    configs:
-      - source: caddyfile
-        target: /etc/caddy/Caddyfile
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
+    cap_add: ["NET_BIND_SERVICE"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    depends_on: [web]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    configs: [{ source: caddyfile, target: /etc/caddy/Caddyfile }]
+    volumes: ["caddy_data:/data", "caddy_config:/config"]
+    mem_limit: 256m
+    pids_limit: 128
 
 configs:
   caddyfile:
     content: |
-      ${SITE_HOST} {
+      {
+        servers {
+          timeouts {
+            read_header 10s
+            read_body 30s
+            write 60s
+            idle 2m
+          }
+        }
+      }
+      (common) {
         encode zstd gzip
-        reverse_proxy web:3000
+        request_body {
+          max_size 1MB
+        }
+        header -Server
+        reverse_proxy web:3000 {
+          header_down -X-Powered-By
+        }
+      }
+      ${SITE_HOST} {
+        import common
+        header {
+          Strict-Transport-Security "max-age=31536000; includeSubDomains"
+          +Content-Security-Policy "upgrade-insecure-requests"
+        }
       }
       http://${SITE_IP} {
-        encode zstd gzip
-        reverse_proxy web:3000
+        import common
       }
 
 volumes:
+  releases:
   caddy_data:
   caddy_config:

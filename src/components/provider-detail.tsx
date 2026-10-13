@@ -12,12 +12,18 @@ import { MethodRow } from "./method-card";
 import { ReportButton } from "./report-button";
 import { PageSkeleton } from "./skeletons";
 import { Avatar, Button, Chip, Container, EmptyState, Field, Input, Notice, SampleTag, StatusPill, Textarea, buttonClass } from "./ui";
+import { safeHttpUrl, safeMailto } from "@/lib/safe-url";
 
 function contactLink(c: Provider["contact"]) {
   if (!c.value) return null;
-  if (c.kind === "whatsapp") return { href: `https://wa.me/${c.value.replace(/\D/g, "")}`, label: "تواصل عبر واتساب", icon: MessageCircle };
-  if (c.kind === "email") return { href: `mailto:${c.value}`, label: "راسله بالبريد", icon: Mail };
-  return { href: c.value, label: "افتح رابط التواصل", icon: ExternalLink };
+  if (c.kind === "whatsapp") {
+    const digits = c.value.replace(/\D/g, "");
+    return digits ? { href: `https://wa.me/${digits}`, label: "تواصل عبر واتساب", icon: MessageCircle } : null;
+  }
+  // checked again here, not only in the form: the value is shown to everyone who opens the profile
+  const href = c.kind === "email" ? safeMailto(c.value) : safeHttpUrl(c.value);
+  if (!href) return null;
+  return c.kind === "email" ? { href, label: "راسله بالبريد", icon: Mail } : { href, label: "افتح رابط التواصل", icon: ExternalLink };
 }
 
 export function ProviderDetail({ id, methods }: { id: string; methods: MethodSummary[] }) {
@@ -104,9 +110,9 @@ export function ProviderDetail({ id, methods }: { id: string; methods: MethodSum
             {provider.portfolio.length ? (
               <ul className="mt-3 flex flex-wrap gap-2">
                 {provider.portfolio.map((p) =>
-                  p.url ? (
+                  safeHttpUrl(p.url) ? (
                     <li key={p.label}>
-                      <a href={p.url} target="_blank" rel="noopener noreferrer nofollow" className={buttonClass("white", "md")}>
+                      <a href={safeHttpUrl(p.url)!} target="_blank" rel="noopener noreferrer nofollow" className={buttonClass("white", "md")}>
                         <Link2 aria-hidden className="size-4" />
                         {p.label}
                       </a>
