@@ -23,6 +23,7 @@ services:
     environment:
       GIT_REF: ${GIT_REF}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      SOURCE_URL: ${SOURCE_URL:-}
       NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
       NEXT_TELEMETRY_DISABLED: "1"
       NODE_OPTIONS: --max-old-space-size=2048
@@ -34,7 +35,7 @@ services:
         case "$$GIT_REF" in ""|*[!0-9a-f]*) echo "GIT_REF must be a commit SHA"; exit 1;; esac
         OUT="/releases/$$GIT_REF"
         if [ -f "$$OUT/server.js" ]; then echo "release $$GIT_REF already built"; exit 0; fi
-        URL="https://api.github.com/repos/taherart/mazen_book/tarball/$$GIT_REF"
+        URL="$${SOURCE_URL:-https://api.github.com/repos/taherart/mazen_book/tarball/$$GIT_REF}"
         if [ -n "$$GITHUB_TOKEN" ]; then wget -q --header "Authorization: Bearer $$GITHUB_TOKEN" -O src.tgz "$$URL"
         else wget -q -O src.tgz "$$URL"; fi
         mkdir src && tar xzf src.tgz -C src --strip-components=1 --no-same-owner && cd src
@@ -76,8 +77,7 @@ services:
     <<: *base
     image: caddy:2-alpine
     cap_add: ["NET_BIND_SERVICE"]
-    read_only: true
-    tmpfs: ["/tmp"]
+    # not read_only: Compose writes the inline Caddyfile into the container
     depends_on: [web]
     ports: ["80:80", "443:443", "443:443/udp"]
     configs: [{ source: caddyfile, target: /etc/caddy/Caddyfile }]

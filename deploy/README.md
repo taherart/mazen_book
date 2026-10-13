@@ -1,17 +1,21 @@
 # Deploying to the VPS
 
 The site runs on a Hostinger VPS (KVM 1, Ubuntu) as a Docker Compose project managed through
-Hostinger's Docker Manager API. Two containers: `web` (the Next.js standalone server, built from
-the repository's `Dockerfile`) and `caddy` (HTTPS on the host name, plain HTTP on the IP).
+Hostinger's Docker Manager API (which cannot build from a git URL, hence the builder):
 
-The server builds the image itself, straight from GitHub at `GIT_REF`, so a deploy is one API call:
-send `deploy/docker-compose.yml` with the environment below. A new `GIT_REF` gives a new image tag,
-so the server always rebuilds the code you asked for.
+- `builder` (one-off) downloads the commit `GIT_REF` from GitHub, builds it into the `releases`
+  volume and exits. A commit that is already built is skipped, so restarts are instant.
+- `web` runs that release: non-root, read-only filesystem, all capabilities dropped,
+  no-new-privileges, memory and process limits, health check.
+- `caddy` serves HTTPS on `SITE_HOST` (HSTS, upgrade-insecure-requests) and plain HTTP on `SITE_IP`,
+  with request timeouts, a 1 MB body limit and no Server header.
+
+A deploy is one API call: send `deploy/docker-compose.yml` with the environment below.
 
 | Variable | Value |
 | --- | --- |
-| `GIT_REPO_URL` | `https://x-access-token:<token>@github.com/taherart/mazen_book.git` with a fine-grained token (this repository only, **Contents: read**). Leave it unset while the repository is public |
-| `GIT_REF` | Commit SHA to deploy. It also tags the image, so each SHA is a fresh build (branch names with `/` are not valid tags) |
+| `GIT_REF` | Commit SHA to deploy (only a full SHA is accepted) |
+| `GITHUB_TOKEN` | Only while the repository is private: fine-grained token, this repository only, **Contents: read** |
 | `SITE_HOST` | `srv2059641.hstgr.cloud`, or the real domain once it points at the server |
 | `SITE_IP` | `191.215.47.95` |
 
@@ -20,7 +24,7 @@ so the server always rebuilds the code you asked for.
 python3 - <<'PY' | curl -sS -X POST https://developers.hostinger.com/api/vps/v1/virtual-machines/2059641/docker \
   -H "Authorization: Bearer $HOSTINGER_API_TOKEN" -H "Content-Type: application/json" --data @-
 import json, os
-env = "\n".join(f"{k}={os.environ[k]}" for k in ("GIT_REPO_URL", "GIT_REF", "SITE_HOST", "SITE_IP") if os.environ.get(k))
+env = "\n".join(f"{k}={os.environ[k]}" for k in ("GIT_REF", "GITHUB_TOKEN", "SITE_HOST", "SITE_IP") if os.environ.get(k))
 print(json.dumps({"project_name": "mazen-book", "content": open("deploy/docker-compose.yml").read(), "environment": env}))
 PY
 ```
