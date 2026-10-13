@@ -106,6 +106,7 @@ configs:
         header -Server
         reverse_proxy web:3000 {
           header_down -X-Powered-By
+          header_down -Via
         }
       }
       ${SITE_HOST} {

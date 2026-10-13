@@ -1,5 +1,7 @@
 # Deploying to the VPS
 
+Live demo: **https://srv2059641.hstgr.cloud** (Let's Encrypt certificate) and http://191.215.47.95.
+
 The site runs on a Hostinger VPS (KVM 1, Ubuntu) as a Docker Compose project managed through
 Hostinger's Docker Manager API (which cannot build from a git URL, hence the builder):
 
