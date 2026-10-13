@@ -10,8 +10,8 @@ so the server always rebuilds the code you asked for.
 
 | Variable | Value |
 | --- | --- |
-| `GITHUB_TOKEN` | Fine-grained token, this repository only, **Contents: read** |
-| `GIT_REF` | Branch, tag or commit SHA to deploy (a SHA pins the exact build) |
+| `GIT_REPO_URL` | `https://x-access-token:<token>@github.com/taherart/mazen_book.git` with a fine-grained token (this repository only, **Contents: read**). Leave it unset while the repository is public |
+| `GIT_REF` | Commit SHA to deploy. It also tags the image, so each SHA is a fresh build (branch names with `/` are not valid tags) |
 | `SITE_HOST` | `srv2059641.hstgr.cloud`, or the real domain once it points at the server |
 | `SITE_IP` | `191.215.47.95` |
 
@@ -20,7 +20,7 @@ so the server always rebuilds the code you asked for.
 python3 - <<'PY' | curl -sS -X POST https://developers.hostinger.com/api/vps/v1/virtual-machines/2059641/docker \
   -H "Authorization: Bearer $HOSTINGER_API_TOKEN" -H "Content-Type: application/json" --data @-
 import json, os
-env = "\n".join(f"{k}={os.environ[k]}" for k in ("GITHUB_TOKEN", "GIT_REF", "SITE_HOST", "SITE_IP"))
+env = "\n".join(f"{k}={os.environ[k]}" for k in ("GIT_REPO_URL", "GIT_REF", "SITE_HOST", "SITE_IP") if os.environ.get(k))
 print(json.dumps({"project_name": "mazen-book", "content": open("deploy/docker-compose.yml").read(), "environment": env}))
 PY
 ```

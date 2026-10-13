@@ -2,8 +2,9 @@
 # The app image is built on the server straight from GitHub at GIT_REF; Caddy terminates HTTPS.
 #
 # Environment (set on the Docker Manager project, never committed):
-#   GITHUB_TOKEN  read-only token for this private repository (Contents: read)
-#   GIT_REF       branch, tag or commit to deploy
+#   GIT_REPO_URL  clone URL; for the private repo, https://x-access-token:<token>@github.com/taherart/mazen_book.git
+#                 with a read-only token (Contents: read); the plain URL works while the repo is public
+#   GIT_REF       commit SHA to deploy (it also tags the image, so each SHA is a fresh build)
 #   SITE_HOST     public host name, served over HTTPS
 #   SITE_IP       the server's IP, served over plain HTTP until a domain is connected
 
@@ -12,7 +13,7 @@ name: mazen-book
 services:
   web:
     build:
-      context: https://x-access-token:${GITHUB_TOKEN}@github.com/taherart/mazen_book.git#${GIT_REF}
+      context: ${GIT_REPO_URL:-https://github.com/taherart/mazen_book.git}#${GIT_REF}
       args:
         NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
     image: mazen-book:${GIT_REF}
