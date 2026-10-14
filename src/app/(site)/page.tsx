@@ -174,7 +174,7 @@ export default async function HomePage() {
       {/* ---------- book ---------- */}
       <section>
         <Container className="pb-section">
-          <div data-reveal className="grid items-center gap-8 overflow-hidden rounded-panel border border-line bg-white p-6 sm:p-10 md:grid-cols-[auto_1fr]">
+          <div data-reveal className="grid items-center gap-8 overflow-hidden rounded-panel bg-brand-wash p-6 sm:p-10 md:grid-cols-[auto_1fr]">
             <Image src="/brand/cover.webp" alt={`غلاف كتاب ${SITE.bookTitle}`} width={768} height={1024} sizes="220px" className="lift mx-auto w-40 rounded-md shadow-[0_18px_40px_-18px_rgb(29_31_38/0.55)] md:w-48" />
             <div>
               <h2 className="font-display text-h2 text-ink">الطرق كلها بين يديك في الكتاب</h2>

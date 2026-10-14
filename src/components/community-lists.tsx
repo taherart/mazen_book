@@ -147,8 +147,8 @@ export function CommunityBento({ methods }: { methods: MethodSummary[] }) {
             ))}
             {/* the invitation fills what the two rows leave beside the featured story */}
             <li data-reveal>
-              <Link href="/methods" className="group flex h-full items-center gap-4 rounded-card border-2 border-dashed border-ink/35 bg-white/60 p-4 transition hover:border-ink">
-                <span className="grid size-12 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">
+              <Link href="/methods" className="group flex h-full items-center gap-4 rounded-card border border-dashed border-brand/40 bg-brand-wash/70 p-4 transition hover:border-brand">
+                <span className="grid size-12 shrink-0 place-items-center rounded-tile bg-brand text-white">
                   <PenLine aria-hidden className="size-6" />
                 </span>
                 <span className="min-w-0">
@@ -219,14 +219,15 @@ export function CommunityStats({ methods }: { methods: MethodSummary[] }) {
   const empty = items.every((i) => i.value === 0);
   return (
     <div>
-      <dl data-stagger className="grid grid-cols-2 gap-y-6 lg:grid-cols-4">
+      {/* the one blue band in this part of the page: the numbers are the news */}
+      <dl data-stagger className="grid grid-cols-2 gap-y-6 rounded-panel bg-brand px-2 py-6 text-white sm:py-8 lg:grid-cols-4">
         {items.map(({ label, value, icon: Icon }) => (
-          <div key={label} data-reveal className="flex flex-col-reverse border-s border-line ps-4">
-            <dt className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
-              <Icon aria-hidden className="size-4 shrink-0 text-brand" />
+          <div key={label} data-reveal className="flex flex-col-reverse border-s border-white/20 px-4 first:border-s-0 lg:px-6">
+            <dt className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-white/80">
+              <Icon aria-hidden className="size-4 shrink-0 text-white/70" />
               {label}
             </dt>
-            <dd data-countup={value} className="font-display text-h1 leading-none text-ink tabular-nums">
+            <dd data-countup={value} className="font-display text-h1 leading-none text-white tabular-nums">
               {value}
             </dd>
           </div>

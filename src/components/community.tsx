@@ -33,7 +33,7 @@ export function StoryFigures({ story, className }: { story: Story; className?: s
 function Result({ story, size }: { story: Story; size: "lg" | "md" }) {
   return (
     <div>
-      <p className={cx("font-display leading-none", size === "lg" ? "text-h2" : "text-h3", story.income ? "text-ink" : "text-ink-soft")}>{story.income ? riyal(story.income) : "لا دخل بعد"}</p>
+      <p className={cx("font-display leading-none", size === "lg" ? "text-h2" : "text-h3", story.income ? "text-brand-dark" : "text-ink-soft")}>{story.income ? riyal(story.income) : "لا دخل بعد"}</p>
       <p className="mt-1.5 text-sm text-ink-soft">
         خلال {story.duration} · التكلفة {story.cost === null ? "لم تُذكر" : story.cost === 0 ? "صفر" : riyal(story.cost)}
       </p>
@@ -83,7 +83,7 @@ export function StoryCard({ story, method, featured, className }: { story: Story
 export function StoryRow({ story, method, className }: { story: Story; method?: MethodSummary; className?: string }) {
   return (
     <Link href={`/stories/${story.id}`} className={cx("group flex h-full gap-4 rounded-card border border-line bg-white p-4 transition hover:border-ink", className)}>
-      <p className="w-24 shrink-0 border-e border-line pe-3 font-display text-2xl leading-tight text-ink sm:w-28">
+      <p className="w-24 shrink-0 border-e border-line pe-3 font-display text-2xl leading-tight text-brand-dark sm:w-28">
         {story.income ? story.income.toLocaleString("en-US") : "—"}
         <span className="block font-sans text-xs font-semibold text-ink-mute">{story.income ? "ريال" : "لا دخل بعد"}</span>
       </p>
@@ -104,8 +104,8 @@ export function StoryRow({ story, method, className }: { story: Story; method?: 
 
 export function ProviderCard({ provider, className }: { provider: Provider; className?: string }) {
   return (
-    <Link href={`/providers/${provider.id}`} className={cx("group flex h-full flex-col rounded-card border border-line bg-white p-4 transition hover:border-ink", className)}>
-      <div className="flex items-start gap-3">
+    <Link href={`/providers/${provider.id}`} className={cx("group flex h-full flex-col overflow-hidden rounded-card border border-line bg-white transition hover:border-brand", className)}>
+      <div className="flex items-start gap-3 bg-brand-wash p-4">
         <Avatar name={provider.name} />
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-bold text-xl leading-tight text-ink">{provider.name}</h3>
@@ -124,27 +124,27 @@ export function ProviderCard({ provider, className }: { provider: Provider; clas
         </div>
         {provider.sample ? <SampleTag /> : null}
       </div>
-      <p className="mt-3 line-clamp-2 text-sm text-ink-soft">{provider.headline}</p>
-      <ul className="mt-3 flex flex-wrap gap-1.5">
+      <p className="mt-3 line-clamp-2 px-4 text-sm text-ink-soft">{provider.headline}</p>
+      <ul className="mt-3 flex flex-wrap gap-1.5 px-4">
         {provider.services.slice(0, 3).map((s) => (
           <li key={s}>
-            <Chip>{s}</Chip>
+            <Chip tone="brand">{s}</Chip>
           </li>
         ))}
       </ul>
-      <div className="mt-auto flex items-end justify-between gap-3 pt-4">
+      <div className="mt-auto flex items-end justify-between gap-3 p-4">
         <p className="text-sm">
           {provider.priceFrom !== null ? (
             <>
               <span className="block text-[0.7rem] text-ink-mute">يبدأ من</span>
-              <b className="font-display text-xl text-ink">{riyal(provider.priceFrom)}</b>
+              <b className="font-display text-xl text-brand-dark">{riyal(provider.priceFrom)}</b>
               {provider.priceNote ? <span className="text-xs text-ink-soft"> {provider.priceNote}</span> : null}
             </>
           ) : (
             <span className="text-ink-soft">السعر عند الطلب</span>
           )}
         </p>
-        <span className="inline-flex h-9 shrink-0 items-center rounded-full bg-brand-wash px-4 text-sm font-bold text-brand-dark transition group-hover:bg-brand group-hover:text-white">تواصل</span>
+        <span className="inline-flex h-9 shrink-0 items-center rounded-full bg-brand px-4 text-sm font-bold text-white transition group-hover:bg-brand-dark">تواصل</span>
       </div>
     </Link>
   );
