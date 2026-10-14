@@ -47,6 +47,81 @@ const MIGRATIONS: { id: number; sql: string }[] = [
       create index challenges_method_submitted_idx on challenges (method, submitted_at) where submitted_at is not null;
     `,
   },
+  {
+    id: 3,
+    sql: `
+      -- what members publish: nothing shows publicly until an admin approves it
+      create table stories (
+        id uuid primary key,
+        user_id uuid not null references users (id) on delete cascade,
+        method smallint not null check (method between 1 and 52),
+        title text not null,
+        author text not null,
+        city text,
+        body text not null,
+        duration text not null,
+        cost integer check (cost >= 0),
+        income integer check (income >= 0),
+        outcome text not null check (outcome in ('worked', 'partly', 'didnt')),
+        challenges text not null,
+        tips text[] not null,
+        media text not null check (media in ('video', 'images', 'none')),
+        status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+        created_at timestamptz not null default now(),
+        reviewed_at timestamptz
+      );
+      create index stories_status_idx on stories (status, created_at desc);
+
+      create table providers (
+        id uuid primary key,
+        user_id uuid not null references users (id) on delete cascade,
+        methods smallint[] not null,
+        name text not null,
+        headline text not null,
+        bio text not null,
+        services text[] not null,
+        portfolio jsonb not null default '[]',
+        price_from integer check (price_from >= 0),
+        price_note text,
+        city text not null,
+        remote boolean not null default false,
+        contact_kind text not null check (contact_kind in ('whatsapp', 'link', 'email')),
+        contact_value text not null,
+        status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+        created_at timestamptz not null default now(),
+        reviewed_at timestamptz
+      );
+      create index providers_status_idx on providers (status, created_at desc);
+
+      create table contact_requests (
+        id uuid primary key default gen_random_uuid(),
+        provider_id uuid not null references providers (id) on delete cascade,
+        from_user_id uuid references users (id) on delete set null,
+        name text not null,
+        contact text not null,
+        message text not null,
+        created_at timestamptz not null default now()
+      );
+      create index contact_requests_provider_idx on contact_requests (provider_id, created_at desc);
+
+      create table helpful (
+        user_id uuid not null references users (id) on delete cascade,
+        story_id uuid not null references stories (id) on delete cascade,
+        primary key (user_id, story_id)
+      );
+
+      create table reports (
+        id uuid primary key default gen_random_uuid(),
+        kind text not null check (kind in ('story', 'provider')),
+        target_id uuid not null,
+        target_title text not null,
+        reason text not null,
+        reporter_id uuid references users (id) on delete set null,
+        created_at timestamptz not null default now(),
+        resolved boolean not null default false
+      );
+    `,
+  },
 ];
 
 export async function migrate() {

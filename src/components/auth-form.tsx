@@ -7,6 +7,7 @@ import { useState, type FormEvent } from "react";
 import { useDemo } from "@/lib/demo/hooks";
 import { actions, type ChallengeState, type DemoUser, type Intent } from "@/lib/demo/store";
 import { signInAction, signUpAction } from "@/lib/server/auth-actions";
+import { refreshSession } from "@/lib/session-client";
 import { Button, Field, Input, Notice, cx } from "./ui";
 import { safeRedirectPath } from "@/lib/safe-url";
 
@@ -32,7 +33,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const query = next === "/dashboard" ? "" : `?next=${encodeURIComponent(next)}`;
 
   const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }, fromServer?: { user: DemoUser; challenges: Record<number, ChallengeState> }) => {
-    if (fromServer) actions.setSession(true, fromServer.user, fromServer.challenges);
+    if (fromServer) {
+      actions.setSession(true, fromServer.user, fromServer.challenges);
+      // the member's own stories and profiles (and, for admins, the review queue)
+      void refreshSession();
+    }
     else actions.signIn(user);
     // arriving from "I'll try this method": join on the way in
     const join = next.match(/^\/method\/(\d{2})\/challenge$/);

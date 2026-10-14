@@ -2,6 +2,7 @@
 // story…) is kept in this browser only, so the flows can be clicked through before the backend
 // exists. The backend phase replaces this module with real API calls.
 import { joinChallengeAction, leaveChallengeAction, setNoteAction, submitChallengeAction, toggleTaskAction } from "../server/challenge-actions";
+import { addProviderAction, addReportAction, addRequestAction, addStoryAction, resolveReportAction, reviewProviderAction, reviewStoryAction, toggleHelpfulAction } from "../server/community-actions";
 import type { Provider, ReviewStatus, Story } from "../types";
 
 export interface DemoUser {
@@ -149,8 +150,8 @@ const noteTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
 /** With a database, a member's change is sent to the server after the local update; if the server
  *  turns it down, the store reloads the server's copy so the screen never shows unsaved work. */
-function toServer(send: () => Promise<{ ok: boolean }>) {
-  if (!state.backend || !state.user) return;
+function toServer(send: () => Promise<{ ok: boolean }>, { anyone = false } = {}) {
+  if (!state.backend || (!state.user && !anyone)) return;
   send()
     .then((res) => (res.ok ? null : resync()))
     .catch(() => resync());
@@ -160,7 +161,14 @@ async function resync() {
   await refreshSession();
 }
 
-const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+/** Server records have UUIDs; the illustrative samples have readable ids and stay local. */
+const isId = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id);
+
+// randomUUID exists only on HTTPS pages; the plain-HTTP preview builds a v4 UUID by hand
+const uid = (): string =>
+  typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (c) => (Number(c) ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (Number(c) / 4)))).toString(16));
 const now = () => new Date().toISOString();
 
 export const actions = {
@@ -172,8 +180,8 @@ export const actions = {
     update((s) => ({ ...s, user: null, challenges: s.backend ? {} : s.challenges }));
   },
   /** The server's answer about who is signed in and their challenges (see lib/session-client.ts). */
-  setSession(backend: boolean, user: DemoUser | null, challenges?: Record<number, ChallengeState>) {
-    update((s) => (backend ? { ...s, backend, user, challenges: challenges ?? (user ? s.challenges : {}) } : { ...s, backend }));
+  setSession(backend: boolean, user: DemoUser | null, challenges?: Record<number, ChallengeState>, community?: Pick<DemoState, "stories" | "providers" | "requests" | "reports" | "helpful">) {
+    update((s) => (backend ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}) } : { ...s, backend }));
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples }));
@@ -219,33 +227,42 @@ export const actions = {
   addStory(input: Omit<Story, "id" | "createdAt" | "status" | "ownerId">) {
     const id = uid();
     update((s) => ({ ...s, stories: [{ ...input, id, createdAt: now(), status: "pending", ownerId: s.user?.id }, ...s.stories] }));
+    toServer(() => addStoryAction(id, input));
     return id;
   },
   addProvider(input: Omit<Provider, "id" | "createdAt" | "status" | "ownerId">) {
     const id = uid();
     update((s) => ({ ...s, providers: [{ ...input, id, createdAt: now(), status: "pending", ownerId: s.user?.id }, ...s.providers] }));
+    toServer(() => addProviderAction(id, input));
     return id;
   },
   addRequest(input: Omit<ContactRequest, "id" | "createdAt">) {
     update((s) => ({ ...s, requests: [{ ...input, id: uid(), createdAt: now() }, ...s.requests] }));
+    // the illustrative profiles have no account behind them, so their requests stay on this device
+    if (isId(input.providerId)) toServer(() => addRequestAction(input), { anyone: true });
   },
 
   toggleHelpful(storyId: string) {
     update((s) => ({ ...s, helpful: s.helpful.includes(storyId) ? s.helpful.filter((x) => x !== storyId) : [...s.helpful, storyId] }));
+    if (isId(storyId)) toServer(() => toggleHelpfulAction(storyId));
   },
   addReport(input: Omit<Report, "id" | "createdAt" | "resolved">) {
     update((s) => ({ ...s, reports: [{ ...input, id: uid(), createdAt: now(), resolved: false }, ...s.reports] }));
+    if (isId(input.targetId)) toServer(() => addReportAction(input), { anyone: true });
   },
 
   // ----- admin -----
   resolveReport(id: string) {
     update((s) => ({ ...s, reports: s.reports.map((r) => (r.id === id ? { ...r, resolved: true } : r)) }));
+    toServer(() => resolveReportAction(id));
   },
   reviewStory(id: string, status: ReviewStatus) {
     update((s) => ({ ...s, stories: s.stories.map((x) => (x.id === id ? { ...x, status } : x)) }));
+    toServer(() => reviewStoryAction(id, status));
   },
   reviewProvider(id: string, status: ReviewStatus) {
     update((s) => ({ ...s, providers: s.providers.map((x) => (x.id === id ? { ...x, status } : x)) }));
+    toServer(() => reviewProviderAction(id, status));
   },
   setWeekMethod(weekMethod: number | null) {
     update((s) => ({ ...s, admin: { ...s.admin, weekMethod } }));

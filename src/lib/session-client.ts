@@ -9,8 +9,8 @@ export async function refreshSession() {
   try {
     const res = await fetch("/api/session", { cache: "no-store" });
     if (!res.ok) return;
-    const data = (await res.json()) as { backend: boolean; user?: DemoUser | null; challenges?: Record<number, ChallengeState> };
-    actions.setSession(data.backend, data.user ?? null, data.challenges);
+    const data = (await res.json()) as { backend: boolean; user?: DemoUser | null; challenges?: Record<number, ChallengeState>; community?: Parameters<typeof actions.setSession>[3] };
+    actions.setSession(data.backend, data.user ?? null, data.challenges, data.community);
   } catch {
     // offline: keep what the store already has
   }
@@ -19,6 +19,8 @@ export async function refreshSession() {
 export async function signOut() {
   await signOutAction();
   actions.signOut();
+  // back to the public view of stories and profiles
+  await refreshSession();
 }
 
 /** Removes the account on the server (when there is one) and everything kept in this browser. */

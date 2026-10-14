@@ -56,7 +56,15 @@ admins only by `ADMIN_EMAILS`, and account deletion.
 
 Done in step 2 (challenges): every change checks the session and touches only that member's
 rows, task numbers and method numbers are validated, a sent write-up is locked, and the note is
-capped at 5,000 characters. The rest of the list follows with the features it covers.
+capped at 5,000 characters.
+
+Done in step 3 (community): every story and profile field is validated on the server with
+length limits, portfolio and contact links must be http(s), nothing is public until an admin
+approves it, review and report decisions check `ADMIN_EMAILS` on the server, contact requests
+only reach approved profiles and only their owner (and admins) can read them, owner ids are not
+sent with public lists, and submissions are limited (5 stories and 5 profiles per member per
+hour, 5 contact requests and 10 reports per address per hour). The rest of the list follows with
+the features it covers.
 
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;
