@@ -177,9 +177,10 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
         </span>
       </header>
       <div className="grid sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <Link href={methodHref(n)} className="plate relative block bg-white paper-dots">
-          <MethodNumber n={n} size="lg" className="absolute start-4 top-4 z-10 shadow-print-sm" />
-          <MethodArt n={n} title={m.title} priority sizes="(min-width: 640px) 320px, 80vw" className="mx-auto max-w-[17rem] p-4 sm:max-w-none" />
+        {/* the number sits above the drawing, never on it */}
+        <Link href={methodHref(n)} className="plate flex flex-col bg-white p-4 paper-dots">
+          <MethodNumber n={n} size="lg" className="shadow-print-sm" />
+          <MethodArt n={n} title={m.title} priority sizes="(min-width: 640px) 320px, 80vw" className="mx-auto my-auto max-w-[17rem] sm:max-w-none" />
         </Link>
         <div className="flex flex-col gap-4 border-t-2 border-ink bg-paper p-5 sm:border-s-2 sm:border-t-0">
           <div>
