@@ -24,13 +24,15 @@ By hand, a deploy is one API call: send `deploy/docker-compose.yml` with the env
 | `GITHUB_TOKEN` | Only while the repository is private: fine-grained token, this repository only, **Contents: read** |
 | `SITE_HOST` | `srv2059641.hstgr.cloud`, or the real domain once it points at the server |
 | `SITE_IP` | `191.215.47.95` |
+| `DB_PASSWORD` | Database password. `deploy/hostinger.py` generates it on the first deploy that needs it; never change it afterwards (the database keeps the one it was created with) |
+| `ADMIN_EMAILS` | Comma-separated emails whose accounts can open `/admin` |
 
 ```bash
 # HOSTINGER_API_TOKEN: hPanel → Account → API. VM id 2059641.
 python3 - <<'PY' | curl -sS -X POST https://developers.hostinger.com/api/vps/v1/virtual-machines/2059641/docker \
   -H "Authorization: Bearer $HOSTINGER_API_TOKEN" -H "Content-Type: application/json" --data @-
 import json, os
-env = "\n".join(f"{k}={os.environ[k]}" for k in ("GIT_REF", "GITHUB_TOKEN", "SITE_HOST", "SITE_IP") if os.environ.get(k))
+env = "\n".join(f"{k}={os.environ[k]}" for k in ("GIT_REF", "GITHUB_TOKEN", "SITE_HOST", "SITE_IP", "DB_PASSWORD", "ADMIN_EMAILS") if os.environ.get(k))
 print(json.dumps({"project_name": "mazen-book", "content": open("deploy/docker-compose.yml").read(), "environment": env}))
 PY
 ```

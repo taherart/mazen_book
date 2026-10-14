@@ -2,7 +2,7 @@
 
 The companion platform for the book «52 طريقة لتزيد دخلك من جد». Next.js 16 (App Router), React 19, Tailwind CSS 4, TypeScript. Arabic, right-to-left, mobile first.
 
-**This is the front-end-first build.** All pages and flows are in place and clickable, the 52 methods are real (taken from the book), and everything a visitor does is kept in their own browser. There is no server-side account, database or upload yet.
+**The backend is being added in steps.** All pages and flows are in place, the 52 methods are real (taken from the book), and accounts are real when the server has a database (`DATABASE_URL`). Everything else a visitor does is still kept in their own browser for now. Without `DATABASE_URL` the whole site runs in that browser-only demo mode.
 
 ## Run it
 
@@ -21,6 +21,8 @@ Optional environment variables (`.env.local`):
 | `NEXT_PUBLIC_SITE_URL` | Base URL, also encoded in the QR codes | `https://52income.com` |
 | `NEXT_PUBLIC_LAUNCH_DATE` | Start of week 1 (a Sunday, Riyadh time). Method N is the challenge of week N | `2026-10-04T00:00:00+03:00` |
 | `NEXT_PUBLIC_BOOK_ORDER_URL` | Where "order the book" points; the button shows "coming soon" while empty | empty |
+| `DATABASE_URL` | PostgreSQL connection. Set: real accounts, schema migrated at server start. Unset: browser-only demo | unset |
+| `ADMIN_EMAILS` | Comma-separated emails whose accounts can open `/admin` | empty |
 
 ## Pages
 
@@ -43,7 +45,8 @@ Optional environment variables (`.env.local`):
 ## What is real and what is a stand-in
 
 - **Real:** the 52 methods (titles, numbers, steps, illustrations), filters, QR codes, the weekly schedule, form validation, every screen state.
-- **Stand-in:** accounts, stories, provider profiles, contact requests, raffle entries and admin decisions live in `localStorage` (`src/lib/demo/store.ts`). The illustrative stories and providers in `src/data/samples.ts` are labelled «مثال توضيحي» wherever they appear and can be switched off from the bar at the top of the site, which shows the true empty state.
+- **Real with a database:** accounts (Argon2id passwords, HttpOnly session cookies, attempt limits, account deletion). Code in `src/lib/server`.
+- **Stand-in:** challenge progress, stories, provider profiles, contact requests, raffle entries and admin decisions live in `localStorage` (`src/lib/demo/store.ts`). The illustrative stories and providers in `src/data/samples.ts` are labelled «مثال توضيحي» wherever they appear and can be switched off from the bar at the top of the site, which shows the true empty state.
 - **Not built:** file upload, analytics, the methods CMS save, legal texts.
 
 ## Where things are
@@ -53,7 +56,7 @@ src/app            routes: (site) public pages, (auth) sign-in, admin
 src/components     UI; admin/ holds the admin sections
 src/lib/methods.ts read access to the 52 methods
 src/lib/demo       browser-only state that stands in for the backend
-src/lib/server     server-only helpers (current week, cached hourly)
+src/lib/server     server-only code: database, migrations, accounts and sessions, current week
 src/data           methods.json (generated) and samples.ts (illustrative)
 src/app/motion.css motion, fluid type and surface utilities (opt-in; samples at /ui)
 src/app/night.css  the night edition (opt-in from the header)

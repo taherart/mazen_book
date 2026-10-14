@@ -54,6 +54,8 @@ export interface Winner {
 }
 
 export interface DemoState {
+  /** True when the server has a database: the account then comes from the server session. */
+  backend: boolean;
   user: DemoUser | null;
   challenges: Record<number, ChallengeState>;
   stories: Story[];
@@ -75,6 +77,7 @@ export interface DemoState {
 }
 
 export const initialState: DemoState = {
+  backend: false,
   user: null,
   challenges: {},
   stories: [],
@@ -150,6 +153,10 @@ export const actions = {
   },
   signOut() {
     update((s) => ({ ...s, user: null }));
+  },
+  /** The server's answer about who is signed in (see lib/session-client.ts). */
+  setSession(backend: boolean, user: DemoUser | null) {
+    update((s) => (backend ? { ...s, backend, user } : { ...s, backend }));
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples }));

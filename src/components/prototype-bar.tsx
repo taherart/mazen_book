@@ -91,7 +91,7 @@ export function PrototypeBar() {
 }
 
 function PrototypeOptions({ onDone, className }: { onDone: () => void; className?: string }) {
-  const { showSamples, user } = useDemo();
+  const { showSamples, user, backend } = useDemo();
   const hydrated = useHydrated();
   return (
     <div className={cx("grid gap-3", className)}>
@@ -106,7 +106,7 @@ function PrototypeOptions({ onDone, className }: { onDone: () => void; className
         <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-brand" />
         <div>
           <span className="block font-bold">لوحة الإدارة</span>
-          {user?.admin ? (
+          {user?.admin || backend ? (
             <Link href="/admin" onClick={onDone} className="font-semibold text-brand underline underline-offset-4">
               افتح لوحة الإدارة
             </Link>

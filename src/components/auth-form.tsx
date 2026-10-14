@@ -4,8 +4,9 @@ import { Eye, EyeOff, LoaderCircle, ShieldCheck } from "@/components/icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { useUser } from "@/lib/demo/hooks";
-import { actions, type Intent } from "@/lib/demo/store";
+import { useDemo } from "@/lib/demo/hooks";
+import { actions, type DemoUser, type Intent } from "@/lib/demo/store";
+import { signInAction, signUpAction } from "@/lib/server/auth-actions";
 import { Button, Field, Input, Notice, cx } from "./ui";
 import { safeRedirectPath } from "@/lib/safe-url";
 
@@ -22,7 +23,7 @@ type Errors = Partial<Record<"name" | "email" | "password" | "consent", string>>
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
   const next = safeRedirectPath(useSearchParams().get("next"), "/dashboard");
-  const existing = useUser();
+  const { user: existing, backend } = useDemo();
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [show, setShow] = useState(false);
@@ -30,15 +31,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const signup = mode === "signup";
   const query = next === "/dashboard" ? "" : `?next=${encodeURIComponent(next)}`;
 
-  const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }) => {
-    actions.signIn(user);
+  const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }, fromServer?: DemoUser) => {
+    if (fromServer) actions.setSession(true, fromServer);
+    else actions.signIn(user);
     // arriving from "I'll try this method": join on the way in
     const join = next.match(/^\/method\/(\d{2})\/challenge$/);
     if (join) actions.joinChallenge(Number(join[1]));
     router.push(user.admin ? "/admin" : next);
   };
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const get = (k: string) => String(f.get(k) ?? "").trim();
@@ -54,8 +56,24 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     }
     setBusy(true);
     const email = get("email").toLowerCase();
+    const password = String(f.get("password") ?? "");
+    try {
+      const res = signup ? await signUpAction({ name: get("name"), email, password, intents, consent: !!f.get("consent") }) : await signInAction({ email, password });
+      if (res.ok) return finish(res.user, res.user);
+      if (!("demo" in res)) {
+        setErrors({ [res.field]: res.error });
+        document.getElementById(res.field)?.focus();
+        setBusy(false);
+        return;
+      }
+    } catch {
+      setErrors({ email: "تعذّر الاتصال بالخادم. تحقّق من الإنترنت وحاول مجددًا." });
+      setBusy(false);
+      return;
+    }
+    // no database on this server: the browser-only demo sign-in
     const name = signup ? get("name") : existing?.email === email ? existing.name : email.split("@")[0];
-    window.setTimeout(() => finish({ name, email, intents: signup ? intents : undefined }), 600);
+    finish({ name, email, intents: signup ? intents : undefined });
   };
 
   return (
@@ -125,13 +143,15 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </Link>
       </p>
 
+      {backend ? null : (
       <Notice tone="sun" className="mt-6" title="نسخة أولية">
-        الدخول هنا تجريبي: أي بريد وكلمة مرور بالصيغة الصحيحة يكفيان، ولا تُحفظ كلمة المرور ولا تُرسل لأي خادم.{" "}
+        الدخول هنا تجريبي: أي بريد وكلمة مرور بالصيغة الصحيحة يكفيان، ولا تُحفظ كلمة المرور.{" "}
         <button type="button" className="inline-flex items-center gap-1 font-bold text-brand underline underline-offset-4" onClick={() => finish({ name: "مشرف المنصة", email: "admin@example.com", admin: true })}>
           <ShieldCheck aria-hidden className="size-4" />
           ادخل كمشرف لتجربة لوحة الإدارة
         </button>
       </Notice>
+      )}
     </div>
   );
 }

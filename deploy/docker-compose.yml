@@ -2,7 +2,9 @@
 # builder: one-off; downloads GIT_REF from GitHub, builds it into the releases volume, exits.
 # web:   runs the built release as a non-root user on a read-only filesystem.
 # caddy: HTTPS for SITE_HOST, plain HTTP on SITE_IP, security headers and timeouts.
-# Env: GIT_REF (commit SHA), SITE_HOST, SITE_IP, GITHUB_TOKEN (read-only; only for a private repo).
+# db:    PostgreSQL for accounts and everything members add; reachable only from web.
+# Env: GIT_REF (commit SHA), SITE_HOST, SITE_IP, DB_PASSWORD (required, URL-safe), ADMIN_EMAILS
+#      (comma-separated), GITHUB_TOKEN (read-only; only for a private repo).
 
 name: mazen-book
 
@@ -58,12 +60,15 @@ services:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: 0.0.0.0
+      DATABASE_URL: postgres://mazen:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/mazen
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       NEXT_TELEMETRY_DISABLED: "1"
     volumes: ["releases:/releases:ro"]
     working_dir: /releases
     command: ["sh", "-c", "mkdir -p /tmp/next-cache && cd /releases/$$GIT_REF && exec node server.js"]
     depends_on:
       builder: { condition: service_completed_successfully }
+      db: { condition: service_healthy }
     mem_limit: 1g
     pids_limit: 256
     healthcheck:
@@ -84,6 +89,26 @@ services:
     volumes: ["caddy_data:/data", "caddy_config:/config"]
     mem_limit: 256m
     pids_limit: 128
+
+  db:
+    <<: *base
+    image: postgres:17-alpine
+    # the entrypoint prepares the data directory as root, then drops to the postgres user
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+    environment:
+      POSTGRES_USER: mazen
+      POSTGRES_DB: mazen
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    shm_size: 128m
+    mem_limit: 512m
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mazen -d mazen"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 configs:
   caddyfile:
@@ -122,5 +147,6 @@ configs:
 
 volumes:
   releases:
+  pgdata:
   caddy_data:
   caddy_config:

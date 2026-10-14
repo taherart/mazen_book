@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useDemo } from "@/lib/demo/hooks";
-import { actions, type DemoUser } from "@/lib/demo/store";
+import type { DemoUser } from "@/lib/demo/store";
 import { methodHref } from "@/lib/methods";
+import { deleteAccount, signOut } from "@/lib/session-client";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { AuthGate } from "./auth-gate";
 import { MethodNumber } from "./method-card";
@@ -27,7 +28,7 @@ export function Dashboard({ methods, week }: { methods: MethodSummary[]; week: W
 
 function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary[]; week: WeekInfo }) {
   const router = useRouter();
-  const { challenges, stories, providers, requests, admin } = useDemo();
+  const { challenges, stories, providers, requests, admin, backend } = useDemo();
   const weekMethod = useWeekMethod(week);
   const mine = Object.entries(challenges)
     .map(([n, c]) => ({ m: methods[Number(n) - 1], c }))
@@ -244,8 +245,8 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
         <div className="flex flex-wrap gap-3">
           <Button
             variant="white"
-            onClick={() => {
-              actions.signOut();
+            onClick={async () => {
+              await signOut();
               router.push("/");
             }}
           >
@@ -254,11 +255,9 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
           </Button>
           <Button
             variant="danger"
-            onClick={() => {
-              if (window.confirm("سيُحذف حسابك وكل تحدياتك وتجاربك وخدماتك من هذا الجهاز نهائيًا. متابعة؟")) {
-                actions.reset();
-                router.push("/");
-              }
+            onClick={async () => {
+              const what = backend ? "سيُحذف حسابك نهائيًا، ومعه كل تحدياتك وتجاربك وخدماتك. متابعة؟" : "سيُحذف حسابك وكل تحدياتك وتجاربك وخدماتك من هذا الجهاز نهائيًا. متابعة؟";
+              if (window.confirm(what) && (await deleteAccount())) router.push("/");
             }}
           >
             <Trash2 aria-hidden className="size-4" />

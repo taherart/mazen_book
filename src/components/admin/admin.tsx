@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
 import { Logo } from "../logo";
-import { Button, cx } from "../ui";
+import { Button, buttonClass, cx } from "../ui";
 import { AdminMethods } from "./admin-methods";
 import { AdminOverview } from "./admin-overview";
 import { AdminPeople } from "./admin-people";
@@ -27,7 +27,7 @@ const TABS: { id: AdminTab; label: string; icon: typeof Gauge }[] = [
 ];
 
 export function Admin(props: AdminProps) {
-  const { user, stories, providers, reports } = useDemo();
+  const { user, stories, providers, reports, backend } = useDemo();
   const hydrated = useHydrated();
   const [tab, setTab] = useState<AdminTab>("overview");
 
@@ -40,11 +40,17 @@ export function Admin(props: AdminProps) {
             <ShieldAlert aria-hidden className="size-6" />
           </span>
           <h1 className="mt-4 font-display text-3xl text-ink">لوحة الإدارة لفريق المنصة</h1>
-          <p className="mt-2 text-ink-soft">تحتاج حسابًا بصلاحية مشرف. في النسخة الأولية تستطيع الدخول بحساب مشرف تجريبي لتجربة المراجعة والسحب.</p>
+          <p className="mt-2 text-ink-soft">{backend ? "تحتاج حسابًا بصلاحية مشرف. سجّل دخولك بحساب الفريق." : "تحتاج حسابًا بصلاحية مشرف. في النسخة الأولية تستطيع الدخول بحساب مشرف تجريبي لتجربة المراجعة والسحب."}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button size="lg" onClick={() => actions.signIn({ name: user?.name ?? "مشرف المنصة", email: user?.email ?? "admin@example.com", admin: true })}>
-              ادخل كمشرف تجريبي
-            </Button>
+            {backend ? (
+              <Link href="/login?next=%2Fadmin" className={buttonClass("primary", "lg")}>
+                سجّل دخولك
+              </Link>
+            ) : (
+              <Button size="lg" onClick={() => actions.signIn({ name: user?.name ?? "مشرف المنصة", email: user?.email ?? "admin@example.com", admin: true })}>
+                ادخل كمشرف تجريبي
+              </Button>
+            )}
             <Link href="/" className="inline-flex h-14 items-center px-4 font-bold text-ink-soft underline underline-offset-4">
               عُد للموقع
             </Link>

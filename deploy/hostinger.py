@@ -12,6 +12,7 @@ builder reports that commit and the web container is healthy again. Used by
 import json
 import os
 import re
+import secrets
 import sys
 import time
 import urllib.error
@@ -53,6 +54,11 @@ def main(sha):
 
     current = call("GET", f"/{PROJECT}")
     env = [line for line in current["environment"].splitlines() if line and not line.startswith("GIT_REF=")]
+    if not any(line.startswith("DB_PASSWORD=") for line in env):
+        # first deploy with the database: Postgres keeps whatever password it is created with, so
+        # this is generated once and then carried forward with the rest of the environment
+        env.append(f"DB_PASSWORD={secrets.token_hex(24)}")
+        print("Generated DB_PASSWORD for the new database (kept in the project's environment)")
     compose = (Path(__file__).parent / "docker-compose.yml").read_text()
     call("POST", "", {"project_name": PROJECT, "content": compose, "environment": "\n".join([f"GIT_REF={sha}", *env])})
     print(f"Deploy of {sha[:7]} sent; waiting for the build (a few minutes on this VPS)")
