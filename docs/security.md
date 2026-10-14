@@ -71,7 +71,15 @@ touch this week's or last week's draw; the winner is picked on the server with
 entry decisions are fixed once it has been drawn; every draw, announcement and undo is appended
 to `raffle_events` with the candidate list, the winner and the admin; other members' entries
 stay private (the public page gets only counts), and an unannounced winner is shown to admins
-only. The rest of the list follows with the features it covers.
+only.
+
+Done in step 5 (production build): the server's build sets `NEXT_PUBLIC_PROTOTYPE=0`, so
+production ships no illustrative content, no preview bar and no demo sign-in, and ignores a
+browser-only copy left by the preview. Deleting an account removes the member, their sessions,
+challenges, stories, provider profiles and "helpful" marks; contact requests they sent and reports
+they filed stay with the recipient or the team without the link to the account; an announced
+winner's name stays in that week's result and in `raffle_events`. The rest of the list follows
+with the features it covers.
 
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;

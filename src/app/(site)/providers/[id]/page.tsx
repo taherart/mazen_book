@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { ProviderDetail } from "@/components/provider-detail";
 import { PageSkeleton } from "@/components/skeletons";
 import { SAMPLE_PROVIDERS } from "@/data/samples";
+import { PROTOTYPE } from "@/lib/config";
 import { getSummaries } from "@/lib/methods";
 
 export function generateStaticParams() {
@@ -11,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/providers/[id]">): Promise<Metadata> {
   const { id } = await params;
-  const provider = SAMPLE_PROVIDERS.find((p) => p.id === id);
+  const provider = PROTOTYPE ? SAMPLE_PROVIDERS.find((p) => p.id === id) : undefined;
   return { title: provider?.name ?? "مقدم خدمة", description: provider?.headline, robots: { index: false } };
 }
 

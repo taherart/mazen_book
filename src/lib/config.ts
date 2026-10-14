@@ -13,5 +13,6 @@ export const SITE = {
 /** Week 1 opens at this instant (a Sunday, Riyadh time). Method N is the challenge of week N. */
 export const LAUNCH_DATE = process.env.NEXT_PUBLIC_LAUNCH_DATE ?? "2026-10-04T00:00:00+03:00";
 
-/** The first build is a clickable prototype: community data is illustrative and actions stay in the browser. */
-export const PROTOTYPE = true;
+/** Builds are the clickable prototype (illustrative content, preview bar, demo sign-in) unless
+ *  NEXT_PUBLIC_PROTOTYPE=0. The server's builder sets that, since production has the database. */
+export const PROTOTYPE = process.env.NEXT_PUBLIC_PROTOTYPE !== "0";

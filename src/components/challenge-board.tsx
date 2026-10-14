@@ -26,7 +26,8 @@ export function ChallengeBoard({ method, tasks, week }: { method: MethodSummary;
 }
 
 function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title: string; detail: string }[]; week: WeekInfo }) {
-  const state = useDemo().challenges[method.n];
+  const { challenges, backend } = useDemo();
+  const state = challenges[method.n];
   const isWeekly = useWeekMethod(week) === method.n;
   const noteId = useId();
   const [proof, setProof] = useState("");
@@ -123,7 +124,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
           </label>
           <Textarea id={noteId} className="mt-4" rows={5} value={state.note} placeholder="مثال: تعلّمت الأساسيات في ثلاثة أيام، جهّزت خمسة نماذج، وراسلت عشرة عملاء فردّ منهم اثنان…" onChange={(e) => actions.setNote(method.n, e.target.value)} onBlur={() => setTouched(true)} aria-invalid={touched && noteShort} disabled={!!state.submittedAt} />
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className={touched && noteShort ? "font-semibold text-bad" : "text-ink-mute"}>{noteShort ? `اكتب ${MIN_NOTE} حرفًا على الأقل (${state.note.trim().length}/${MIN_NOTE})` : "يُحفظ تلقائيًا على جهازك"}</span>
+            <span className={touched && noteShort ? "font-semibold text-bad" : "text-ink-mute"}>{noteShort ? `اكتب ${MIN_NOTE} حرفًا على الأقل (${state.note.trim().length}/${MIN_NOTE})` : backend ? "يُحفظ تلقائيًا في حسابك" : "يُحفظ تلقائيًا على جهازك"}</span>
           </div>
 
           <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed border-line px-4 py-3 text-sm hover:border-ink">

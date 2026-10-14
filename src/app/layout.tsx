@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { MotionRoot } from "@/components/motion-root";
 import { PrototypeBar } from "@/components/prototype-bar";
 import { SessionSync } from "@/components/session-sync";
-import { SITE } from "@/lib/config";
+import { PROTOTYPE, SITE } from "@/lib/config";
 import { PRE_PAINT_SCRIPT } from "@/lib/pre-paint";
 import "./globals.css";
 
@@ -55,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <MotionRoot />
         <SessionSync />
-        <PrototypeBar />
+        {PROTOTYPE ? <PrototypeBar /> : null}
         {children}
         {/* paper grain: one fixed, non-interactive layer for the whole site */}
         <div aria-hidden className="grain fixed inset-0 z-[var(--z-grain)]" />

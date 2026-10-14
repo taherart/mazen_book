@@ -4,6 +4,7 @@
 import { joinChallengeAction, leaveChallengeAction, setNoteAction, submitChallengeAction, toggleTaskAction } from "../server/challenge-actions";
 import { addProviderAction, addReportAction, addRequestAction, addStoryAction, resolveReportAction, reviewProviderAction, reviewStoryAction, toggleHelpfulAction } from "../server/community-actions";
 import { announceWinnerAction, drawWinnerAction, reviewEntryAction, setPrizeAction, setWeekMethodAction, undoWinnerAction } from "../server/raffle-actions";
+import { PROTOTYPE } from "../config";
 import type { Provider, ReviewStatus, Story } from "../types";
 
 export interface DemoUser {
@@ -113,7 +114,7 @@ export interface DemoState {
 }
 
 export const initialState: DemoState = {
-  backend: false,
+  backend: !PROTOTYPE,
   user: null,
   challenges: {},
   stories: [],
@@ -121,7 +122,7 @@ export const initialState: DemoState = {
   requests: [],
   reports: [],
   helpful: [],
-  showSamples: true,
+  showSamples: PROTOTYPE,
   admin: { weekMethod: null, prize: "", entries: {}, winners: {}, entryCounts: { total: 0, eligible: 0, pending: 0 }, raffle: [] },
 };
 
@@ -137,7 +138,8 @@ function load() {
     const saved = window.localStorage.getItem(KEY);
     if (saved) {
       const parsed = JSON.parse(saved) as Partial<DemoState>;
-      state = { ...initialState, ...parsed, admin: { ...initialState.admin, ...parsed.admin } };
+      // in production a copy left by the browser-only preview is not this visitor's account
+      if (PROTOTYPE || parsed.backend) state = { ...initialState, ...parsed, showSamples: PROTOTYPE && (parsed.showSamples ?? true), admin: { ...initialState.admin, ...parsed.admin } };
     }
   } catch {
     // private mode or corrupt data: start clean
@@ -225,7 +227,7 @@ export const actions = {
     update((s) => (backend ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}), admin: { ...s.admin, ...raffle } } : { ...s, backend }));
   },
   setShowSamples(showSamples: boolean) {
-    update((s) => ({ ...s, showSamples }));
+    update((s) => ({ ...s, showSamples: PROTOTYPE && showSamples }));
   },
   reset() {
     update(() => initialState);

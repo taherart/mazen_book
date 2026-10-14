@@ -27,6 +27,8 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       SOURCE_URL: ${SOURCE_URL:-}
       NEXT_PUBLIC_SITE_URL: https://${SITE_HOST}
+      # production has the database: no illustrative content, preview bar or demo sign-in
+      NEXT_PUBLIC_PROTOTYPE: "0"
       NEXT_TELEMETRY_DISABLED: "1"
       NODE_OPTIONS: --max-old-space-size=2048
     volumes: ["releases:/releases"]
