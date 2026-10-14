@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { useHydrated, useUser } from "@/lib/demo/hooks";
 import { THEME_KEY } from "@/lib/pre-paint";
+import { FooterPile } from "./footer-pile";
 import { Logo } from "./logo";
 import { Avatar, buttonClass, cx } from "./ui";
 
@@ -215,6 +216,8 @@ export function SiteFooter() {
           ]}
         />
       </div>
+      {/* the mark, as a pile of coins that makes way for the cursor */}
+      <FooterPile className="pointer-events-none h-60 sm:h-72 lg:h-80" />
       <div className="border-t border-white/15">
         <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-white/50 sm:px-6">© 2026 {`52 طريقة لزيادة الدخل`}. جميع الأرقام والمحتوى من كتاب مازن الضراب، والنتائج تختلف من شخص لآخر.</p>
       </div>
