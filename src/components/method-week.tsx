@@ -56,7 +56,7 @@ export function RafflePanel({ method, week, className }: { method: number; week:
 
   return (
     <div className={cx("overflow-hidden rounded-[2rem] border-2 border-ink bg-white shadow-print", className)}>
-      <div className="grid divide-y-2 divide-ink md:grid-cols-3 md:divide-x-2 md:divide-y-0 md:divide-x-reverse">
+      <div className="grid divide-y-2 divide-ink md:grid-cols-3 md:divide-x-2 md:divide-y-0">
         <div className="p-5">
           <h3 className="flex items-center gap-2 font-display text-xl text-ink">
             <ScrollText aria-hidden className="size-5 text-brand" />

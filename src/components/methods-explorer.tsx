@@ -82,7 +82,11 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
           {active ? <span className="grid size-5 place-items-center rounded-full bg-brand text-xs text-white">{active}</span> : null}
         </Button>
         <p aria-live="polite" className="ms-auto text-sm text-ink-soft">
-          <b className="font-display text-xl text-brand">{result.length}</b> من {methods.length} طريقة
+          {/* keyed so the new count rolls in each time the filter changes it */}
+          <b key={result.length} className="inline-block animate-digit font-display text-xl text-brand">
+            {result.length}
+          </b>{" "}
+          من {methods.length} طريقة
         </p>
       </div>
 
@@ -90,11 +94,12 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
         {groups.map((g) => (
           <fieldset key={g.key} className="min-w-0">
             <legend className="mb-2 text-xs font-bold text-ink-mute">{g.label}</legend>
-            <div className="flex flex-wrap gap-1.5">
+            {/* chips stay compact; `tap` stretches each hit area to 44px and the row gap keeps them from overlapping */}
+            <div className="flex flex-wrap gap-x-1.5 gap-y-2.5">
               {Object.entries(g.options).map(([value, label]) => {
                 const on = filters[g.key] === value;
                 return (
-                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("rounded-full border-2 px-3 py-1.5 text-sm font-semibold leading-none transition", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
+                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("tap rounded-full border-2 px-3 py-2 text-sm font-semibold leading-none transition-[scale,background-color,border-color,color] duration-(--dur-3) ease-spring active:scale-96", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
                     {label}
                   </button>
                 );
@@ -111,9 +116,9 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
       </div>
 
       {shown.length ? (
-        <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul data-stagger className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {shown.map((m, i) => (
-            <li key={m.n} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+            <li key={m.n} data-reveal>
               <MethodCard method={m} className="h-full" priority={i < 4} />
             </li>
           ))}

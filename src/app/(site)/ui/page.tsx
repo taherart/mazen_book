@@ -161,7 +161,7 @@ export default function UiPage() {
 
       {/* ---------- proposed motion layer: live samples of app/motion.css ---------- */}
       <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-(--z-overlay) h-1 bg-sun" />
-      <Block title="الحركة والتأثيرات (مقترح)" note="عيّنات حيّة من نظام الحركة في app/motion.css. لم تُطبَّق على صفحات الموقع بعد. الخط الأصفر أعلى الصفحة هو مؤشر التقدّم في القراءة.">
+      <Block title="الحركة والتأثيرات" note="عيّنات حيّة من نظام الحركة في app/motion.css، المطبّق على الرئيسية وصفحات الطرق والتحدي. الخط الأصفر أعلى الصفحة هو مؤشر التقدّم في القراءة.">
         <div className="grid gap-6 lg:grid-cols-2">
           <State name="كشف عند التمرير + قلم التظليل (data-reveal · marker-draw)">
             <div data-reveal className="rounded-panel border-2 border-ink bg-white p-6">

@@ -237,7 +237,7 @@ Budget: no effect may add a continuously repainting layer, and the page must hol
 
 ### What is already in the codebase
 
-Two files, wired in and dormant: nothing on the site changes until a page opts in.
+Two files, wired in. Pages opt in; phases 0 and 1 below have opted in the home, method and challenge pages.
 
 - `src/app/motion.css`: tokens, utilities, keyframes and view-transition rules.
 - `src/components/motion-root.tsx`: one IntersectionObserver and one pointer listener for the whole site, mounted in the root layout. Server components opt in with data attributes and stay server components.
@@ -297,8 +297,8 @@ Rules for using it:
 
 | Phase | Work | Size | Risk |
 |---|---|---|---|
-| 0. Defects | Contrast (done), 44px targets, one join label, trim the hero, drop four eyebrow labels | Small | None |
-| 1. Motion layer | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive |
+| 0. Defects (**done**) | Contrast, 44px targets, one join label, trim the hero (its numbers moved to a fact strip), drop four eyebrow labels | Small | None |
+| 1. Motion layer (**done**) | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive |
 | 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest |
 | 3. Atmosphere | Grain, frosted chrome, misprint, torn edges | Small | Low |
 | 4. Optional | Phosphor icons to match the book; night edition | Medium | Low |

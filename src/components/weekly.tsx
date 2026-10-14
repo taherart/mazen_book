@@ -44,8 +44,11 @@ export function Countdown({ endsAt, tone = "light", className }: { endsAt: strin
   return (
     <div role="timer" aria-label="الوقت المتبقي لنهاية التحدي" className={cx("grid max-w-xs grid-cols-4 gap-2", className)}>
       {parts.map((p) => (
-        <div key={p.label} className={cx("min-w-0 rounded-2xl border-2 px-1 py-1.5 text-center", tone === "dark" ? "border-white/25 bg-white/10 text-white" : "border-ink bg-white text-ink")}>
-          <div className="font-display text-2xl leading-none tabular-nums">{p.value === null ? "--" : String(p.value).padStart(2, "0")}</div>
+        <div key={p.label} className={cx("min-w-0 overflow-hidden rounded-2xl border-2 px-1 py-1.5 text-center", tone === "dark" ? "border-white/25 bg-white/10 text-white" : "border-ink bg-white text-ink")}>
+          {/* keyed by value: each new digit rolls up into place */}
+          <div key={p.value ?? "--"} className="animate-digit font-display text-2xl leading-none tabular-nums">
+            {p.value === null ? "--" : String(p.value).padStart(2, "0")}
+          </div>
           <div className={cx("mt-1 text-[0.68rem] font-semibold", tone === "dark" ? "text-white/70" : "text-ink-mute")}>{p.label}</div>
         </div>
       ))}
@@ -53,8 +56,9 @@ export function Countdown({ endsAt, tone = "light", className }: { endsAt: strin
   );
 }
 
-/** "I'll try this method": sends guests to sign in first, members straight to their checklist. */
-export function JoinButton({ method, size = "lg", variant = "primary", className, label = "سأجرّب هذه الطريقة" }: { method: number; size?: "md" | "lg"; variant?: "primary" | "sun"; className?: string; label?: string }) {
+/** "I'll try this method": sends guests to sign in first, members straight to their checklist.
+ *  `magnetic` makes it lean toward the pointer: use it on the one primary action in view. */
+export function JoinButton({ method, size = "lg", variant = "primary", className, label = "سأجرّب هذه الطريقة", magnetic }: { method: number; size?: "md" | "lg"; variant?: "primary" | "sun"; className?: string; label?: string; magnetic?: boolean }) {
   const router = useRouter();
   const { user, challenges } = useDemo();
   const hydrated = useHydrated();
@@ -71,6 +75,7 @@ export function JoinButton({ method, size = "lg", variant = "primary", className
   return (
     <button
       type="button"
+      data-magnetic={magnetic ? "0.3" : undefined}
       className={buttonClass(variant, size, className)}
       onClick={() => {
         if (!user) {
@@ -157,13 +162,14 @@ export function WeekStrip({ week, methods, className }: { week: WeekInfo; method
   const current = useWeekMethod(week);
   const { challenges } = useDemo();
   return (
-    <ol className={cx("grid grid-cols-7 gap-1.5 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2", className)}>
-      {methods.map((m) => {
+    // the cells stamp in one after another as the strip scrolls into view
+    <ol data-stagger style={{ "--stagger": "18ms" } as React.CSSProperties} className={cx("grid grid-cols-7 gap-1.5 sm:grid-cols-[repeat(13,minmax(0,1fr))] sm:gap-2", className)}>
+      {methods.map((m, i) => {
         const mine = challenges[m.n];
         const done = !!mine && mine.done.length >= m.tasks;
         const state = m.n === current ? "bg-sun text-ink border-ink shadow-print-sm scale-110 z-10" : done ? "bg-ink text-white border-ink" : mine ? "bg-brand text-white border-ink" : "bg-white text-ink-soft border-line hover:border-ink hover:text-ink";
         return (
-          <li key={m.n}>
+          <li key={m.n} data-reveal="scale" style={{ "--i": i } as React.CSSProperties}>
             <Link href={methodHref(m.n)} title={`${m.n}. ${m.title}`} aria-label={`الطريقة ${m.n}: ${m.title}${m.n === current ? " (تحدي هذا الأسبوع)" : ""}`} className={cx("relative grid aspect-square place-items-center rounded-xl border-2 pt-[0.12em] font-display text-lg leading-none transition sm:text-xl", state)}>
               {done ? <Check aria-hidden className="size-5" /> : m.n}
             </Link>

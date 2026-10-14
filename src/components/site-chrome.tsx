@@ -25,7 +25,8 @@ export function SiteHeader() {
   const hydrated = useHydrated();
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
+    // named so page transitions treat it as the fixed point the content moves under (motion.css)
+    <header style={{ viewTransitionName: "site-header" }} className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Logo />
         <nav aria-label="التنقل الرئيسي" className="mx-auto hidden items-center gap-1 lg:flex">
@@ -53,7 +54,7 @@ export function SiteHeader() {
               </Link>
             </>
           )}
-          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="grid size-10 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
+          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="grid size-11 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -85,7 +86,7 @@ export function SiteHeader() {
 /** Non-interactive stand-in while the header's route state resolves. */
 export function SiteHeaderShell() {
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95">
+    <header style={{ viewTransitionName: "site-header" }} className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95">
       <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6">
         <Logo />
       </div>

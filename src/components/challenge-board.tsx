@@ -93,6 +93,12 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
                       <T>{t.detail}</T>
                     </span>
                   </span>
+                  {/* completion is the product's core moment: a "done" stamp lands on the task */}
+                  {checked ? (
+                    <span aria-hidden className="ms-auto shrink-0 self-start animate-stamp rounded-tile border-4 border-ok px-2.5 pt-1.5 pb-0.5 font-display text-lg leading-none text-ok">
+                      تم
+                    </span>
+                  ) : null}
                 </label>
               </li>
             );

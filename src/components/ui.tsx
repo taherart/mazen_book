@@ -16,12 +16,13 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return <span className={cx("inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-bold text-ink", className)}>{children}</span>;
 }
 
-export function SectionHead({ eyebrow, title, lead, action, className }: { eyebrow?: ReactNode; title: ReactNode; lead?: ReactNode; action?: ReactNode; className?: string }) {
+/** `reveal` fades the heading in once when it scrolls into view (see motion.css). Never use it above the fold. */
+export function SectionHead({ eyebrow, title, lead, action, reveal, className }: { eyebrow?: ReactNode; title: ReactNode; lead?: ReactNode; action?: ReactNode; reveal?: boolean; className?: string }) {
   return (
-    <div className={cx("flex flex-wrap items-end justify-between gap-x-6 gap-y-4", className)}>
+    <div data-reveal={reveal ? "" : undefined} className={cx("flex flex-wrap items-end justify-between gap-x-6 gap-y-4", className)}>
       <div className="max-w-2xl">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h2 className="mt-3 font-display text-3xl text-ink sm:text-4xl">{title}</h2>
+        <h2 className={cx("font-display text-h2 text-ink", eyebrow ? "mt-3" : null)}>{title}</h2>
         {lead ? <p className="mt-2 text-ink-soft">{lead}</p> : null}
       </div>
       {action}
@@ -44,7 +45,8 @@ const VARIANT: Record<Variant, string> = {
 };
 const PRESS = "active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none";
 const SIZE: Record<Size, string> = {
-  sm: "h-9 px-4 text-sm gap-1.5",
+  // `tap` keeps the hit area at 44px without making the small button look bigger
+  sm: "tap h-9 px-4 text-sm gap-1.5",
   md: "h-11 px-5 text-[0.95rem] gap-2",
   lg: "h-14 px-7 text-lg gap-2.5",
 };
@@ -120,7 +122,7 @@ export function Progress({ value, className, tone = "brand" }: { value: number; 
   const pct = Math.max(0, Math.min(100, Math.round(value)));
   return (
     <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className={cx("h-3 overflow-hidden rounded-full border-2 border-ink bg-white", className)}>
-      <div className={cx("h-full rounded-full transition-[width] duration-500", tone === "sun" ? "bg-sun" : "bg-brand")} style={{ width: `${pct}%` }} />
+      <div className={cx("h-full rounded-full transition-[width,background-color] duration-(--dur-5) ease-spring-soft", tone === "sun" ? "bg-sun" : "bg-brand")} style={{ width: `${pct}%` }} />
     </div>
   );
 }

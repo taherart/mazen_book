@@ -150,11 +150,12 @@
    2. Micro-interactions
    ============================================================ */
 
-/* Marker pen swipes under the word, right to left. Use together with `marker`. */
+/* Marker pen swipes under the word, right to left. Use together with `marker`.
+   Set --marker-delay on the element to fit it into a load sequence. */
 @utility marker-draw {
   &::after {
     transform-origin: right center;
-    animation: marker-swipe 700ms var(--ease-out-expo) 350ms both;
+    animation: marker-swipe 700ms var(--ease-out-expo) var(--marker-delay, 350ms) both;
   }
 }
 html.motion [data-reveal]:not([data-inview]) .marker-draw::after,
@@ -227,7 +228,10 @@ html.motion .marker-draw[data-reveal]:not([data-inview])::after {
 
 /* Illustration drifts a few pixels against the pointer inside a [data-spotlight] card. */
 @utility art-drift {
-  transition: transform 500ms var(--ease-out-expo);
+  /* lists filter too, so it combines with `misprint` (each shorthand would cancel the other) */
+  transition:
+    transform 500ms var(--ease-out-expo),
+    filter var(--dur-3) var(--ease-out-expo);
   @media (hover: hover) and (pointer: fine) {
     [data-spotlight]:hover & {
       transform: translate3d(calc((var(--px, 0.5) - 0.5) * -14px), calc((var(--py, 0.5) - 0.5) * -10px), 0) scale(1.04);
@@ -319,7 +323,9 @@ html.motion .marker-draw[data-reveal]:not([data-inview])::after {
 
 /* Risograph misregistration: the art gets a blue ghost that slips out on hover. */
 @utility misprint {
-  transition: filter var(--dur-3) var(--ease-out-expo);
+  transition:
+    transform 500ms var(--ease-out-expo),
+    filter var(--dur-3) var(--ease-out-expo);
   @media (hover: hover) {
     .group:hover & {
       filter: drop-shadow(-3px 2px 0 rgb(47 91 211 / 0.35));
@@ -441,6 +447,9 @@ html.motion .marker-draw[data-reveal]:not([data-inview])::after {
   }
   [data-magnetic] {
     transform: none !important;
+  }
+  .drift {
+    animation: none !important;
   }
   ::view-transition-group(*),
   ::view-transition-old(*),

@@ -1,6 +1,7 @@
 import { ArrowLeft, Banknote, Clock3, Home, MapPin, Wallet } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { methodHref, methodImage } from "@/lib/methods";
 import { DOMAINS, LEVELS, PLACES } from "@/lib/taxonomy";
 import type { Level, MethodSummary } from "@/lib/types";
@@ -29,12 +30,22 @@ export function MethodArt({ n, title, className, priority, sizes = "(min-width: 
   return <Image src={methodImage(n)} alt={`رسمة توضيحية: ${title}`} width={640} height={640} sizes={sizes} priority={priority} className={cx("h-auto w-full select-none", className)} />;
 }
 
-export function MethodCard({ method, className, priority }: { method: MethodSummary; className?: string; priority?: boolean }) {
+/** The illustration a card and its method page share, so it travels between them on navigation. */
+export function SharedMethodArt(props: Parameters<typeof MethodArt>[0]) {
   return (
-    <Link href={methodHref(method.n)} className={cx("group relative flex flex-col overflow-hidden rounded-3xl border-2 border-ink bg-white transition duration-200 hover:-translate-y-1 hover:shadow-print", className)}>
-      <div className="relative bg-paper paper-dots">
+    <ViewTransition name={`method-art-${props.n}`} share="morph" default="none">
+      <MethodArt {...props} />
+    </ViewTransition>
+  );
+}
+
+export function MethodCard({ method, className, priority }: { method: MethodSummary; className?: string; priority?: boolean }) {
+  // No overflow-hidden on the card itself: the spotlight ring sits on the border and would be clipped.
+  return (
+    <Link href={methodHref(method.n)} data-spotlight className={cx("spotlight lift group flex flex-col rounded-3xl border-2 border-ink bg-white", className)}>
+      <div className="relative overflow-hidden rounded-t-[1.375rem] bg-paper paper-dots">
         <MethodNumber n={method.n} className="absolute start-3 top-3 z-10 shadow-print-sm" />
-        <MethodArt n={method.n} title={method.title} priority={priority} className="mx-auto max-w-[15rem] p-3 transition duration-300 group-hover:scale-[1.04]" />
+        <SharedMethodArt n={method.n} title={method.title} priority={priority} className="art-drift misprint mx-auto max-w-[15rem] p-3" />
       </div>
       <div className="flex flex-1 flex-col border-t-2 border-ink p-4">
         <Chip tone="brand" className="self-start">
