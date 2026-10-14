@@ -87,6 +87,10 @@
 }
 
 @layer base {
+  :root {
+    /* chart bars: the book's blue; night mode lifts it to clear 3:1 on navy */
+    --chart-bar: var(--color-brand);
+  }
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;

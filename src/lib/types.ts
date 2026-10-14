@@ -37,6 +37,9 @@ export interface Method {
 export type MethodSummary = Pick<Method, "n" | "slug" | "title" | "tagline" | "domain" | "kind" | "place" | "level" | "capitalBand" | "timeBand" | "stats"> & {
   /** Number of items on the weekly checklist. */
   tasks: number;
+  /** Monthly income range in riyals, when the book prices the method by the month; max is null
+   *  for an open-ended figure such as «+4,000». Methods priced per piece, project or season: null. */
+  monthly: { min: number; max: number | null } | null;
 };
 
 export type ReviewStatus = "pending" | "approved" | "rejected";

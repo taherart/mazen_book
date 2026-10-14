@@ -338,3 +338,7 @@ Rules for using it:
 - Method page: the book's two facing pages (picture and three numbers; why, the numbers, the rest of
   the method and the QR code), with running heads and folios. Home: a 52-week wall planner by month.
 - Story cards lead with the result and the member's own words instead of the method drawing.
+- Methods guide: a third view, «مقارنة الدخل» (`/methods?view=chart`), draws each method the book
+  prices by the month as a floating bar of its income range, grouped by starting capital. Methods
+  priced per piece, project or season are left out so every bar is in the same unit; the filters
+  apply to it like the other views.

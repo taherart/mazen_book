@@ -114,6 +114,9 @@ export default async function HomePage() {
                 <span className="text-xs font-semibold text-brand">{s.n}</span>
               </Link>
             ))}
+            <Link href="/methods?view=chart" className="tap inline-flex items-center gap-1.5 px-2 py-2 text-sm font-bold text-brand underline underline-offset-4">
+              قارن الدخل الشهري للطرق
+            </Link>
           </nav>
         </Container>
       </section>

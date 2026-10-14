@@ -1,10 +1,11 @@
 "use client";
 
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from "@/components/icons";
+import { BarChart3, LayoutGrid, List, Search, SlidersHorizontal, X } from "@/components/icons";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { CAPITAL, DOMAINS, KINDS, LEVELS, PLACES, TIME } from "@/lib/taxonomy";
 import type { MethodSummary } from "@/lib/types";
+import { IncomeChart } from "./income-chart";
 import { MethodCard, MethodListItem } from "./method-card";
 import { Button, EmptyState, cx } from "./ui";
 
@@ -64,7 +65,8 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
   const [panel, setPanel] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const narrow = useNarrow();
-  const [choice, setChoice] = useState<"grid" | "list" | null>(null);
+  // ?view=chart opens the income comparison straight away (linked from the home page)
+  const [choice, setChoice] = useState<"grid" | "list" | "chart" | null>(() => (params.get("view") === "chart" ? "chart" : null));
   const view = choice ?? (narrow ? "list" : "grid");
 
   const set = (key: keyof Filters, value: string) => {
@@ -115,6 +117,7 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
             [
               ["list", "قائمة", List],
               ["grid", "بطاقات", LayoutGrid],
+              ["chart", "مقارنة الدخل", BarChart3],
             ] as const
           ).map(([v, label, Icon]) => (
             <button key={v} type="button" aria-pressed={view === v} title={label} onClick={() => setChoice(v)} className={cx("tap grid size-9 place-items-center rounded-full transition", view === v ? "bg-ink text-white" : "text-ink-soft hover:text-ink")}>
@@ -167,7 +170,9 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
         </Button>
       </div>
 
-      {result.length ? (
+      {result.length && view === "chart" ? (
+        <IncomeChart methods={result} />
+      ) : result.length ? (
         <ul className={cx("mt-6 grid grid-cols-[minmax(0,1fr)]", view === "list" ? "gap-3 lg:grid-cols-2" : "gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4")}>
           {result.map((m, i) => (
             <li key={m.n} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>

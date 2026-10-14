@@ -22,7 +22,18 @@ export function getMethod(n: number): Method | undefined {
 
 export function toSummary(m: Method): MethodSummary {
   const { n, slug, title, tagline, domain, kind, place, level, capitalBand, timeBand, stats } = m;
-  return { n, slug, title, tagline, domain, kind, place, level, capitalBand, timeBand, stats, tasks: m.steps.length + 1 };
+  return { n, slug, title, tagline, domain, kind, place, level, capitalBand, timeBand, stats, tasks: m.steps.length + 1, monthly: monthlyIncome(stats.income) };
+}
+
+/** Reads the monthly range out of the book's income line: «3,000–6,000 ريال شهريًا» → 3000–6000,
+ *  «+4,000 ريال شهريًا» → 4000 and up. A line with several prices keeps only its monthly part. */
+export function monthlyIncome(income: string): MethodSummary["monthly"] {
+  const part = income.split("،").find((p) => p.includes("شهري"));
+  if (!part) return null;
+  const nums = [...part.matchAll(/\d[\d,]*/g)].map((x) => Number(x[0].replace(/,/g, "")));
+  if (!nums.length) return null;
+  const open = part.trim().startsWith("+") || part.includes("أكثر من");
+  return { min: nums[0], max: open ? null : (nums[1] ?? nums[0]) };
 }
 
 export function getSummaries(): MethodSummary[] {

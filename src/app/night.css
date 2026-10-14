@@ -28,6 +28,7 @@ html[data-theme="night"] {
   --ink-fill: #060b1d;
   --brand-text: #a3bcff;
   --dots: rgb(255 255 255 / 0.07);
+  --chart-bar: #5580ea;
 }
 
 html[data-theme="night"] :is(.bg-sun, .plate) {
