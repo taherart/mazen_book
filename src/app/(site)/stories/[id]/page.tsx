@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { PageSkeleton } from "@/components/skeletons";
 import { StoryDetail } from "@/components/story-detail";
 import { SAMPLE_STORIES } from "@/data/samples";
-import { PROTOTYPE } from "@/lib/config";
+import { SAMPLES } from "@/lib/config";
 import { getSummaries } from "@/lib/methods";
 
 export function generateStaticParams() {
@@ -12,7 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/stories/[id]">): Promise<Metadata> {
   const { id } = await params;
-  const story = PROTOTYPE ? SAMPLE_STORIES.find((s) => s.id === id) : undefined;
+  const story = SAMPLES ? SAMPLE_STORIES.find((s) => s.id === id) : undefined;
   return { title: story?.title ?? "تجربة من المجتمع", description: story?.body.slice(0, 160), robots: { index: false } };
 }
 

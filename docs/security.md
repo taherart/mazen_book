@@ -74,7 +74,8 @@ stay private (the public page gets only counts), and an unannounced winner is sh
 only.
 
 Done in step 5 (production build): the server's build sets `NEXT_PUBLIC_PROTOTYPE=0`, so
-production ships no illustrative content, no preview bar and no demo sign-in, and ignores a
+production ships no preview bar and no demo sign-in (the labelled samples stay until
+`SAMPLES=0`), and ignores a
 browser-only copy left by the preview. Deleting an account removes the member, their sessions,
 challenges, stories, provider profiles and "helpful" marks; contact requests they sent and reports
 they filed stay with the recipient or the team without the link to the account; an announced

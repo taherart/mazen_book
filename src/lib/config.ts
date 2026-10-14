@@ -16,3 +16,7 @@ export const LAUNCH_DATE = process.env.NEXT_PUBLIC_LAUNCH_DATE ?? "2026-10-04T00
 /** Builds are the clickable prototype (illustrative content, preview bar, demo sign-in) unless
  *  NEXT_PUBLIC_PROTOTYPE=0. The server's builder sets that, since production has the database. */
 export const PROTOTYPE = process.env.NEXT_PUBLIC_PROTOTYPE !== "0";
+
+/** The illustrative stories, profiles and entries, labelled «مثال توضيحي». Shown until real content
+ *  takes over; NEXT_PUBLIC_SAMPLES=0 removes them (on the server: SAMPLES=0, then redeploy). */
+export const SAMPLES = process.env.NEXT_PUBLIC_SAMPLES !== "0";
