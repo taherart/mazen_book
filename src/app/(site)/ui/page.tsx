@@ -193,7 +193,7 @@ export default function UiPage() {
           </State>
 
           <State name="زر مغناطيسي + عدّاد (data-magnetic · data-countup)">
-            <div data-reveal className="flex flex-wrap items-center gap-6 rounded-panel border-2 border-ink bg-brand p-6 blue-dots">
+            <div data-reveal className="flex flex-wrap items-center gap-6 rounded-panel border-2 border-ink bg-brand p-6">
               <Button variant="sun" size="lg" data-magnetic="0.3">
                 سأجرّب هذه الطريقة
               </Button>
@@ -218,7 +218,7 @@ export default function UiPage() {
           </State>
 
           <State name="زجاج مصنفر للشريط العائم + حبيبات الورق (glass · grain)">
-            <div data-reveal className="relative h-44 overflow-hidden rounded-panel border-2 border-ink bg-brand blue-dots">
+            <div data-reveal className="relative h-44 overflow-hidden rounded-panel border-2 border-ink bg-brand">
               <MethodArt n={3} title={methods[2].title} sizes="260px" className="absolute -bottom-10 start-6 w-56" />
               <div aria-hidden className="grain absolute inset-0" />
               <div className="glass absolute inset-x-4 bottom-4 flex items-center justify-between rounded-full border border-ink/15 px-5 py-2.5">

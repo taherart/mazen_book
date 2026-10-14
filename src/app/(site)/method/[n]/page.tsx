@@ -92,7 +92,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-[var(--z-overlay)] h-1 bg-sun" />
 
       {/* ---------- hero ---------- */}
-      <header className="border-b-2 border-ink paper-dots">
+      <header className="border-b border-line">
         <Container className="pb-10 pt-6">
           <nav aria-label="مسار التصفح" className="flex flex-wrap items-center gap-1 text-sm font-semibold text-ink-soft">
             <Link href="/methods" className="hover:text-brand">
@@ -172,9 +172,9 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
       {/* ---------- the three ways in (what the book's QR code opens onto) ----------
           Trying it leads, with this week's tasks in view; offering and sharing sit beside it. */}
-      <section id="paths" className="scroll-mt-20 border-b-2 border-ink bg-white">
+      <section id="paths" className="scroll-mt-20 border-b border-line bg-white">
         <Container data-stagger className="grid gap-4 py-section-tight lg:grid-cols-3">
-          <div data-reveal className="grid items-start gap-5 rounded-panel border-2 border-ink bg-brand p-5 text-white shadow-print blue-dots sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:col-span-2">
+          <div data-reveal className="grid items-start gap-5 rounded-panel border-2 border-ink bg-brand p-5 text-white shadow-print sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:col-span-2">
             <div>
               <span className="grid size-11 place-items-center rounded-tile border-2 border-ink bg-white text-brand">
                 <Rocket aria-hidden className="size-6" />
@@ -286,7 +286,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           ) : null}
 
           {/* a taste of the two sections that stay in the book */}
-          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-panel border-2 border-ink bg-brand-deep text-white blue-dots">
+          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-panel border-2 border-ink bg-brand-deep text-white">
             <div className="grid gap-6 p-5 sm:p-7 md:grid-cols-2">
               <div>
                 <h2 id="craft" className="flex items-center gap-2 font-display text-2xl">
@@ -393,7 +393,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       </section>
 
       {/* ---------- F. providers ---------- */}
-      <section className="border-y-2 border-ink bg-white">
+      <section className="border-y border-line bg-white">
         <Container className="py-14">
           <SectionHead
             reveal

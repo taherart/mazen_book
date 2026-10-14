@@ -89,7 +89,7 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
         <label className="relative block min-w-0 flex-1 basis-64">
           <span className="sr-only">ابحث في الطرق</span>
           <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-mute" />
-          <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border-2 border-ink bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
+          <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border border-ink/20 bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
         </label>
         <Button
           variant="white"
@@ -110,7 +110,7 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
           </b>{" "}
           من {methods.length} طريقة
         </p>
-        <div role="group" aria-label="طريقة العرض" className="flex rounded-full border-2 border-ink bg-white p-0.5">
+        <div role="group" aria-label="طريقة العرض" className="flex rounded-full border border-ink/20 bg-white p-0.5">
           {(
             [
               ["list", "قائمة", List],
@@ -130,14 +130,14 @@ export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
       <div
         onKeyDown={(e) => e.key === "Escape" && setPanel(false)}
         className={cx(
-          "gap-x-6 gap-y-4 border-2 border-ink bg-white p-4 lg:mt-4 lg:grid lg:grid-cols-3 lg:rounded-card",
+          "gap-x-6 gap-y-4 border border-line bg-white p-4 lg:mt-4 lg:grid lg:grid-cols-3 lg:rounded-card",
           "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-[var(--z-overlay)] max-lg:max-h-[85dvh] max-lg:overflow-y-auto max-lg:rounded-t-panel max-lg:border-x-0 max-lg:border-b-0 max-lg:pb-[calc(1rem+env(safe-area-inset-bottom))]",
           panel ? "grid" : "hidden",
         )}
       >
         <div className="flex items-center justify-between lg:hidden">
           <p className="font-display text-h3 text-ink">تصفية الطرق</p>
-          <button ref={closeRef} type="button" aria-label="أغلق التصفية" onClick={() => setPanel(false)} className="tap grid size-10 place-items-center rounded-full border-2 border-ink">
+          <button ref={closeRef} type="button" aria-label="أغلق التصفية" onClick={() => setPanel(false)} className="tap grid size-10 place-items-center rounded-full border border-ink/20">
             <X aria-hidden className="size-5" />
           </button>
         </div>

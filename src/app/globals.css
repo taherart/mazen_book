@@ -28,6 +28,11 @@
   --color-bad: #d93b41;
   --color-bad-wash: #fde9ea;
 
+  /* small corners: printed matter, not app bubbles */
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 0.875rem;
+
   --font-sans: var(--font-plex-ar), var(--font-plex-lat), system-ui, sans-serif;
   --font-display: var(--font-lalezar-lat), var(--font-lalezar-ar), var(--font-plex-ar), sans-serif;
 
@@ -133,10 +138,6 @@
 /* Dotted notebook paper. */
 @utility paper-dots {
   background-image: radial-gradient(rgb(29 31 38 / 0.1) 1.1px, transparent 0);
-  background-size: 22px 22px;
-}
-@utility blue-dots {
-  background-image: radial-gradient(rgb(255 255 255 / 0.16) 1.1px, transparent 0);
   background-size: 22px 22px;
 }
 

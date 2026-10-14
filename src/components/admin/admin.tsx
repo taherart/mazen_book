@@ -35,7 +35,7 @@ export function Admin(props: AdminProps) {
   if (!user?.admin) {
     return (
       <div className="grid flex-1 place-items-center p-6">
-        <div className="max-w-md rounded-[2rem] border-2 border-ink bg-white p-8 text-center shadow-print">
+        <div className="max-w-md rounded-panel border-2 border-ink bg-white p-8 text-center shadow-print">
           <span className="mx-auto grid size-14 place-items-center rounded-2xl border-2 border-ink bg-sun">
             <ShieldAlert aria-hidden className="size-6" />
           </span>

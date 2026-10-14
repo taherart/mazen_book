@@ -1,7 +1,7 @@
 import { AlertTriangle, ArrowLeft, Banknote, BookOpen, FileCheck2, Footprints, Laugh, QrCode, Scale, ShoppingBag } from "@/components/icons";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Container, Eyebrow, LinkButton } from "@/components/ui";
+import { Container, Eyebrow, LinkButton, buttonClass } from "@/components/ui";
 import { SITE } from "@/lib/config";
 import { getMethods } from "@/lib/methods";
 import { DOMAINS } from "@/lib/taxonomy";
@@ -55,10 +55,10 @@ export default function BookPage() {
 
   return (
     <>
-      <header className="overflow-hidden border-b-2 border-ink bg-brand blue-dots">
+      <header className="overflow-hidden border-b border-line bg-brand">
         <Container className="grid items-center gap-10 py-12 md:grid-cols-[1fr_auto] md:py-16">
           <div className="animate-enter text-white">
-            <Eyebrow className="border-white/40 bg-white/10 text-white">
+            <Eyebrow className="text-white/80">
               <BookOpen aria-hidden className="size-3.5" />
               تأليف {SITE.author}
             </Eyebrow>
@@ -74,11 +74,11 @@ export default function BookPage() {
               </LinkButton>
             </div>
           </div>
-          <Image src="/brand/cover.webp" alt={`غلاف كتاب ${SITE.bookTitle}`} width={768} height={1024} priority sizes="(min-width: 768px) 300px, 60vw" className="lift mx-auto w-56 rotate-[4deg] animate-enter rounded-2xl border-2 border-ink shadow-print [animation-delay:160ms] md:w-72" />
+          <Image src="/brand/cover.webp" alt={`غلاف كتاب ${SITE.bookTitle}`} width={768} height={1024} priority sizes="(min-width: 768px) 300px, 60vw" className="lift mx-auto w-56 rotate-[4deg] animate-enter rounded-2xl border border-line [animation-delay:160ms] md:w-72" />
         </Container>
       </header>
 
-      <section className="border-b-2 border-ink bg-white">
+      <section className="border-b border-line bg-white">
         <Container className="grid gap-10 py-14 lg:grid-cols-2">
           <div data-reveal>
             <h2 className="font-display text-h2 text-ink">دخلك ثابت… والمصاريف مو ثابتة؟</h2>
@@ -88,9 +88,9 @@ export default function BookPage() {
             </p>
           </div>
           <div data-stagger className="grid gap-4 sm:grid-cols-2">
-            <div data-reveal className="rounded-3xl border-2 border-ink bg-paper p-5">
+            <div data-reveal className="rounded-3xl border border-line bg-paper p-5">
               <p className="text-xs font-bold text-ink-mute">الصفحة الأولى</p>
-              <h3 className="mt-1 font-display text-xl text-ink">الصورة بثلاثة أرقام</h3>
+              <h3 className="mt-1 font-bold text-xl text-ink">الصورة بثلاثة أرقام</h3>
               <ul className="mt-3 grid gap-2 text-sm font-bold text-ink">
                 {["رسمة مرحة وعنوان", "الدخل المتوقع", "رأس المال", "أول ريال خلال"].map((x) => (
                   <li key={x} className="rounded-xl border border-line bg-white px-3 py-2">
@@ -99,9 +99,9 @@ export default function BookPage() {
                 ))}
               </ul>
             </div>
-            <div data-reveal className="rounded-3xl border-2 border-ink bg-paper p-5">
+            <div data-reveal className="rounded-3xl border border-line bg-paper p-5">
               <p className="text-xs font-bold text-ink-mute">الصفحة الثانية</p>
-              <h3 className="mt-1 font-display text-xl text-ink">تسعة أجزاء ثابتة</h3>
+              <h3 className="mt-1 font-bold text-xl text-ink">تسعة أجزاء ثابتة</h3>
               <ol className="mt-3 grid gap-1.5 text-sm text-ink-soft">
                 {PAGE_TWO.map((x, i) => (
                   <li key={x} className="flex gap-2">
@@ -115,18 +115,18 @@ export default function BookPage() {
         </Container>
       </section>
 
-      <section className="paper-dots">
+      <section>
         <Container className="py-14">
           <h2 data-reveal className="font-display text-h2 text-ink">
-            طرق، <span className="marker marker-draw">مو نصايح</span>
+            طرق، مو نصايح
           </h2>
           <ul data-stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map(({ icon: Icon, title, text }) => (
-              <li key={title} data-reveal className="rounded-3xl border-2 border-ink bg-white p-5">
-                <span className="grid size-12 place-items-center rounded-2xl border-2 border-ink bg-sun text-ink">
+              <li key={title} data-reveal className="rounded-3xl border border-line bg-white p-5">
+                <span className="grid size-12 place-items-center rounded-2xl bg-brand-wash text-brand">
                   <Icon aria-hidden className="size-6" />
                 </span>
-                <h3 className="mt-4 font-display text-xl text-ink">{title}</h3>
+                <h3 className="mt-4 font-bold text-xl text-ink">{title}</h3>
                 <p className="mt-1 text-sm leading-7 text-ink-soft">{text}</p>
               </li>
             ))}
@@ -134,7 +134,7 @@ export default function BookPage() {
         </Container>
       </section>
 
-      <section className="border-y-2 border-ink bg-white">
+      <section className="border-y border-line bg-white">
         <Container className="py-14">
           <h2 data-reveal className="font-display text-h2 text-ink">52 طريقة في 10 مجالات</h2>
           <ul data-reveal className="mt-6 flex flex-wrap gap-2.5">
@@ -154,9 +154,9 @@ export default function BookPage() {
         </Container>
       </section>
 
-      <section id="author" className="scroll-mt-20 bg-brand-deep text-white blue-dots">
+      <section id="author" className="scroll-mt-20 bg-brand-deep text-white">
         <Container className="grid gap-10 py-14 lg:grid-cols-[auto_1fr]">
-          <Image src="/brand/author.avif" alt={SITE.author} width={400} height={400} sizes="220px" className="mx-auto size-48 rounded-[2rem] border-2 border-white object-cover lg:mx-0 lg:size-56" />
+          <Image src="/brand/author.avif" alt={SITE.author} width={400} height={400} sizes="220px" className="mx-auto size-48 rounded-panel border-2 border-white object-cover lg:mx-0 lg:size-56" />
           <div data-reveal>
             <p className="text-sm font-bold text-sun">عن المؤلف</p>
             <h2 className="mt-1 font-display text-h1">{SITE.author}</h2>
@@ -181,13 +181,13 @@ export default function BookPage() {
 
       <section>
         <Container className="max-w-3xl py-14">
-          <h2 data-reveal className="font-display text-h2 text-ink">عندك سؤال؟</h2>
+          <h2 data-reveal className="font-display text-h2 text-ink">أسئلة متكررة</h2>
           <div data-reveal className="mt-6 grid gap-3">
             {FAQ.map(([q, a]) => (
-              <details key={q} className="group rounded-3xl border-2 border-ink bg-white p-5 open:shadow-print-sm">
+              <details key={q} className="group rounded-3xl border border-line bg-white p-5">
                 <summary className="flex list-none items-center justify-between gap-4 font-display text-xl text-ink [&::-webkit-details-marker]:hidden">
                   {q}
-                  <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink text-xl leading-none transition group-open:rotate-45 group-open:bg-sun">
+                  <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-full border border-ink/20 text-xl leading-none transition group-open:rotate-45 group-open:bg-brand-wash">
                     +
                   </span>
                 </summary>
@@ -195,7 +195,7 @@ export default function BookPage() {
               </details>
             ))}
           </div>
-          <div data-reveal="scale" className="mt-10 rounded-[2rem] border-2 border-ink bg-sun p-6 text-center shadow-print sm:p-10">
+          <div data-reveal="scale" className="mt-10 rounded-panel border border-line bg-white p-6 text-center sm:p-10">
             <h2 className="font-display text-h2 text-ink">ابدأ طريقك الأولى اليوم</h2>
             <p className="mt-2 text-ink">52 فرصة، وبعضها يبدأ بأسبوع وبلا رأس مال. اختر واحدة وابدأ.</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -221,7 +221,7 @@ function OrderButton() {
     );
   }
   return (
-    <a href={SITE.bookOrderUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-14 select-none items-center gap-2.5 rounded-full border-2 border-ink bg-sun px-7 text-lg font-bold text-ink shadow-print-sm transition hover:bg-sun-deep">
+    <a href={SITE.bookOrderUrl} target="_blank" rel="noopener noreferrer" className={buttonClass("primary", "lg")}>
       <ShoppingBag aria-hidden className="size-5" />
       اطلب نسختك الآن
     </a>
@@ -231,7 +231,7 @@ function OrderButton() {
 function Timeline({ title, rows }: { title: string; rows: string[][] }) {
   return (
     <div>
-      <h3 className="font-display text-xl text-sun">{title}</h3>
+      <h3 className="font-bold text-xl text-sun">{title}</h3>
       <ul className="mt-3 grid gap-3">
         {rows.map(([year, text]) => (
           <li key={year} className="flex gap-3 text-sm leading-6 text-white/85">

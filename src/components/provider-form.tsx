@@ -84,8 +84,8 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
 
   if (status === "done") {
     return (
-      <div className="animate-pop rounded-[2rem] border-2 border-ink bg-white p-6 text-center shadow-print sm:p-10">
-        <span className="mx-auto grid size-16 place-items-center rounded-full border-2 border-ink bg-ok text-white">
+      <div className="animate-pop rounded-panel border border-line bg-white p-6 text-center sm:p-10">
+        <span className="mx-auto grid size-16 place-items-center rounded-full bg-ok text-white">
           <CircleCheckBig aria-hidden className="size-8" />
         </span>
         <h2 className="mt-4 font-display text-3xl text-ink">استلمنا ملفك</h2>
@@ -116,7 +116,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </Notice>
       ) : null}
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">من أنت؟</legend>
         <Field label="المهارة التي تقدّمها" htmlFor="method">
           <Select id="method" name="method" defaultValue={method.n} onChange={(e) => router.replace(`${methodHref(Number(e.target.value))}/offer`)}>
@@ -145,7 +145,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </Field>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">ماذا تقدّم؟</legend>
         <div>
           <p className="mb-1.5 text-sm font-bold text-ink">الخدمات</p>
@@ -208,7 +208,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </div>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">أين وكيف يصلون إليك؟</legend>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="المدينة" htmlFor="city" error={errors.city}>

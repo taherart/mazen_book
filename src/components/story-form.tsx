@@ -99,8 +99,8 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
 
   if (status === "done") {
     return (
-      <div className="animate-pop rounded-[2rem] border-2 border-ink bg-white p-6 text-center shadow-print sm:p-10">
-        <span className="mx-auto grid size-16 place-items-center rounded-full border-2 border-ink bg-ok text-white">
+      <div className="animate-pop rounded-panel border border-line bg-white p-6 text-center sm:p-10">
+        <span className="mx-auto grid size-16 place-items-center rounded-full bg-ok text-white">
           <CircleCheckBig aria-hidden className="size-8" />
         </span>
         <h2 className="mt-4 font-display text-3xl text-ink">وصلتنا تجربتك، شكرًا لك</h2>
@@ -130,7 +130,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </Notice>
       ) : null}
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">التجربة</legend>
         <Field label="الطريقة" htmlFor="method">
           <Select id="method" name="method" defaultValue={method.n} onChange={(e) => router.replace(`${methodHref(Number(e.target.value))}/share`)}>
@@ -160,7 +160,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </Field>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">الأرقام</legend>
         <div className="grid gap-5 sm:grid-cols-3">
           <Field label="المدة" htmlFor="duration" error={errors.duration}>
@@ -176,7 +176,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         <Notice tone="sun">اكتب الأرقام كما هي. نعرضها باسمك ولا نعدّلها، وقد نطلب إثباتًا قبل النشر.</Notice>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">الدروس</legend>
         <Field label="أبرز التحديات" htmlFor="challenges" error={errors.challenges}>
           <Textarea id="challenges" name="challenges" rows={3} {...err("challenges")} />
@@ -205,7 +205,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-4 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">فيديو أو صور</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed border-line p-5 text-center hover:border-ink">
@@ -231,7 +231,7 @@ function Form({ user, method, methods }: { user: DemoUser; method: MethodSummary
         <p className="text-xs text-ink-mute">لا تُظهر في الفيديو أو الصور بيانات عملائك أو وجوه من لم يوافق. في النسخة الأولية نتحقق من الحجم والنوع فقط ولا يُرفع الملف.</p>
       </fieldset>
 
-      <fieldset className="space-y-5 rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-7">
+      <fieldset className="space-y-5 rounded-panel border border-line bg-white p-5 sm:p-7">
         <legend className="px-2 font-display text-2xl text-ink">كيف يظهر اسمك؟</legend>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="الاسم المعروض" htmlFor="author" hint="يمكنك الاكتفاء بالاسم الأول.">

@@ -10,7 +10,7 @@ import { Container, cx } from "./ui";
 export function MethodSubpage({ method, title, lead, children, wide }: { method: MethodSummary; title: string; lead: string; children: ReactNode; wide?: boolean }) {
   return (
     <>
-      <header className="border-b-2 border-ink paper-dots">
+      <header className="border-b border-line">
         <Container className={cx("py-8", !wide && "max-w-3xl")}>
           <nav aria-label="مسار التصفح" className="flex flex-wrap items-center gap-1 text-sm font-semibold text-ink-soft">
             <Link href="/methods" className="hover:text-brand">

@@ -30,46 +30,41 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
   return (
     <>
       {/* ---------- this week ---------- */}
-      <section className="border-b-2 border-ink bg-sun">
+      <section className="border-b border-line">
         <Container className="grid items-center gap-8 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:py-14">
           <div className="animate-enter">
-            <Eyebrow>
+            <Eyebrow className="rounded-md bg-sun px-2 py-0.5 text-ink">
               <Trophy aria-hidden className="size-3.5" />
               تحدي الأسبوع {week.week} من 52
             </Eyebrow>
             <div className="mt-4 flex items-start gap-4">
-              <MethodNumber n={n} size="lg" className="shadow-print-sm" />
+              <MethodNumber n={n} size="lg" />
               <div>
                 <h1 className="font-display text-h1 text-ink">{m.title}</h1>
                 {m.tagline ? <p className="mt-1 font-display text-xl text-brand-dark sm:text-2xl">«{m.tagline}»</p> : null}
               </div>
             </div>
-            <dl className="mt-5 flex flex-wrap gap-2 text-sm">
-              <div className="rounded-2xl border-2 border-ink bg-white px-3 py-2">
+            <dl className="mt-6 grid grid-cols-3 divide-x divide-line border-y border-line text-sm">
+              <div className="py-3 pe-3">
                 <dt className="text-xs text-ink-mute">الدخل المتوقع</dt>
-                <dd className="font-bold text-ink">
+                <dd className="font-bold text-brand-dark">
                   <T>{m.stats.income}</T>
                 </dd>
               </div>
-              <div className="rounded-2xl border-2 border-ink bg-white px-3 py-2">
+              <div className="px-3 py-3">
                 <dt className="text-xs text-ink-mute">رأس المال</dt>
                 <dd className="font-bold text-ink">
                   <T>{m.stats.capital}</T>
                 </dd>
               </div>
-              <div className="rounded-2xl border-2 border-ink bg-white px-3 py-2">
+              <div className="py-3 ps-3">
                 <dt className="text-xs text-ink-mute">أول ريال خلال</dt>
                 <dd className="font-bold text-ink">
                   <T>{m.stats.firstRiyal}</T>
                 </dd>
               </div>
             </dl>
-            <div className="mt-6">
-              <p className="mb-2 text-sm font-bold text-ink">
-                ينتهي <span suppressHydrationWarning>{formatDay(week.endsAt)}</span>
-              </p>
-              <Countdown endsAt={week.endsAt} />
-            </div>
+            <Countdown endsAt={week.endsAt} className="mt-6" />
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <JoinButton method={n} magnetic />
               <Link href={methodHref(n)} className="font-bold text-ink underline underline-offset-4">
@@ -78,7 +73,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
             </div>
             <Participants method={n} className="mt-4 text-ink" />
           </div>
-          <Link href={methodHref(n)} className="mx-auto block w-full max-w-sm animate-land rounded-[2.5rem] border-2 border-ink bg-white p-4 shadow-print [animation-delay:200ms]">
+          <Link href={methodHref(n)} className="mx-auto block w-full max-w-sm animate-enter rounded-panel border border-line bg-white p-4 [animation-delay:200ms]">
             <div className="plate rounded-tile">
               <MethodArt n={n} title={m.title} priority sizes="(min-width: 1024px) 380px, 80vw" />
             </div>
@@ -87,15 +82,15 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
       </section>
 
       {/* ---------- tasks ---------- */}
-      <section className="border-b-2 border-ink bg-white">
+      <section className="border-b border-line bg-white">
         <Container className="grid gap-8 py-12 lg:grid-cols-2">
           <div data-reveal>
             <h2 className="font-display text-h2 text-ink">مهام هذا الأسبوع</h2>
             <p className="mt-2 text-ink-soft">خطوات الطريقة كما في الكتاب، مرتبة لتنجزها خلال أسبوع وتوثّق نتيجتها.</p>
-            <ol className="mt-5 grid gap-2">
+            <ol className="mt-5 border-t border-line">
               {tasks.map((t, i) => (
-                <li key={i} className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-paper px-4 py-3">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink bg-white pt-[0.1em] font-display text-lg leading-none">{i + 1}</span>
+                <li key={i} className="flex items-baseline gap-4 border-b border-line py-3">
+                  <span className="w-6 shrink-0 font-display text-xl leading-none text-brand">{i + 1}</span>
                   <span className="font-bold text-ink">
                     <T>{t}</T>
                   </span>
@@ -106,7 +101,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
           <div data-reveal>
             <h2 className="flex items-center gap-2 font-display text-h2 text-ink">
               <ScrollText aria-hidden className="size-6 text-brand" />
-              كيف يتم السحب؟
+              طريقة السحب
             </h2>
             <p className="mt-2 text-ink-soft">الجائزة لمن جرّب فعلًا، والاختيار عشوائي بين من استوفى الشروط.</p>
             <ol className="mt-5 grid gap-3">
@@ -129,15 +124,15 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
       </section>
 
       {/* ---------- prize ---------- */}
-      <section className="paper-dots">
+      <section>
         <Container className="py-12">
           <SectionHead reveal title="الجائزة والفائز" lead="موعد الإغلاق، الجائزة، واسم الفائز بعد إعلان النتيجة." />
           <div data-reveal className="mt-6">
             <RafflePanel method={n} week={week} />
           </div>
-          <div data-reveal className="mt-6 rounded-3xl border-2 border-ink bg-white p-5">
+          <div data-reveal className="mt-6 rounded-3xl border border-line bg-white p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h3 className="font-display text-xl text-ink">مشاركات هذا الأسبوع</h3>
+              <h3 className="font-bold text-xl text-ink">مشاركات هذا الأسبوع</h3>
               <div className="flex flex-wrap items-center gap-2 text-sm">
                 <Chip tone="paper">{count(counts.total, ENTRIES)}</Chip>
                 <Chip tone="ok">{counts.eligible} مؤهلة</Chip>
@@ -161,7 +156,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
       </section>
 
       {/* ---------- winners + upcoming ---------- */}
-      <section className="border-t-2 border-ink bg-white">
+      <section className="border-t border-line bg-white">
         <Container className="grid gap-10 py-12 lg:grid-cols-2">
           <div data-reveal>
             <h2 className="flex items-center gap-2 font-display text-h2 text-ink">
@@ -171,8 +166,8 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
             {winners.length ? (
               <ul className="mt-5 grid gap-3">
                 {winners.map(([w, win]) => (
-                  <li key={w} className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-sun-wash p-3">
-                    <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ink bg-sun font-display text-xl">{w}</span>
+                  <li key={w} className="flex items-center gap-3 rounded-2xl border border-line bg-sun-wash p-3">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full border border-ink/20 bg-sun font-display text-xl">{w}</span>
                     <div className="min-w-0">
                       <p className="font-display text-xl leading-tight text-ink">{win.name}</p>
                       <p className="truncate text-sm text-ink-soft">

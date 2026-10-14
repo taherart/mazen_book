@@ -31,7 +31,7 @@ export function ShareButtons({ path, title, className }: { path: string; title: 
     }
   };
 
-  const pill = "inline-flex h-10 items-center gap-2 rounded-full border-2 border-ink bg-white px-4 text-sm font-bold text-ink transition hover:bg-brand-wash";
+  const pill = "inline-flex h-10 items-center gap-2 rounded-full border border-ink/20 bg-white px-4 text-sm font-bold text-ink transition hover:bg-brand-wash";
   return (
     <div className={cx("flex flex-wrap items-center gap-2", className)}>
       <button type="button" className={pill} onClick={() => open((u, t) => `https://wa.me/?text=${t}%20${u}`)}>

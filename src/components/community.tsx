@@ -1,10 +1,7 @@
 import { ArrowLeft, Clock3, Images, MapPin, Play, Wifi } from "@/components/icons";
-import Image from "next/image";
 import Link from "next/link";
-import { methodImage } from "@/lib/methods";
 import { OUTCOMES, riyal } from "@/lib/taxonomy";
 import type { MethodSummary, Outcome, Provider, Story } from "@/lib/types";
-import { MethodNumber } from "./method-card";
 import { Avatar, Chip, SampleTag, cx } from "./ui";
 
 export function OutcomeChip({ outcome }: { outcome: Outcome }) {
@@ -32,47 +29,51 @@ export function StoryFigures({ story, className }: { story: Story; className?: s
   );
 }
 
+/** What the member earned, set large like a figure in the book; the story's own words follow. */
+function Result({ story, size }: { story: Story; size: "lg" | "md" }) {
+  return (
+    <div>
+      <p className={cx("font-display leading-none", size === "lg" ? "text-h2" : "text-h3", story.income ? "text-ink" : "text-ink-soft")}>{story.income ? riyal(story.income) : "لا دخل بعد"}</p>
+      <p className="mt-1.5 text-sm text-ink-soft">
+        خلال {story.duration} · التكلفة {story.cost === null ? "لم تُذكر" : story.cost === 0 ? "صفر" : riyal(story.cost)}
+      </p>
+    </div>
+  );
+}
+
+function Media({ media }: { media: Story["media"] }) {
+  if (media === "video") return <Play aria-label="فيها فيديو" weight="fill" className="size-4 text-ink-soft" />;
+  if (media === "images") return <Images aria-label="فيها صور" className="size-4 text-ink-soft" />;
+  return null;
+}
+
 export function StoryCard({ story, method, featured, className }: { story: Story; method?: MethodSummary; featured?: boolean; className?: string }) {
   return (
-    <Link href={`/stories/${story.id}`} className={cx("group flex h-full flex-col overflow-hidden rounded-3xl border-2 border-ink bg-white transition hover:-translate-y-1 hover:shadow-print", className)}>
-      <div className="relative flex aspect-[16/10] items-end overflow-hidden bg-brand blue-dots">
-        <Image src={methodImage(story.method)} alt="" width={featured ? 480 : 320} height={featured ? 480 : 320} sizes={featured ? "320px" : "240px"} className={cx("absolute end-2 opacity-95 transition duration-300 group-hover:scale-105", featured ? "-bottom-10 w-[58%] max-w-80" : "-bottom-6 w-44")} />
-        <div className="relative z-10 flex w-full items-center justify-between p-3">
-          {story.media === "video" ? (
-            <span className="grid size-11 place-items-center rounded-full border-2 border-ink bg-sun text-ink shadow-print-sm">
-              <Play aria-hidden weight="fill" className="size-5 translate-x-[-1px]" />
-            </span>
-          ) : story.media === "images" ? (
-            <span className="grid size-11 place-items-center rounded-full border-2 border-ink bg-white text-ink shadow-print-sm">
-              <Images aria-hidden className="size-5" />
-            </span>
-          ) : (
-            <span />
-          )}
-          <MethodNumber n={story.method} size="sm" inverted />
-        </div>
+    <Link href={`/stories/${story.id}`} className={cx("group flex h-full flex-col rounded-card border border-line bg-white p-5 transition hover:border-ink", featured && "sm:p-7", className)}>
+      <div className="flex flex-wrap items-center gap-2">
+        <OutcomeChip outcome={story.outcome} />
+        {story.sample ? <SampleTag /> : null}
+        <span className="ms-auto text-xs font-semibold text-brand">الطريقة {story.method}</span>
       </div>
-      <div className="flex flex-1 flex-col border-t-2 border-ink p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <OutcomeChip outcome={story.outcome} />
-          {story.sample ? <SampleTag /> : null}
-        </div>
-        <h3 className="mt-2.5 line-clamp-2 font-display text-xl leading-snug text-ink">{story.title}</h3>
-        {method ? <p className="mt-1 truncate text-xs font-semibold text-brand">{method.title}</p> : null}
-        <StoryFigures story={story} className="mt-4" />
-        <div className="mt-auto flex items-center justify-between pt-4 text-sm">
-          <span className="flex min-w-0 items-center gap-2 text-ink-soft">
-            <Avatar name={story.author} size="sm" />
-            <span className="truncate">
-              {story.author}
-              {story.city ? ` · ${story.city}` : ""}
-            </span>
+      <div className="mt-5">
+        <Result story={story} size={featured ? "lg" : "md"} />
+      </div>
+      <h3 className={cx("mt-5 line-clamp-2 font-bold leading-snug text-ink", featured ? "text-xl" : "text-lg")}>{story.title}</h3>
+      {method ? <p className="mt-0.5 truncate text-xs font-semibold text-ink-mute">{method.title}</p> : null}
+      <p className={cx("mt-3 text-sm leading-7 text-ink-soft", featured ? "line-clamp-5" : "line-clamp-3")}>«{story.body}»</p>
+      <div className="mt-auto flex items-center justify-between gap-3 border-t border-line pt-4 text-sm">
+        <span className="flex min-w-0 items-center gap-2 text-ink-soft">
+          <Avatar name={story.author} size="sm" />
+          <span className="truncate">
+            {story.author}
+            {story.city ? ` · ${story.city}` : ""}
           </span>
-          <span className="inline-flex shrink-0 items-center gap-1 font-bold text-brand">
-            اقرأ
-            <ArrowLeft aria-hidden className="size-4 transition group-hover:-translate-x-1" />
-          </span>
-        </div>
+          <Media media={story.media} />
+        </span>
+        <span className="inline-flex shrink-0 items-center gap-1 font-bold text-brand">
+          اقرأ
+          <ArrowLeft aria-hidden className="size-4 transition group-hover:-translate-x-1" />
+        </span>
       </div>
     </Link>
   );
@@ -81,19 +82,20 @@ export function StoryCard({ story, method, featured, className }: { story: Story
 /** A story on one line, beside the featured one on the home page. */
 export function StoryRow({ story, method, className }: { story: Story; method?: MethodSummary; className?: string }) {
   return (
-    <Link href={`/stories/${story.id}`} className={cx("lift group flex h-full gap-4 rounded-card border-2 border-ink bg-white p-3", className)}>
-      <div className="relative w-24 shrink-0 overflow-hidden rounded-tile bg-brand blue-dots sm:w-28">
-        <Image src={methodImage(story.method)} alt="" width={160} height={160} sizes="112px" className="absolute -bottom-3 inset-x-0 w-full" />
-      </div>
-      <div className="min-w-0 flex-1 py-1">
+    <Link href={`/stories/${story.id}`} className={cx("group flex h-full gap-4 rounded-card border border-line bg-white p-4 transition hover:border-ink", className)}>
+      <p className="w-24 shrink-0 border-e border-line pe-3 font-display text-2xl leading-tight text-ink sm:w-28">
+        {story.income ? story.income.toLocaleString("en-US") : "—"}
+        <span className="block font-sans text-xs font-semibold text-ink-mute">{story.income ? "ريال" : "لا دخل بعد"}</span>
+      </p>
+      <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <OutcomeChip outcome={story.outcome} />
           {story.sample ? <SampleTag /> : null}
         </div>
-        <h3 className="mt-2 line-clamp-2 font-display text-lg leading-snug text-ink">{story.title}</h3>
-        {method ? <p className="truncate text-xs font-semibold text-brand">{method.title}</p> : null}
-        <p className="mt-1 text-sm text-ink-soft">
-          {story.duration} · <b className={story.income ? "text-ok" : "font-semibold"}>{story.income ? riyal(story.income) : "لا دخل بعد"}</b>
+        <h3 className="mt-2 line-clamp-2 font-bold leading-snug text-ink">{story.title}</h3>
+        <p className="mt-0.5 truncate text-xs text-ink-mute">
+          {method ? `${method.title} · ` : ""}
+          {story.duration}
         </p>
       </div>
     </Link>
@@ -102,11 +104,11 @@ export function StoryRow({ story, method, className }: { story: Story; method?: 
 
 export function ProviderCard({ provider, className }: { provider: Provider; className?: string }) {
   return (
-    <Link href={`/providers/${provider.id}`} className={cx("group flex h-full flex-col rounded-3xl border-2 border-ink bg-white p-4 transition hover:-translate-y-1 hover:shadow-print", className)}>
+    <Link href={`/providers/${provider.id}`} className={cx("group flex h-full flex-col rounded-card border border-line bg-white p-4 transition hover:border-ink", className)}>
       <div className="flex items-start gap-3">
         <Avatar name={provider.name} />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-display text-xl leading-tight text-ink">{provider.name}</h3>
+          <h3 className="truncate font-bold text-xl leading-tight text-ink">{provider.name}</h3>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-soft">
             <span className="inline-flex items-center gap-1">
               <MapPin aria-hidden className="size-3.5" />

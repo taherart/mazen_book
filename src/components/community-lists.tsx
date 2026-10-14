@@ -148,11 +148,11 @@ export function CommunityBento({ methods }: { methods: MethodSummary[] }) {
             {/* the invitation fills what the two rows leave beside the featured story */}
             <li data-reveal>
               <Link href="/methods" className="group flex h-full items-center gap-4 rounded-card border-2 border-dashed border-ink/35 bg-white/60 p-4 transition hover:border-ink">
-                <span className="grid size-12 shrink-0 place-items-center rounded-tile bg-sun-wash text-ink">
+                <span className="grid size-12 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">
                   <PenLine aria-hidden className="size-6" />
                 </span>
                 <span className="min-w-0">
-                  <b className="block font-display text-lg text-ink">جرّبت طريقة؟</b>
+                  <b className="block text-lg font-bold text-ink">شارك تجربتك</b>
                   <span className="text-sm text-ink-soft">شارك ما حدث معك، نجحت أو لم تنجح: افتح الطريقة من الدليل ثم «شارك تجربتك».</span>
                 </span>
               </Link>
@@ -176,7 +176,7 @@ export function CommunityBento({ methods }: { methods: MethodSummary[] }) {
       <div data-reveal>
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
           <div>
-            <h3 className="font-display text-h3 text-ink">تحتاج من ينفّذها لك؟</h3>
+            <h3 className="font-bold text-h3 text-ink">أصحاب مهارات ينفّذونها لك</h3>
             <p className="text-sm text-ink-soft">أشخاص يقدّمون خدمات مرتبطة بالطرق. تواصل معهم مباشرة، بلا وسيط ولا عمولة.</p>
           </div>
           <Link href="/providers" className="tap inline-flex items-center gap-1.5 text-sm font-bold text-brand hover:underline">

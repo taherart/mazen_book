@@ -12,8 +12,9 @@ export function Container({ className, ...props }: ComponentProps<"div">) {
   return <div className={cx("mx-auto w-full max-w-6xl px-4 sm:px-6", className)} {...props} />;
 }
 
+/** A running head above a title, set like the section labels in the book: small, plain, no box. */
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={cx("inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-bold text-ink", className)}>{children}</span>;
+  return <span className={cx("inline-flex items-center gap-2 text-sm font-bold text-brand", className)}>{children}</span>;
 }
 
 /** Section title. `reveal` fades it in as it scrolls into view (never use it above the fold). */
@@ -35,10 +36,11 @@ export function SectionHead({ eyebrow, title, lead, action, reveal, className }:
 type Variant = "primary" | "sun" | "white" | "soft" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
+// Only the main action is printed (ink outline and offset shadow); everything else stays flat
 const VARIANT: Record<Variant, string> = {
   primary: "bg-brand text-white border-2 border-ink shadow-print-sm hover:bg-brand-dark",
-  sun: "bg-sun text-ink border-2 border-ink shadow-print-sm hover:bg-sun-deep",
-  white: "bg-white text-ink border-2 border-ink shadow-print-sm hover:bg-brand-wash",
+  sun: "bg-sun text-ink border border-sun-deep hover:bg-sun-deep",
+  white: "bg-white text-ink border border-ink/25 hover:border-ink",
   soft: "bg-brand-wash text-brand-dark border-2 border-transparent hover:border-brand-soft",
   ghost: "text-ink-soft border-2 border-transparent hover:bg-ink/5 hover:text-ink",
   danger: "bg-white text-bad border-2 border-bad hover:bg-bad-wash",
@@ -52,7 +54,7 @@ const SIZE: Record<Size, string> = {
 };
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
-  const printed = variant === "primary" || variant === "sun" || variant === "white";
+  const printed = variant === "primary";
   return cx(
     "inline-flex select-none items-center justify-center rounded-full font-bold leading-none transition duration-150 disabled:translate-none disabled:opacity-50 disabled:shadow-none",
     VARIANT[variant],
@@ -112,7 +114,7 @@ export function Avatar({ name, size = "md", className }: { name: string; size?: 
   const tone = AVATAR_TONES[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_TONES.length];
   const box = size === "lg" ? "size-20 text-3xl" : size === "sm" ? "size-9 text-base" : "size-12 text-xl";
   return (
-    <span aria-hidden className={cx("grid shrink-0 place-items-center rounded-full border-2 border-ink font-display leading-none", box, tone, className)}>
+    <span aria-hidden className={cx("grid shrink-0 place-items-center rounded-full font-display leading-none", box, tone, className)}>
       {name.trim().charAt(0)}
     </span>
   );
@@ -121,7 +123,7 @@ export function Avatar({ name, size = "md", className }: { name: string; size?: 
 export function Progress({ value, className, tone = "brand" }: { value: number; className?: string; tone?: "brand" | "sun" }) {
   const pct = Math.max(0, Math.min(100, Math.round(value)));
   return (
-    <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className={cx("h-3 overflow-hidden rounded-full border-2 border-ink bg-white", className)}>
+    <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className={cx("h-2.5 overflow-hidden rounded-full bg-paper-deep", className)}>
       <div className={cx("h-full rounded-full transition-[width,background-color] duration-700 ease-spring-soft", tone === "sun" ? "bg-sun" : "bg-brand")} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -129,9 +131,9 @@ export function Progress({ value, className, tone = "brand" }: { value: number; 
 
 export function EmptyState({ icon, title, children, action, className }: { icon?: ReactNode; title: string; children?: ReactNode; action?: ReactNode; className?: string }) {
   return (
-    <div className={cx("rounded-3xl border-2 border-dashed border-line bg-white/60 px-6 py-10 text-center", className)}>
+    <div className={cx("rounded-card border border-dashed border-ink/20 px-6 py-10 text-center", className)}>
       {icon ? <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-brand-wash text-brand">{icon}</div> : null}
-      <h3 className="font-display text-xl text-ink">{title}</h3>
+      <h3 className="text-lg font-bold text-ink">{title}</h3>
       {children ? <p className="mx-auto mt-1.5 max-w-md text-sm text-ink-soft">{children}</p> : null}
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </div>

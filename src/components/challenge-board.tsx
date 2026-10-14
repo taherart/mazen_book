@@ -37,7 +37,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
 
   if (!state) {
     return (
-      <div className="rounded-[2rem] border-2 border-ink bg-white p-6 text-center shadow-print sm:p-10">
+      <div className="rounded-panel border border-line bg-white p-6 text-center sm:p-10">
         <MethodNumber n={method.n} size="lg" className="mx-auto" />
         <h2 className="mt-4 font-display text-2xl text-ink">لم تنضم لهذا التحدي بعد</h2>
         <p className="mx-auto mt-2 max-w-md text-ink-soft">
@@ -59,7 +59,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="min-w-0 space-y-6">
         {/* progress */}
-        <div className="rounded-[2rem] border-2 border-ink bg-white p-5 shadow-print sm:p-6">
+        <div className="rounded-panel border border-line bg-white p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-display text-2xl text-ink">
               أنجزت <span className="text-brand">{done}</span> من {tasks.length}
@@ -116,7 +116,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
         </ol>
 
         {/* write-up */}
-        <div className="rounded-[2rem] border-2 border-ink bg-white p-5 sm:p-6">
+        <div className="rounded-panel border border-line bg-white p-5 sm:p-6">
           <h2 className="font-display text-2xl text-ink">وثّق تقدّمك</h2>
           <p className="mt-1 text-sm text-ink-soft">ماذا فعلت هذا الأسبوع؟ ماذا نجح وماذا تعثّر؟ هذا الملخص هو مشاركتك في السحب.</p>
           <label htmlFor={noteId} className="sr-only">
@@ -161,7 +161,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
 
       {/* side */}
       <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-        <div className={cx("rounded-3xl border-2 border-ink p-5", isWeekly ? "bg-sun" : "bg-white")}>
+        <div className={cx("rounded-3xl border border-line p-5", isWeekly ? "bg-sun" : "bg-white")}>
           <p className="flex items-center gap-2 font-display text-xl text-ink">
             <Trophy aria-hidden className="size-5" />
             {isWeekly ? `تحدي الأسبوع ${week.week}` : "تجربة مفتوحة"}
@@ -175,7 +175,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
             <p className="mt-1 text-sm text-ink-soft">هذه ليست طريقة الأسبوع، فلا موعد نهائي لها. خذ وقتك وأكمل المهام.</p>
           )}
         </div>
-        <div className="rounded-3xl border-2 border-ink bg-white p-5">
+        <div className="rounded-3xl border border-line bg-white p-5">
           <p className="font-display text-xl text-ink">بعد التجربة</p>
           <div className="mt-3 grid gap-2">
             <Link href={`${methodHref(method.n)}/share`} className={buttonClass("soft", "md", "w-full")}>

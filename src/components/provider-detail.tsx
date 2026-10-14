@@ -53,7 +53,7 @@ export function ProviderDetail({ id, methods }: { id: string; methods: MethodSum
   const link = contactLink(provider.contact);
   return (
     <>
-      <header className="border-b-2 border-ink paper-dots">
+      <header className="border-b border-line">
         <Container className="max-w-5xl py-8">
           {provider.status !== "approved" ? (
             <Notice tone={provider.status === "rejected" ? "bad" : "sun"} className="mb-5" title={provider.status === "pending" ? "معاينة خاصة بك: بانتظار موافقة الإدارة" : "لم يُقبل هذا الملف"}>
@@ -97,7 +97,7 @@ export function ProviderDetail({ id, methods }: { id: string; methods: MethodSum
             <h2 className="font-display text-2xl text-ink">الخدمات</h2>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {provider.services.map((s) => (
-                <li key={s} className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-white px-4 py-3 font-bold text-ink">
+                <li key={s} className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 font-bold text-ink">
                   <span aria-hidden className="size-2 shrink-0 rounded-full bg-brand" />
                   {s}
                 </li>
@@ -147,7 +147,7 @@ export function ProviderDetail({ id, methods }: { id: string; methods: MethodSum
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[2rem] border-2 border-ink bg-white p-5 shadow-print">
+          <div className="rounded-panel border border-line bg-white p-5">
             <p className="text-sm text-ink-mute">{provider.priceFrom !== null ? "السعر يبدأ من" : "السعر"}</p>
             <p className="font-display text-3xl text-ink">
               {provider.priceFrom !== null ? riyal(provider.priceFrom) : "عند الطلب"}

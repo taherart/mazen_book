@@ -58,7 +58,7 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
   return (
     <div className="space-y-10">
       {/* ---------- header ---------- */}
-      <header className="flex flex-wrap items-center gap-4 rounded-[2rem] border-2 border-ink bg-brand p-5 text-white shadow-print blue-dots sm:p-7">
+      <header className="flex flex-wrap items-center gap-4 rounded-panel border border-line bg-brand p-5 text-white sm:p-7">
         <Avatar name={user.name} size="lg" />
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-3xl sm:text-4xl">أهلًا {user.name.split(" ")[0]}</h1>
@@ -82,7 +82,7 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
       </header>
 
       {user.admin ? (
-        <Link href="/admin" className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-sun px-4 py-3 font-bold text-ink shadow-print-sm">
+        <Link href="/admin" className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 font-bold text-ink hover:border-ink">
           <ShieldCheck aria-hidden className="size-5" />
           حسابك مشرف: افتح لوحة الإدارة
         </Link>
@@ -116,7 +116,7 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
               const pct = (c.done.length / m.tasks) * 100;
               const done = c.done.length >= m.tasks;
               return (
-                <li key={m.n} className="rounded-3xl border-2 border-ink bg-white p-4">
+                <li key={m.n} className="rounded-3xl border border-line bg-white p-4">
                   <div className="flex items-start gap-3">
                     <MethodNumber n={m.n} />
                     <div className="min-w-0 flex-1">
@@ -154,7 +154,7 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
       <Section icon={<Award className="size-5" />} title="شارات الإنجاز">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {badges.map(({ icon: Icon, title, text, earned }) => (
-            <li key={title} className={cx("rounded-3xl border-2 p-4 text-center transition", earned ? "border-ink bg-sun shadow-print-sm" : "border-dashed border-line bg-white/60")}>
+            <li key={title} className={cx("rounded-3xl border-2 p-4 text-center transition", earned ? "border-brand bg-brand-wash" : "border-dashed border-line bg-white/60")}>
               <span className={cx("mx-auto grid size-12 place-items-center rounded-full border-2", earned ? "animate-wiggle border-ink bg-white text-brand" : "border-line text-ink-mute")}>
                 <Icon aria-hidden className="size-6" />
               </span>

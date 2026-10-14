@@ -48,14 +48,14 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
 
   return (
     <article>
-      <header className="border-b-2 border-ink paper-dots">
+      <header className="border-b border-line">
         <Container className="max-w-4xl py-8">
           {story.status !== "approved" ? (
             <Notice tone={story.status === "rejected" ? "bad" : "sun"} className="mb-5" title={story.status === "pending" ? "معاينة خاصة بك: بانتظار المراجعة" : "لم تُقبل هذه التجربة"}>
               {story.status === "pending" ? "لا يراها غيرك حتى توافق عليها الإدارة." : "راجع شروط النشر وعدّلها ثم أرسلها من جديد."}
             </Notice>
           ) : null}
-          <Link href={methodHref(method.n)} className="inline-flex items-center gap-2.5 rounded-full border-2 border-ink bg-white py-1 pe-4 ps-1 text-sm font-bold hover:bg-brand-wash">
+          <Link href={methodHref(method.n)} className="inline-flex items-center gap-2.5 rounded-full border border-ink/20 bg-white py-1 pe-4 ps-1 text-sm font-bold hover:bg-brand-wash">
             <MethodNumber n={method.n} size="sm" className="rounded-full" />
             {method.title}
           </Link>
@@ -84,18 +84,18 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
 
       <Container className="max-w-4xl space-y-8 py-10">
         {story.media !== "none" ? (
-          <div className="relative grid aspect-video place-items-center overflow-hidden rounded-[2rem] border-2 border-ink bg-brand blue-dots shadow-print">
+          <div className="relative grid aspect-video place-items-center overflow-hidden rounded-panel border border-line bg-brand">
             <Image src={methodImage(story.method)} alt="" width={640} height={640} sizes="360px" className="absolute -bottom-10 end-4 w-72 opacity-90" />
             {story.media === "video" ? (
               <button type="button" onClick={() => setPlayed(true)} className="relative z-10 flex flex-col items-center gap-3 text-white">
-                <span className="grid size-20 place-items-center rounded-full border-2 border-ink bg-sun text-ink shadow-print transition hover:scale-105">
+                <span className="grid size-20 place-items-center rounded-full bg-white text-ink transition hover:scale-105">
                   <Play aria-hidden weight="fill" className="size-9 translate-x-[-2px]" />
                 </span>
                 <span className="rounded-full bg-ink/70 px-3 py-1 text-sm font-semibold">{played ? "الفيديو غير متاح في النسخة الأولية" : "شاهد التجربة"}</span>
               </button>
             ) : (
               <span className="relative z-10 flex flex-col items-center gap-3 text-white">
-                <span className="grid size-20 place-items-center rounded-full border-2 border-ink bg-white text-ink shadow-print">
+                <span className="grid size-20 place-items-center rounded-full bg-white text-ink">
                   <Images aria-hidden className="size-9" />
                 </span>
                 <span className="rounded-full bg-ink/70 px-3 py-1 text-sm font-semibold">صور التجربة تظهر هنا</span>
@@ -107,11 +107,11 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
         <StoryFigures story={story} className="[&_dd]:text-lg [&_dt]:text-xs" />
 
         <section>
-          <h2 className="font-display text-2xl text-ink">ماذا فعل؟</h2>
+          <h2 className="font-display text-2xl text-ink">ما فعله</h2>
           <p className="mt-2 whitespace-pre-line text-lg leading-9 text-ink-soft">{story.body}</p>
         </section>
 
-        <section className="rounded-3xl border-2 border-ink bg-white p-5">
+        <section className="rounded-3xl border border-line bg-white p-5">
           <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
             <Mountain aria-hidden className="size-5 text-brand" />
             أبرز التحديات
@@ -119,7 +119,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
           <p className="mt-2 leading-8 text-ink-soft">{story.challenges}</p>
         </section>
 
-        <section className="rounded-3xl border-2 border-ink bg-sun-wash p-5">
+        <section className="rounded-3xl border border-line bg-paper p-5">
           <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
             <Lightbulb aria-hidden className="size-5 text-sun-deep" />
             نصائح لمن يبدأ
@@ -147,7 +147,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
           <ShareButtons path={`/stories/${story.id}`} title={story.title} />
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border-2 border-ink bg-brand p-6 text-white shadow-print blue-dots">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-line bg-brand p-6 text-white">
           <div>
             <p className="font-display text-2xl">جرّب الطريقة نفسها</p>
             <p className="text-white/80">

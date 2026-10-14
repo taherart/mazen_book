@@ -7,7 +7,7 @@ export default function ErrorPage({ reset }: { error: Error & { digest?: string 
   return (
     <Container className="grid flex-1 place-items-center py-20 text-center">
       <div role="alert">
-        <span className="mx-auto grid size-16 place-items-center rounded-2xl border-2 border-ink bg-bad-wash text-bad">
+        <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-bad-wash text-bad">
           <TriangleAlert aria-hidden className="size-8" />
         </span>
         <h1 className="mt-4 font-display text-4xl text-ink">حدث خطأ غير متوقع</h1>

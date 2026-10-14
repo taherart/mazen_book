@@ -38,7 +38,7 @@ export default function TermsPage() {
       </Notice>
       <div className="mt-8 grid gap-5">
         {SECTIONS.map((s) => (
-          <section key={s.id} id={s.id} className="scroll-mt-24 rounded-3xl border-2 border-ink bg-white p-6">
+          <section key={s.id} id={s.id} className="scroll-mt-24 rounded-3xl border border-line bg-white p-6">
             <h2 className="font-display text-2xl text-ink">{s.title}</h2>
             <p className="mt-1 text-sm font-bold text-ink-mute">يجب أن يغطي:</p>
             <ul className="mt-3 grid gap-2 text-ink-soft">

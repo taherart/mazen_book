@@ -17,8 +17,8 @@ export function AuthGate({ children, title = "سجّل دخولك لتكمل", r
   if (!user) {
     const next = encodeURIComponent(pathname);
     return (
-      <div className="rounded-[2rem] border-2 border-ink bg-white p-6 text-center shadow-print sm:p-10">
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl border-2 border-ink bg-sun text-ink">
+      <div className="rounded-panel border border-line bg-white p-6 text-center sm:p-10">
+        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-brand-wash text-brand">
           <LogIn aria-hidden className="size-6" />
         </span>
         <h2 className="mt-4 font-display text-2xl text-ink">{title}</h2>

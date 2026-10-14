@@ -48,7 +48,7 @@ export function FormSkeleton() {
   return (
     <Container className="max-w-3xl py-10" aria-busy="true" aria-label="جارٍ التحميل">
       <div className="skeleton h-10 w-2/3" />
-      <div className="mt-6 space-y-4 rounded-[2rem] border-2 border-line bg-white p-6">
+      <div className="mt-6 space-y-4 rounded-panel border-2 border-line bg-white p-6">
         <div className="skeleton h-12" />
         <div className="skeleton h-12" />
         <div className="skeleton h-28" />

@@ -46,12 +46,7 @@ export function AdminWeek({ methods, week }: AdminProps) {
                   عُد لجدول الكتاب
                 </Button>
               ) : null}
-              <div>
-                <p className="mb-2 text-sm font-bold text-ink" suppressHydrationWarning>
-                  يُغلق {formatDay(week.endsAt)}
-                </p>
-                <Countdown endsAt={week.endsAt} />
-              </div>
+              <Countdown endsAt={week.endsAt} />
             </div>
           </div>
         </Panel>

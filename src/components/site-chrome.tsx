@@ -27,7 +27,7 @@ export function SiteHeader() {
 
   return (
     // anchored: content slides under it during page transitions
-    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b border-line">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:h-16">
         <Logo />
         <nav aria-label="التنقل الرئيسي" className="mx-auto hidden items-center gap-1 lg:flex">
@@ -41,7 +41,7 @@ export function SiteHeader() {
           {!hydrated ? (
             <span className="skeleton block h-10 w-24" />
           ) : user ? (
-            <Link href="/dashboard" className="tap flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
+            <Link href="/dashboard" className="tap flex items-center gap-2 rounded-full border border-ink/20 bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
               <span className="max-w-28 truncate">{user.name.split(" ")[0]}</span>
               <Avatar name={user.name} size="sm" className="size-8 border-0" />
             </Link>
@@ -56,7 +56,7 @@ export function SiteHeader() {
             </>
           )}
           <ThemeToggle className="hidden lg:grid" />
-          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="tap grid size-10 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
+          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="tap grid size-10 place-items-center rounded-full border border-ink/20 bg-white lg:hidden">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -123,7 +123,7 @@ function ThemeToggle({ className }: { className?: string }) {
       aria-label="الطبعة الليلية"
       title={night ? "عُد إلى الطبعة النهارية" : "الطبعة الليلية"}
       onClick={() => setNight(!night)}
-      className={cx("tap size-10 shrink-0 place-items-center rounded-full border-2 border-ink bg-white text-ink transition hover:bg-brand-wash", className)}
+      className={cx("tap size-10 shrink-0 place-items-center rounded-full border border-ink/20 bg-white text-ink transition hover:bg-brand-wash", className)}
     >
       <Moon aria-hidden className="size-5 [html[data-theme=night]_&]:hidden" />
       <Sun aria-hidden className="hidden size-5 [html[data-theme=night]_&]:block" />
@@ -145,7 +145,7 @@ function ThemeMenuItem() {
 /** Non-interactive stand-in while the header's route state resolves. */
 export function SiteHeaderShell() {
   return (
-    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b border-line">
       <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6 lg:h-16">
         <Logo />
       </div>
@@ -188,7 +188,7 @@ export function TabBar() {
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 border-t-2 border-ink bg-ink text-white">
+    <footer className="mt-20 bg-ink text-white">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Logo inverted />

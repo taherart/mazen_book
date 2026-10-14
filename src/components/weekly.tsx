@@ -8,6 +8,8 @@ import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
 import { methodHref } from "@/lib/methods";
+import { count } from "@/lib/taxonomy";
+import { formatDay } from "@/lib/week";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { MethodArt, MethodNumber } from "./method-card";
 import { STRIP } from "./week-strip-tones";
@@ -32,30 +34,25 @@ export function useWeekMethod(week: WeekInfo) {
   return useDemo().admin.weekMethod ?? week.week;
 }
 
+const DAYS: [string, string, string] = ["يوم", "يومان", "أيام"];
+const HOURS: [string, string, string] = ["ساعة", "ساعتان", "ساعات"];
+const MINUTES: [string, string, string] = ["دقيقة", "دقيقتان", "دقائق"];
+
+/** "Closes Sunday 18 October · in 3 days and 4 hours": one line, the way a notice board says it. */
 export function Countdown({ endsAt, tone = "light", className }: { endsAt: string; tone?: "light" | "dark"; className?: string }) {
   const now = useNow();
   const left = now === null ? null : Math.max(0, Math.floor(new Date(endsAt).getTime() / 1000) - now);
-  const parts = [
-    { label: "يوم", value: left === null ? null : Math.floor(left / 86400) },
-    { label: "ساعة", value: left === null ? null : Math.floor((left % 86400) / 3600) },
-    { label: "دقيقة", value: left === null ? null : Math.floor((left % 3600) / 60) },
-    { label: "ثانية", value: left === null ? null : left % 60 },
-  ];
   if (left === 0) return <p className={cx("font-bold", tone === "dark" ? "text-sun" : "text-bad", className)}>انتهى وقت هذا التحدي.</p>;
+  const [d, h, m] = left === null ? [0, 0, 0] : [Math.floor(left / 86400), Math.floor((left % 86400) / 3600), Math.floor((left % 3600) / 60)];
+  const parts = d ? [count(d, DAYS), h ? count(h, HOURS) : null] : [h ? count(h, HOURS) : null, count(Math.max(m, 1), MINUTES)];
   return (
-    <div role="timer" aria-label="الوقت المتبقي لنهاية التحدي" className={cx("grid max-w-xs grid-cols-4 gap-2", className)}>
-      {parts.map((p) => (
-        <div key={p.label} className={cx("min-w-0 rounded-2xl border-2 px-1 py-1.5 text-center", tone === "dark" ? "border-white/25 bg-white/10 text-white" : "border-ink bg-white text-ink")}>
-          {/* keyed so each new value rolls up from below; only the bottom edge clips */}
-          <div className="font-display text-2xl leading-none tabular-nums [clip-path:inset(-1em_-1em_0_-1em)]">
-            <span key={p.value ?? "-"} className={cx("block", p.value !== null && "animate-digit")}>
-              {p.value === null ? "--" : String(p.value).padStart(2, "0")}
-            </span>
-          </div>
-          <div className={cx("mt-1 text-[0.68rem] font-semibold", tone === "dark" ? "text-white/70" : "text-ink-mute")}>{p.label}</div>
-        </div>
-      ))}
-    </div>
+    <p role="timer" className={cx("text-sm", tone === "dark" ? "text-white/85" : "text-ink-soft", className)}>
+      يُغلق{" "}
+      <b className={tone === "dark" ? "text-white" : "text-ink"} suppressHydrationWarning>
+        {formatDay(endsAt)}
+      </b>
+      {left === null ? null : <> · بعد {parts.filter(Boolean).join(" و")}</>}
+    </p>
   );
 }
 
@@ -169,7 +166,7 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
   const n = useWeekMethod(week);
   const m = methods[n - 1];
   return (
-    <article className={cx("overflow-hidden rounded-[2rem] border-2 border-ink bg-white shadow-print", className)}>
+    <article className={cx("overflow-hidden rounded-panel border-2 border-ink bg-white shadow-print", className)}>
       <header className="flex items-center justify-between gap-3 border-b-2 border-ink bg-sun px-5 py-2.5">
         <span className="font-display text-lg leading-none text-ink">تحدي الأسبوع</span>
         <span className="text-sm font-bold text-ink">
@@ -201,10 +198,7 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
               <dd className="font-bold text-ink"><T>{m.stats.capital}</T></dd>
             </div>
           </dl>
-          <div>
-            <p className="mb-2 text-xs font-bold text-ink-mute">ينتهي التحدي بعد</p>
-            <Countdown endsAt={week.endsAt} />
-          </div>
+          <Countdown endsAt={week.endsAt} />
           <Participants method={n} />
           <JoinButton method={n} size="md" magnetic className="mt-auto w-full" />
         </div>
