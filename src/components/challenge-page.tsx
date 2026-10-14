@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Medal, ScrollText, Trophy } from "lucide-react";
+import { CalendarDays, Medal, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useDemo, useEntries } from "@/lib/demo/hooks";
 import { methodHref } from "@/lib/methods";
@@ -31,7 +31,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
       {/* ---------- this week ---------- */}
       <section className="border-b-2 border-ink bg-sun">
         <Container className="grid items-center gap-8 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:py-14">
-          <div>
+          <div className="animate-enter">
             <Eyebrow>
               <Trophy aria-hidden className="size-3.5" />
               تحدي الأسبوع {week.week} من 52
@@ -70,7 +70,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
               <Countdown endsAt={week.endsAt} />
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              <JoinButton method={n} label="انضم للتحدي" magnetic />
+              <JoinButton method={n} magnetic />
               <Link href={methodHref(n)} className="font-bold text-ink underline underline-offset-4">
                 اقرأ عن الطريقة أولًا
               </Link>
@@ -78,7 +78,9 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
             <Participants method={n} className="mt-4 text-ink" />
           </div>
           <Link href={methodHref(n)} className="mx-auto block w-full max-w-sm animate-land rounded-[2.5rem] border-2 border-ink bg-white p-4 shadow-print [animation-delay:200ms]">
-            <MethodArt n={n} title={m.title} priority sizes="(min-width: 1024px) 380px, 80vw" />
+            <div className="plate rounded-tile">
+              <MethodArt n={n} title={m.title} priority sizes="(min-width: 1024px) 380px, 80vw" />
+            </div>
           </Link>
         </Container>
       </section>
@@ -86,16 +88,12 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
       {/* ---------- tasks ---------- */}
       <section className="border-b-2 border-ink bg-white">
         <Container className="grid gap-8 py-12 lg:grid-cols-2">
-          <div>
-            <div data-reveal>
-              <h2 className="font-display text-h2 text-ink">
-                مهام <span className="marker marker-draw">هذا الأسبوع</span>
-              </h2>
-              <p className="mt-2 text-ink-soft">خطوات الطريقة كما في الكتاب، مرتبة لتنجزها خلال أسبوع وتوثّق نتيجتها.</p>
-            </div>
-            <ol data-stagger className="mt-5 grid gap-2">
+          <div data-reveal>
+            <h2 className="font-display text-h2 text-ink">مهام هذا الأسبوع</h2>
+            <p className="mt-2 text-ink-soft">خطوات الطريقة كما في الكتاب، مرتبة لتنجزها خلال أسبوع وتوثّق نتيجتها.</p>
+            <ol className="mt-5 grid gap-2">
               {tasks.map((t, i) => (
-                <li key={i} data-reveal="start" className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-paper px-4 py-3">
+                <li key={i} className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-paper px-4 py-3">
                   <span className="grid size-8 shrink-0 place-items-center rounded-full border-2 border-ink bg-white pt-[0.1em] font-display text-lg leading-none">{i + 1}</span>
                   <span className="font-bold text-ink">
                     <T>{t}</T>

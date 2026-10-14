@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleCheckBig, ImagePlus, LoaderCircle, Plus, X } from "lucide-react";
+import { CircleCheckBig, ImagePlus, LoaderCircle, Plus, X } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";

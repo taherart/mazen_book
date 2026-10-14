@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CircleCheckBig, FileUp, PartyPopper, Send, Trophy } from "lucide-react";
+import { Check, CircleCheckBig, FileUp, PartyPopper, Send, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useDemo } from "@/lib/demo/hooks";
@@ -12,7 +12,7 @@ import { AuthGate } from "./auth-gate";
 import { MethodNumber } from "./method-card";
 import { T } from "./text";
 import { Button, Chip, Notice, Progress, Textarea, buttonClass, cx } from "./ui";
-import { Countdown, useWeekMethod } from "./weekly";
+import { Countdown, JOIN_LABEL, useWeekMethod } from "./weekly";
 
 const ENTRY_LABEL = { pending: "مشاركتك بانتظار المراجعة", eligible: "مشاركتك مؤهلة للسحب", rejected: "مشاركتك لم تستوفِ الشروط" } as const;
 const MIN_NOTE = 30;
@@ -31,6 +31,8 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
   const noteId = useId();
   const [proof, setProof] = useState("");
   const [touched, setTouched] = useState(false);
+  // only the task just ticked gets the stamp animation; ones already done show it at rest
+  const [stamped, setStamped] = useState<number | null>(null);
 
   if (!state) {
     return (
@@ -41,7 +43,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
           {count(tasks.length, TASKS)} لتجربة «{method.title}». تحدّد إنجاز كل مهمة وتوثّق ما حدث معك.
         </p>
         <Button size="lg" className="mt-6" onClick={() => actions.joinChallenge(method.n)}>
-          انضم للتحدي
+          {JOIN_LABEL}
         </Button>
       </div>
     );
@@ -62,7 +64,7 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
               أنجزت <span className="text-brand">{done}</span> من {tasks.length}
             </p>
             {complete ? (
-              <Chip tone="ok" className="animate-pop px-3 py-1.5 text-sm">
+              <Chip tone="ok" className="animate-stamp px-3 py-1.5 text-sm">
                 <PartyPopper aria-hidden className="size-4" />
                 أكملت كل المهام
               </Chip>
@@ -79,10 +81,23 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
             const checked = state.done.includes(i);
             return (
               <li key={i}>
-                <label className={cx("flex cursor-pointer gap-4 rounded-3xl border-2 p-4 transition sm:p-5", checked ? "border-ok bg-ok-wash" : "border-ink bg-white hover:bg-brand-wash")}>
-                  <input type="checkbox" className="peer sr-only" checked={checked} onChange={() => actions.toggleTask(method.n, i)} />
+                <label className={cx("relative flex cursor-pointer gap-4 rounded-3xl border-2 p-4 transition sm:p-5", checked ? "border-ok bg-ok-wash" : "border-ink bg-white hover:bg-brand-wash")}>
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    checked={checked}
+                    onChange={() => {
+                      setStamped(checked ? null : i);
+                      actions.toggleTask(method.n, i);
+                    }}
+                  />
+                  {checked ? (
+                    <span aria-hidden className={cx("pointer-events-none absolute -top-3 end-5 rounded-lg border-[3px] border-ok bg-ok-wash px-2.5 pt-[0.12em] font-display text-lg leading-tight text-ok [transform:rotate(-6deg)]", stamped === i && "animate-stamp")}>
+                      تم
+                    </span>
+                  ) : null}
                   <span aria-hidden className={cx("mt-0.5 grid size-8 shrink-0 place-items-center rounded-xl border-2 transition peer-focus-visible:outline-3 peer-focus-visible:outline-sun-deep", checked ? "border-ok bg-ok text-white" : "border-ink bg-white text-transparent")}>
-                    <Check className="size-5" strokeWidth={3} />
+                    <Check weight="bold" className="size-5" />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-xs font-bold text-ink-mute">المهمة {i + 1}</span>
@@ -93,12 +108,6 @@ function Board({ method, tasks, week }: { method: MethodSummary; tasks: { title:
                       <T>{t.detail}</T>
                     </span>
                   </span>
-                  {/* completion is the product's core moment: a "done" stamp lands on the task */}
-                  {checked ? (
-                    <span aria-hidden className="ms-auto shrink-0 self-start animate-stamp rounded-tile border-4 border-ok px-2.5 pt-1.5 pb-0.5 font-display text-lg leading-none text-ok">
-                      تم
-                    </span>
-                  ) : null}
                 </label>
               </li>
             );

@@ -1,10 +1,11 @@
 "use client";
 
-import { BookOpen, Compass, Home, LayoutGrid, Menu, MessagesSquare, Trophy, UserRound, X } from "lucide-react";
+import { BookOpen, Compass, Home, LayoutGrid, Menu, MessagesSquare, Moon, Sun, Trophy, UserRound, X } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useHydrated, useUser } from "@/lib/demo/hooks";
+import { THEME_KEY } from "@/lib/pre-paint";
 import { Logo } from "./logo";
 import { Avatar, buttonClass, cx } from "./ui";
 
@@ -25,9 +26,9 @@ export function SiteHeader() {
   const hydrated = useHydrated();
 
   return (
-    // named so page transitions treat it as the fixed point the content moves under (motion.css)
-    <header style={{ viewTransitionName: "site-header" }} className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
+    // anchored: content slides under it during page transitions
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6 lg:h-16">
         <Logo />
         <nav aria-label="التنقل الرئيسي" className="mx-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
@@ -40,13 +41,13 @@ export function SiteHeader() {
           {!hydrated ? (
             <span className="skeleton block h-10 w-24" />
           ) : user ? (
-            <Link href="/dashboard" className="flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
+            <Link href="/dashboard" className="tap flex items-center gap-2 rounded-full border-2 border-ink bg-white py-1 pe-1 ps-3 text-sm font-bold hover:bg-brand-wash">
               <span className="max-w-28 truncate">{user.name.split(" ")[0]}</span>
               <Avatar name={user.name} size="sm" className="size-8 border-0" />
             </Link>
           ) : (
             <>
-              <Link href="/login" className={buttonClass("ghost", "sm", "hidden sm:inline-flex")}>
+              <Link href="/login" className={buttonClass("ghost", "sm", "max-sm:hidden")}>
                 دخول
               </Link>
               <Link href="/signup" className={buttonClass("primary", "sm")}>
@@ -54,7 +55,8 @@ export function SiteHeader() {
               </Link>
             </>
           )}
-          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="grid size-11 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
+          <ThemeToggle className="hidden lg:grid" />
+          <button type="button" aria-label={open ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="tap grid size-10 place-items-center rounded-full border-2 border-ink bg-white lg:hidden">
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -69,6 +71,9 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
+            <li>
+              <ThemeMenuItem />
+            </li>
             {hydrated && !user ? (
               <li>
                 <Link href="/login" onClick={() => setOpen(false)} className="block rounded-2xl px-4 py-3 font-bold text-ink hover:bg-paper">
@@ -83,11 +88,65 @@ export function SiteHeader() {
   );
 }
 
+const watchTheme = (change: () => void) => {
+  const mo = new MutationObserver(change);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => mo.disconnect();
+};
+
+function useNight() {
+  return useSyncExternalStore(
+    watchTheme,
+    () => document.documentElement.dataset.theme === "night",
+    () => false,
+  );
+}
+
+function setNight(on: boolean) {
+  const root = document.documentElement;
+  try {
+    localStorage.setItem(THEME_KEY, on ? "night" : "day");
+  } catch {}
+  if (on) root.dataset.theme = "night";
+  else delete root.dataset.theme;
+}
+
+/** Day or night edition. Icons follow the <html> attribute through CSS, so they are right from the
+ *  first paint; the pressed state catches up once React is live. Desktop header; phones get the
+ *  menu item below, since the header has no room. */
+function ThemeToggle({ className }: { className?: string }) {
+  const night = useNight();
+  return (
+    <button
+      type="button"
+      aria-pressed={night}
+      aria-label="الطبعة الليلية"
+      title={night ? "عُد إلى الطبعة النهارية" : "الطبعة الليلية"}
+      onClick={() => setNight(!night)}
+      className={cx("tap size-10 shrink-0 place-items-center rounded-full border-2 border-ink bg-white text-ink transition hover:bg-brand-wash", className)}
+    >
+      <Moon aria-hidden className="size-5 [html[data-theme=night]_&]:hidden" />
+      <Sun aria-hidden className="hidden size-5 [html[data-theme=night]_&]:block" />
+    </button>
+  );
+}
+
+function ThemeMenuItem() {
+  const night = useNight();
+  return (
+    <button type="button" aria-pressed={night} onClick={() => setNight(!night)} className="flex w-full items-center justify-between rounded-2xl px-4 py-3 font-bold text-ink hover:bg-paper">
+      الطبعة الليلية
+      <Moon aria-hidden className="size-5 [html[data-theme=night]_&]:hidden" />
+      <Sun aria-hidden className="hidden size-5 [html[data-theme=night]_&]:block" />
+    </button>
+  );
+}
+
 /** Non-interactive stand-in while the header's route state resolves. */
 export function SiteHeaderShell() {
   return (
-    <header style={{ viewTransitionName: "site-header" }} className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95">
-      <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6">
+    <header style={{ viewTransitionName: "site-header" }} className="glass sticky top-0 z-40 border-b-2 border-ink">
+      <div className="mx-auto flex h-14 max-w-6xl items-center px-4 sm:px-6 lg:h-16">
         <Logo />
       </div>
     </header>
@@ -106,7 +165,7 @@ const TABS = [
 export function TabBar() {
   const pathname = usePathname();
   return (
-    <nav aria-label="التنقل السريع" className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav aria-label="التنقل السريع" className="glass fixed inset-x-0 bottom-0 z-40 border-t-2 border-ink pb-[env(safe-area-inset-bottom)] lg:hidden">
       <ul className="mx-auto grid max-w-lg grid-cols-5">
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);

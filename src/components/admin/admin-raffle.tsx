@@ -1,6 +1,6 @@
 "use client";
 
-import { Dices, Megaphone, PartyPopper, Ticket, Undo2 } from "lucide-react";
+import { Dices, Megaphone, PartyPopper, Ticket, Undo2 } from "@/components/icons";
 import { useState } from "react";
 import { useDemo, useEntries, type RaffleEntry } from "@/lib/demo/hooks";
 import { actions, type EntryStatus } from "@/lib/demo/store";

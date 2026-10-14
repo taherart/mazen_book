@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/icons";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import type { ReviewStatus } from "@/lib/types";
@@ -16,13 +16,13 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return <span className={cx("inline-flex items-center gap-2 rounded-full border-2 border-ink bg-white px-3 py-1 text-xs font-bold text-ink", className)}>{children}</span>;
 }
 
-/** `reveal` fades the heading in once when it scrolls into view (see motion.css). Never use it above the fold. */
+/** Section title. `reveal` fades it in as it scrolls into view (never use it above the fold). */
 export function SectionHead({ eyebrow, title, lead, action, reveal, className }: { eyebrow?: ReactNode; title: ReactNode; lead?: ReactNode; action?: ReactNode; reveal?: boolean; className?: string }) {
   return (
     <div data-reveal={reveal ? "" : undefined} className={cx("flex flex-wrap items-end justify-between gap-x-6 gap-y-4", className)}>
       <div className="max-w-2xl">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h2 className={cx("font-display text-h2 text-ink", eyebrow ? "mt-3" : null)}>{title}</h2>
+        <h2 className={cx("font-display text-h2 text-ink", !!eyebrow && "mt-3")}>{title}</h2>
         {lead ? <p className="mt-2 text-ink-soft">{lead}</p> : null}
       </div>
       {action}
@@ -43,9 +43,9 @@ const VARIANT: Record<Variant, string> = {
   ghost: "text-ink-soft border-2 border-transparent hover:bg-ink/5 hover:text-ink",
   danger: "bg-white text-bad border-2 border-bad hover:bg-bad-wash",
 };
-const PRESS = "active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none";
+// printed buttons rise a little under a mouse and press flat when tapped
+const PRESS = "hover:translate-x-px hover:-translate-y-0.5 hover:shadow-print active:translate-x-[-2px] active:translate-y-[2px] active:shadow-none";
 const SIZE: Record<Size, string> = {
-  // `tap` keeps the hit area at 44px without making the small button look bigger
   sm: "tap h-9 px-4 text-sm gap-1.5",
   md: "h-11 px-5 text-[0.95rem] gap-2",
   lg: "h-14 px-7 text-lg gap-2.5",
@@ -54,7 +54,7 @@ const SIZE: Record<Size, string> = {
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
   const printed = variant === "primary" || variant === "sun" || variant === "white";
   return cx(
-    "inline-flex select-none items-center justify-center rounded-full font-bold leading-none transition duration-150 disabled:opacity-50 disabled:shadow-none",
+    "inline-flex select-none items-center justify-center rounded-full font-bold leading-none transition duration-150 disabled:translate-none disabled:opacity-50 disabled:shadow-none",
     VARIANT[variant],
     printed && PRESS,
     SIZE[size],
@@ -122,7 +122,7 @@ export function Progress({ value, className, tone = "brand" }: { value: number; 
   const pct = Math.max(0, Math.min(100, Math.round(value)));
   return (
     <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} className={cx("h-3 overflow-hidden rounded-full border-2 border-ink bg-white", className)}>
-      <div className={cx("h-full rounded-full transition-[width,background-color] duration-(--dur-5) ease-spring-soft", tone === "sun" ? "bg-sun" : "bg-brand")} style={{ width: `${pct}%` }} />
+      <div className={cx("h-full rounded-full transition-[width,background-color] duration-700 ease-spring-soft", tone === "sun" ? "bg-sun" : "bg-brand")} style={{ width: `${pct}%` }} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, BarChart3, ClipboardCheck, Flag, PlugZap } from "lucide-react";
+import { ArrowLeft, BarChart3, ClipboardCheck, Flag, PlugZap } from "@/components/icons";
 import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useEntries, useProviders, useStories } from "@/lib/demo/hooks";
 import { SampleTag } from "../ui";

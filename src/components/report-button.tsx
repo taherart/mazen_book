@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Flag } from "lucide-react";
+import { Check, Flag } from "@/components/icons";
 import { useState } from "react";
 import { actions, type Report } from "@/lib/demo/store";
 import { Button, Select } from "./ui";

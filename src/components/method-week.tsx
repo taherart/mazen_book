@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, Gift, ScrollText, Trophy } from "lucide-react";
+import { CalendarClock, Gift, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useDemo } from "@/lib/demo/hooks";
 import { formatDay } from "@/lib/week";

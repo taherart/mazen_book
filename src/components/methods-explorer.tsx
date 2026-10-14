@@ -1,11 +1,11 @@
 "use client";
 
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { LayoutGrid, List, Search, SlidersHorizontal, X } from "@/components/icons";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { CAPITAL, DOMAINS, KINDS, LEVELS, PLACES, TIME } from "@/lib/taxonomy";
 import type { MethodSummary } from "@/lib/types";
-import { MethodCard } from "./method-card";
+import { MethodCard, MethodListItem } from "./method-card";
 import { Button, EmptyState, cx } from "./ui";
 
 type Filters = { q: string; capital: string; time: string; level: string; place: string; kind: string; domain: string };
@@ -38,19 +38,38 @@ function matches(m: MethodSummary, f: Filters) {
   return true;
 }
 
-export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSummary[]; limit?: number; compact?: boolean }) {
+const NARROW = "(max-width: 639.98px)";
+const onResize = (change: () => void) => {
+  const mq = window.matchMedia(NARROW);
+  mq.addEventListener("change", change);
+  return () => mq.removeEventListener("change", change);
+};
+/** Phones get the compact list by default. The explorer renders in the browser (it reads the query
+ *  string), so the first render already knows the width and nothing switches after paint. */
+function useNarrow() {
+  return useSyncExternalStore(
+    onResize,
+    () => window.matchMedia(NARROW).matches,
+    () => false,
+  );
+}
+
+export function MethodsExplorer({ methods }: { methods: MethodSummary[] }) {
   const params = useSearchParams();
   const [filters, setFilters] = useState<Filters>(() => {
     const init = { ...EMPTY };
-    if (!compact) for (const k of KEYS) init[k] = params.get(k) ?? "";
+    for (const k of KEYS) init[k] = params.get(k) ?? "";
     return init;
   });
   const [panel, setPanel] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const narrow = useNarrow();
+  const [choice, setChoice] = useState<"grid" | "list" | null>(null);
+  const view = choice ?? (narrow ? "list" : "grid");
 
   const set = (key: keyof Filters, value: string) => {
     const next = { ...filters, [key]: value };
     setFilters(next);
-    if (compact) return;
     // keep the address shareable without a navigation
     const qs = new URLSearchParams();
     for (const k of KEYS) if (next[k]) qs.set(k, next[k]);
@@ -58,48 +77,78 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
   };
   const clear = () => {
     setFilters(EMPTY);
-    if (!compact) window.history.replaceState(null, "", window.location.pathname);
+    window.history.replaceState(null, "", window.location.pathname);
   };
 
   const result = useMemo(() => methods.filter((m) => matches(m, filters)), [methods, filters]);
   const active = KEYS.filter((k) => k !== "q" && filters[k]).length;
-  const shown = limit ? result.slice(0, limit) : result;
-  const groups = compact ? GROUPS.slice(0, 4) : GROUPS;
 
   return (
     <div>
       <div className="flex flex-wrap items-center gap-3">
-        {!compact ? (
-          <label className="relative block min-w-0 flex-1 basis-64">
-            <span className="sr-only">ابحث في الطرق</span>
-            <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-mute" />
-            <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border-2 border-ink bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
-          </label>
-        ) : null}
-        <Button variant="white" className="lg:hidden" onClick={() => setPanel((v) => !v)} aria-expanded={panel}>
+        <label className="relative block min-w-0 flex-1 basis-64">
+          <span className="sr-only">ابحث في الطرق</span>
+          <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-ink-mute" />
+          <input type="search" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="ابحث باسم الطريقة أو رقمها…" className="h-12 w-full rounded-full border-2 border-ink bg-white pe-4 ps-12 text-ink placeholder:text-ink-mute focus:border-brand focus:outline-none" />
+        </label>
+        <Button
+          variant="white"
+          className="lg:hidden"
+          aria-expanded={panel}
+          onClick={() => {
+            setPanel(true);
+            requestAnimationFrame(() => closeRef.current?.focus());
+          }}
+        >
           <SlidersHorizontal aria-hidden className="size-4" />
           تصفية
           {active ? <span className="grid size-5 place-items-center rounded-full bg-brand text-xs text-white">{active}</span> : null}
         </Button>
         <p aria-live="polite" className="ms-auto text-sm text-ink-soft">
-          {/* keyed so the new count rolls in each time the filter changes it */}
           <b key={result.length} className="inline-block animate-digit font-display text-xl text-brand">
             {result.length}
           </b>{" "}
           من {methods.length} طريقة
         </p>
+        <div role="group" aria-label="طريقة العرض" className="flex rounded-full border-2 border-ink bg-white p-0.5">
+          {(
+            [
+              ["list", "قائمة", List],
+              ["grid", "بطاقات", LayoutGrid],
+            ] as const
+          ).map(([v, label, Icon]) => (
+            <button key={v} type="button" aria-pressed={view === v} title={label} onClick={() => setChoice(v)} className={cx("tap grid size-9 place-items-center rounded-full transition", view === v ? "bg-ink text-white" : "text-ink-soft hover:text-ink")}>
+              <Icon aria-hidden className="size-4" />
+              <span className="sr-only">{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className={cx("mt-4 gap-x-6 gap-y-4 rounded-3xl border-2 border-ink bg-white p-4 lg:grid", compact ? "lg:grid-cols-4" : "lg:grid-cols-3", panel ? "grid" : "hidden")}>
-        {groups.map((g) => (
+      {/* phones: a bottom sheet over a dimmed page; desktop: an inline panel */}
+      {panel ? <div aria-hidden onClick={() => setPanel(false)} className="fixed inset-0 z-[var(--z-overlay)] bg-ink/40 lg:hidden" /> : null}
+      <div
+        onKeyDown={(e) => e.key === "Escape" && setPanel(false)}
+        className={cx(
+          "gap-x-6 gap-y-4 border-2 border-ink bg-white p-4 lg:mt-4 lg:grid lg:grid-cols-3 lg:rounded-card",
+          "max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-[var(--z-overlay)] max-lg:max-h-[85dvh] max-lg:overflow-y-auto max-lg:rounded-t-panel max-lg:border-x-0 max-lg:border-b-0 max-lg:pb-[calc(1rem+env(safe-area-inset-bottom))]",
+          panel ? "grid" : "hidden",
+        )}
+      >
+        <div className="flex items-center justify-between lg:hidden">
+          <p className="font-display text-h3 text-ink">تصفية الطرق</p>
+          <button ref={closeRef} type="button" aria-label="أغلق التصفية" onClick={() => setPanel(false)} className="tap grid size-10 place-items-center rounded-full border-2 border-ink">
+            <X aria-hidden className="size-5" />
+          </button>
+        </div>
+        {GROUPS.map((g) => (
           <fieldset key={g.key} className="min-w-0">
             <legend className="mb-2 text-xs font-bold text-ink-mute">{g.label}</legend>
-            {/* chips stay compact; `tap` stretches each hit area to 44px and the row gap keeps them from overlapping */}
-            <div className="flex flex-wrap gap-x-1.5 gap-y-2.5">
+            <div className="flex flex-wrap gap-1.5">
               {Object.entries(g.options).map(([value, label]) => {
                 const on = filters[g.key] === value;
                 return (
-                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("tap rounded-full border-2 px-3 py-2 text-sm font-semibold leading-none transition-[scale,background-color,border-color,color] duration-(--dur-3) ease-spring active:scale-96", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
+                  <button key={value} type="button" aria-pressed={on} onClick={() => set(g.key, on ? "" : value)} className={cx("tap rounded-full border-2 px-3 py-1.5 text-sm font-semibold leading-none transition duration-300 ease-spring active:scale-96", on ? "border-ink bg-brand text-white" : "border-line bg-white text-ink-soft hover:border-ink hover:text-ink")}>
                     {label}
                   </button>
                 );
@@ -108,18 +157,21 @@ export function MethodsExplorer({ methods, limit, compact }: { methods: MethodSu
           </fieldset>
         ))}
         {active || filters.q ? (
-          <button type="button" onClick={clear} className="inline-flex items-center gap-1.5 self-end justify-self-start text-sm font-bold text-bad hover:underline">
+          <button type="button" onClick={clear} className="tap inline-flex items-center gap-1.5 self-end justify-self-start text-sm font-bold text-bad hover:underline">
             <X aria-hidden className="size-4" />
             مسح التصفية
           </button>
         ) : null}
+        <Button size="lg" className="sticky bottom-0 w-full lg:hidden" onClick={() => setPanel(false)}>
+          اعرض {result.length} طريقة
+        </Button>
       </div>
 
-      {shown.length ? (
-        <ul data-stagger className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {shown.map((m, i) => (
-            <li key={m.n} data-reveal>
-              <MethodCard method={m} className="h-full" priority={i < 4} />
+      {result.length ? (
+        <ul className={cx("mt-6 grid grid-cols-[minmax(0,1fr)]", view === "list" ? "gap-3 lg:grid-cols-2" : "gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4")}>
+          {result.map((m, i) => (
+            <li key={m.n} className="animate-rise" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+              {view === "list" ? <MethodListItem method={m} className="h-full" /> : <MethodCard method={m} className="h-full" priority={i < 4} />}
             </li>
           ))}
         </ul>

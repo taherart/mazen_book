@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Pencil, Search, X } from "lucide-react";
+import { ExternalLink, Pencil, Search, X } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { methodHref } from "@/lib/methods";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Bell, Flag, HandHeart, Inbox, LogOut, MessageSquareHeart, Rocket, ShieldCheck, Sparkles, Ticket, Trash2, Trophy } from "lucide-react";
+import { Award, Bell, Flag, HandHeart, Inbox, LogOut, MessageSquareHeart, Rocket, ShieldCheck, Sparkles, Ticket, Trash2, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";

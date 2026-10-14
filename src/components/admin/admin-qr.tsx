@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download } from "@/components/icons";
 import { methodHref } from "@/lib/methods";
 import { Qr } from "../qr";
 import { Notice } from "../ui";

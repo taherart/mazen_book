@@ -1,5 +1,6 @@
 name: Deploy to VPS
 
+# Every push to main goes live on the VPS's Docker project (see deploy/README.md).
 on:
   push:
     branches: [main]
@@ -12,7 +13,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -25,44 +26,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # gate: never send the VPS a commit that doesn't lint or build
+      - run: pnpm lint
       - run: pnpm build
 
-      - name: Package release
-        run: |
-          cp -r public .next/standalone/
-          cp -r .next/static .next/standalone/.next/
-          tar -C .next/standalone -czf release.tgz .
-
-      - name: Configure SSH
+      - name: Deploy through Hostinger's Docker Manager
         env:
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-        run: |
-          if [ -z "$VPS_SSH_KEY" ] || [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ]; then
-            echo "::error::Add VPS_SSH_KEY, VPS_HOST and VPS_USER under Settings > Secrets and variables > Actions > Repository secrets."
-            exit 1
-          fi
-          install -m 700 -d ~/.ssh
-          # Accept the key as-is, or as one base64 line (safer to copy out of a web terminal).
-          if printf '%s' "$VPS_SSH_KEY" | grep -q 'BEGIN OPENSSH PRIVATE KEY'; then
-            printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' > ~/.ssh/id_ed25519
-          else
-            printf '%s' "$VPS_SSH_KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/id_ed25519 || true
-          fi
-          chmod 600 ~/.ssh/id_ed25519
-          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null; then
-            echo "::error::VPS_SSH_KEY is not a valid private key. On the VPS run: base64 -w0 ~/.ssh/deploy  then paste that single line as the secret."
-            exit 1
-          fi
-          # public fingerprint only: compare with `ssh-keygen -lf ~/.ssh/deploy.pub` on the VPS
-          ssh-keygen -lf ~/.ssh/id_ed25519
-          ssh-keyscan -t ed25519 "$VPS_HOST" >> ~/.ssh/known_hosts
-
-      - name: Upload and switch release
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-        run: |
-          scp release.tgz "$VPS_USER@$VPS_HOST:/tmp/mazen-book-release.tgz"
-          ssh "$VPS_USER@$VPS_HOST" 'bash -s' -- "$GITHUB_SHA" < scripts/deploy-vps.sh
+          HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+        run: python3 deploy/hostinger.py "$GITHUB_SHA"

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Link2, Share2 } from "lucide-react";
+import { Check, Link2, Share2 } from "@/components/icons";
 import { useState } from "react";
 import { cx } from "./ui";
 

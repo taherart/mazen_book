@@ -23,11 +23,16 @@ export function MotionRoot() {
 
     const countUp = (el: HTMLElement) => {
       const target = Number(el.dataset.countup);
-      if (!Number.isFinite(target) || reduce) return;
+      // Write into the text node React rendered, never replace it: if React later updates the
+      // number it updates that same node, and the screen stays in step.
+      const text = el.firstChild;
+      if (!Number.isFinite(target) || reduce || !(text instanceof Text) || el.childNodes.length !== 1) return;
       const started = performance.now();
       const tick = (now: number) => {
+        // React changed the value mid-count: its number wins
+        if (Number(el.dataset.countup) !== target) return;
         const t = Math.min(1, (now - started) / 900);
-        el.textContent = Math.round(target * (1 - Math.pow(1 - t, 4))).toLocaleString("en-US");
+        text.nodeValue = Math.round(target * (1 - Math.pow(1 - t, 4))).toLocaleString("en-US");
         if (t < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
@@ -52,15 +57,6 @@ export function MotionRoot() {
     const SELECTOR = "[data-reveal]:not([data-inview]), [data-countup]:not([data-inview])";
     const watch = (scope: ParentNode) => scope.querySelectorAll<HTMLElement>(SELECTOR).forEach((el) => io.observe(el));
 
-    // Whatever is already on screen stays put: mark it before the hidden state switches on,
-    // so hydration never makes visible content blink.
-    for (const el of document.querySelectorAll<HTMLElement>(SELECTOR)) {
-      const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight && r.bottom > 0) el.dataset.inview = "";
-    }
-    root.classList.add("motion");
-    watch(document);
-
     const mo = new MutationObserver((records) => {
       for (const record of records) {
         for (const node of record.addedNodes) {
@@ -70,7 +66,6 @@ export function MotionRoot() {
         }
       }
     });
-    mo.observe(document.body, { childList: true, subtree: true });
 
     let frame = 0;
     let last: PointerEvent | null = null;
@@ -112,12 +107,37 @@ export function MotionRoot() {
       last = e;
       if (!frame) frame = requestAnimationFrame(apply);
     };
-    if (fine && !reduce) {
-      document.addEventListener("pointermove", onMove, { passive: true });
-      root.addEventListener("pointerleave", release);
-    }
+    const start = () => {
+      // Whatever is on screen, or already scrolled past, stays put: mark it before the hidden
+      // state switches on, so visible content never blinks.
+      for (const el of document.querySelectorAll<HTMLElement>(SELECTOR)) {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.dataset.inview = "";
+      }
+      root.classList.add("motion");
+      watch(document);
+      mo.observe(document.body, { childList: true, subtree: true });
+      if (fine && !reduce) {
+        document.addEventListener("pointermove", onMove, { passive: true });
+        root.addEventListener("pointerleave", release);
+      }
+    };
+
+    // Server-rendered elements must not gain attributes before React hydrates them, or React
+    // reports a mismatch, and Suspense boundaries hydrate after this effect runs. So wait until
+    // the document has finished streaming and the main thread is idle. Until then nothing is
+    // hidden, so the page is complete either way.
+    const hasIdle = typeof window.requestIdleCallback === "function"; // not in Safari
+    let idle = 0;
+    const schedule = () => {
+      idle = hasIdle ? window.requestIdleCallback(start, { timeout: 1500 }) : window.setTimeout(start, 200);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
 
     return () => {
+      window.removeEventListener("load", schedule);
+      if (hasIdle) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
       io.disconnect();
       mo.disconnect();
       cancelAnimationFrame(frame);

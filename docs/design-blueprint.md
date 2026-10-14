@@ -15,19 +15,19 @@ Audit of the current build and the plan to raise it, written against the running
 | # | Finding | Measured | Fix |
 |---|---|---|---|
 | 1 | Small grey text failed contrast | `ink-mute` was 3.61:1 on paper and 3.99:1 on white. AA needs 4.5:1 | **Fixed**: token is now `#63666f` (5.2:1 and 5.7:1) |
-| 2 | The site barely moves | 3 animated elements on home, 2 on a method page. No scroll response, no page transitions | Phase 1 |
+| 2 | The site barely moves | 3 animated elements on home, 2 on a method page. No scroll response, no page transitions | **Fixed** in phase 1 |
 | 3 | Everything is a box | 52 ink-bordered boxes on home; 61 on a method page, plus 20 hard shadows | Surface tiers, phase 2 |
 | 4 | One layout repeated | Rows of 3 or 4 equal cards in 5 of the 8 home sections | Home recomposition, phase 2 |
-| 5 | Hero carries too much | Eyebrow, headline, subtext, two buttons and three stat tiles, next to the weekly card. Its bottom edge sits 56px below the fold at 1366×768 | Phase 0 |
-| 6 | Same intent, competing buttons | Hero has "ابدأ تحدي هذا الأسبوع" beside a card whose own button is "انضم للتحدي". Method page asks you to join 3 times under 2 labels | Phase 0 |
-| 7 | A label above every section | 5 small pill labels across 8 sections | Keep the hero one, drop the rest |
+| 5 | Hero carries too much | Eyebrow, headline, subtext, two buttons and three stat tiles, next to the weekly card. Its bottom edge sits 56px below the fold at 1366×768 | **Fixed**: stats moved to a fact strip, second button gone; the hero now ends above the fold |
+| 6 | Same intent, competing buttons | Hero has "ابدأ تحدي هذا الأسبوع" beside a card whose own button is "انضم للتحدي". Method page asks you to join 3 times under 2 labels | **Label fixed**: "سأجرّب هذه الطريقة" everywhere (`JOIN_LABEL`). The third join button goes with the lower band in phase 2 |
+| 7 | A label above every section | 5 small pill labels across 8 sections | **Fixed**: the hero one stays |
 | 8 | Browsing 52 methods on a phone is long | Card is 469px tall: 1.35 cards per screen, about 38 screens for the full list | Compact row card, phase 2 |
 | 9 | Fixed chrome eats the phone screen | Prototype bar 38 + header 66 + tab bar 74 = 178px, 22% of an 812px screen | Chrome diet, phase 2 |
-| 10 | Touch targets under 44px | 27 filter chips at 30px; header controls at 36 to 40px | `tap` utility, phase 0 |
+| 10 | Touch targets under 44px | 27 filter chips at 30px; header controls at 36 to 40px | **Fixed** with `tap`: chips, small buttons, header and prototype-bar controls |
 | 11 | Radius drift | 8 different radii in use (6, 8, 10, 12, 16, 24, 32, 40px) plus pill | One scale, phase 2 |
 | 12 | Method page is long and flat | About 9 screens tall at tablet width, 15 second-level headings, every block weighted the same | Method recomposition, phase 2 |
-| 13 | Type jumps at breakpoints | Sizes step at `sm`/`lg` instead of scaling | Fluid scale, phase 1 |
-| 14 | Icon family differs from the book | Site uses Lucide; the book's PDF embeds Phosphor Light | Swap to `@phosphor-icons/react`, phase 4 |
+| 13 | Type jumps at breakpoints | Sizes step at `sm`/`lg` instead of scaling | **Fixed** on home, method, challenge and book headings |
+| 14 | Icon family differs from the book | Site uses Lucide; the book's PDF embeds Phosphor Light | **Fixed**: Phosphor through `components/icons.tsx`; Light from 24px up, Regular below |
 
 **What is already right and stays:** brand tokens taken from the book, real illustrations instead of stock, a hero that shows a real working component, full empty/loading/error/pending states, correct right-to-left behaviour, a global reduced-motion guard.
 
@@ -237,7 +237,7 @@ Budget: no effect may add a continuously repainting layer, and the page must hol
 
 ### What is already in the codebase
 
-Two files, wired in. Pages opt in; phases 0 and 1 below have opted in the home, method and challenge pages.
+Two files, wired in and dormant: nothing on the site changes until a page opts in.
 
 - `src/app/motion.css`: tokens, utilities, keyframes and view-transition rules.
 - `src/components/motion-root.tsx`: one IntersectionObserver and one pointer listener for the whole site, mounted in the root layout. Server components opt in with data attributes and stay server components.
@@ -295,13 +295,28 @@ Rules for using it:
 
 ### Rollout
 
-| Phase | Work | Size | Risk |
-|---|---|---|---|
-| 0. Defects (**done**) | Contrast, 44px targets, one join label, trim the hero (its numbers moved to a fact strip), drop four eyebrow labels | Small | None |
-| 1. Motion layer (**done**) | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive |
-| 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest |
-| 3. Atmosphere | Grain, frosted chrome, misprint, torn edges | Small | Low |
-| 4. Optional | Phosphor icons to match the book; night edition | Medium | Low |
+| Phase | Work | Size | Risk | Status |
+|---|---|---|---|---|
+| 0. Defects | Contrast (done), 44px targets, one join label, trim the hero, drop four eyebrow labels | Small | None | **Done** |
+| 1. Motion layer | Reveals and markers on home, method and challenge pages; `lift`; stamps in the checklist and week strip; digit roll; the four view transitions; fluid type | Medium | Low: additive | **Done**, book page included |
+| 2. Recomposition | Surface tiers and radius cleanup; home bento, route and year band; method page paths and steps; compact list on phones; sticky join bar; chrome diet | Large | Medium: changes layout, wants your sign-off on a first page before the rest | **Done**: home signed off, then method page, phone list with grid/list toggle and filter sheet, sticky join bar |
+| 3. Atmosphere | Grain, frosted chrome, misprint, torn edges | Small | Low | **Done** except torn edges, which move to phase 2 with the year band they frame |
+| 4. Optional | Phosphor icons to match the book; night edition | Medium | Low | **Done**: night edition is opt-in from the header |
+
+### Notes from phases 0, 1 and 3
+
+- **The morph needs a full prefetch.** With Partial Prefetching a link only fetches the route's shared App Shell, which stops at the method page's Suspense boundary, so the destination arrived as a skeleton and the illustration had nothing to pair with. Method cards and the previous/next links use `prefetch` (per-link prefetching); the art and number now travel in one transition. Checked on a production build: prefetching is off in `next dev`.
+- **MotionRoot waits for hydration.** It used to mark on-screen elements as soon as the root layout mounted, before the page's Suspense boundaries hydrated, and React reported attribute mismatches. It now starts after `load` and an idle callback; until then nothing is hidden.
+- **Count-up writes into React's text node** instead of replacing it, so a counter whose value later changes (the community stats react to the sample toggle) stays correct.
+- **Chip reflow through a view transition was left out.** Naming all 52 cards for one transition costs a snapshot per card, too much memory on a mid-range phone. Chips press on a spring and the result count rolls instead.
+- **Home bento picks follow rules, not taste.** Each of the five cells is chosen by a rule (start here, no capital, first riyal in two weeks, from home, for the experienced), preferring domains not yet shown and skipping this week's method, which already leads the hero. The label on the card is the rule, so it is always true.
+- **The prototype bar becomes a pill after the first visit.** A tiny script in `<head>` reads the choice before first paint, so a returning visitor never sees the page jump (CLS 0).
+- **The sticky join bar floats above the tab bar's raised challenge button** rather than under it, and steps aside while the try path's own button, the end of the article or the footer is on screen. The prototype pill moves up while it shows.
+- **The phone list is the default only on phones**, decided on the first render: the guide renders in the browser because it reads the query string, so the width is known before anything paints.
+- **Icons: Light where the book is, Regular where the screen needs it.** Phosphor Light at 14–20px draws a stroke under a pixel wide and breaks up on ordinary screens, so `components/icons.tsx` uses Light only from `size-6` up. Components keep their old icon names; only the import path changed.
+- **The night edition is opt-in**, from the header (the menu on phones), and remembered; a script in `<head>` applies it before first paint. Following the system setting instead is a one-line change in `lib/pre-paint.ts`, left off because the print look is the brand's default.
+- **Night is a token swap plus three role fixes** (`app/night.css`): white surfaces, dark ink fills and blue text each switch through their own variable, because in day mode one colour plays two parts. Yellow surfaces and the plates behind illustrations stay day-printed islands, since the drawings are transparent line art made for light paper.
+- **Fixed in passing:** `divide-x-reverse` drew the dividers on the wrong side (Tailwind 4 dividers are already logical); story cards showed a blank method number; a long task title made phone method pages scroll sideways; `data-scroll-behavior="smooth"` added so route changes don't smooth-scroll.
 
 ### Acceptance checks
 

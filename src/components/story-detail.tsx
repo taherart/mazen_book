@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, CalendarDays, Images, Lightbulb, MapPin, Mountain, Play, SearchX, ThumbsUp } from "lucide-react";
+import { ArrowLeft, CalendarDays, Images, Lightbulb, MapPin, Mountain, Play, SearchX, ThumbsUp } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -89,7 +89,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
             {story.media === "video" ? (
               <button type="button" onClick={() => setPlayed(true)} className="relative z-10 flex flex-col items-center gap-3 text-white">
                 <span className="grid size-20 place-items-center rounded-full border-2 border-ink bg-sun text-ink shadow-print transition hover:scale-105">
-                  <Play aria-hidden className="size-9 translate-x-[-2px] fill-current" />
+                  <Play aria-hidden weight="fill" className="size-9 translate-x-[-2px]" />
                 </span>
                 <span className="rounded-full bg-ink/70 px-3 py-1 text-sm font-semibold">{played ? "الفيديو غير متاح في النسخة الأولية" : "شاهد التجربة"}</span>
               </button>
@@ -136,7 +136,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-y-2 border-line py-5">
           <button type="button" aria-pressed={liked} onClick={() => actions.toggleHelpful(story.id)} className={cx("inline-flex h-11 items-center gap-2 rounded-full border-2 px-5 font-bold transition", liked ? "border-ink bg-brand text-white shadow-print-sm" : "border-ink bg-white text-ink hover:bg-brand-wash")}>
-            <ThumbsUp aria-hidden className={cx("size-5", liked && "fill-current")} />
+            <ThumbsUp aria-hidden weight={liked ? "fill" : "regular"} className="size-5" />
             {liked ? "أفادتني" : "هل أفادتك هذه التجربة؟"}
           </button>
           <ReportButton kind="story" targetId={story.id} targetTitle={story.title} />
@@ -155,7 +155,7 @@ export function StoryDetail({ id, methods }: { id: string; methods: MethodSummar
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <JoinButton method={method.n} variant="sun" size="md" label="ابدأ التحدي" />
+            <JoinButton method={method.n} variant="sun" size="md" />
             <Link href={methodHref(method.n)} className="inline-flex items-center gap-1 font-bold underline underline-offset-4">
               صفحة الطريقة
               <ArrowLeft aria-hidden className="size-4" />

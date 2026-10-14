@@ -1,12 +1,13 @@
 "use client";
 
-import { Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle, ShieldCheck } from "@/components/icons";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useUser } from "@/lib/demo/hooks";
 import { actions, type Intent } from "@/lib/demo/store";
 import { Button, Field, Input, Notice, cx } from "./ui";
+import { safeRedirectPath } from "@/lib/safe-url";
 
 const INTENTS: { id: Intent; title: string; text: string }[] = [
   { id: "explore", title: "أجرّب طريقة", text: "أبحث عن دخل إضافي" },
@@ -17,13 +18,10 @@ const INTENTS: { id: Intent; title: string; text: string }[] = [
 type Errors = Partial<Record<"name" | "email" | "password" | "consent", string>>;
 
 /** Only same-site paths are followed after signing in. */
-function safeNext(value: string | null) {
-  return value && value.startsWith("/") && !value.startsWith("//") ? value : "/dashboard";
-}
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
-  const next = safeNext(useSearchParams().get("next"));
+  const next = safeRedirectPath(useSearchParams().get("next"), "/dashboard");
   const existing = useUser();
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);

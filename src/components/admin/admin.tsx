@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardCheck, ExternalLink, Gauge, LayoutList, QrCode, ShieldAlert, Ticket, Trophy, Users } from "lucide-react";
+import { ClipboardCheck, ExternalLink, Gauge, LayoutList, QrCode, ShieldAlert, Ticket, Trophy, Users } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";

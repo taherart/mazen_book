@@ -17,7 +17,7 @@ export default function ProvidersPage() {
           <div className="max-w-2xl">
             <Eyebrow>دليل مقدمي الخدمات</Eyebrow>
             <h1 className="mt-4 font-display text-4xl text-ink sm:text-6xl">
-              أصحاب <span className="marker">المهارات</span>
+              أصحاب <span className="marker marker-draw">المهارات</span>
             </h1>
             <p className="mt-3 text-lg text-ink-soft">أشخاص يتقنون إحدى الطرق ويقدمونها كخدمة. تصفّح ملفاتهم ونماذج أعمالهم، وتواصل معهم مباشرة.</p>
           </div>

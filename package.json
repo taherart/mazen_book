@@ -11,7 +11,7 @@
     "data": "node scripts/build-methods.mjs"
   },
   "dependencies": {
-    "lucide-react": "^1.55.0",
+    "@phosphor-icons/react": "2.1.10",
     "next": "16.4.0",
     "qrcode": "^1.5.4",
     "react": "19.3.0",

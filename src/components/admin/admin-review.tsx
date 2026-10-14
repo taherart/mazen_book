@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ClipboardCheck, Eye, X } from "lucide-react";
+import { Check, ClipboardCheck, Eye, X } from "@/components/icons";
 import Link from "next/link";
 import { useDemo } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";

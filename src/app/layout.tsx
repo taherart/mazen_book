@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { MotionRoot } from "@/components/motion-root";
 import { PrototypeBar } from "@/components/prototype-bar";
 import { SITE } from "@/lib/config";
+import { PRE_PAINT_SCRIPT } from "@/lib/pre-paint";
 import "./globals.css";
 
 // The book's own typefaces. Each family ships as an Arabic and a Latin subset; listing both in
@@ -45,11 +46,17 @@ export const viewport: Viewport = { themeColor: "#2f5bd3", width: "device-width"
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" className={`${plexArabic.variable} ${plexLatin.variable} ${lalezarArabic.variable} ${lalezarLatin.variable} h-full antialiased`}>
+    // suppressHydrationWarning: the inline script below may set data-bar and data-theme on <html> before React loads
+    <html lang="ar" dir="rtl" data-scroll-behavior="smooth" suppressHydrationWarning className={`${plexArabic.variable} ${plexLatin.variable} ${lalezarArabic.variable} ${lalezarLatin.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PRE_PAINT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <MotionRoot />
         <PrototypeBar />
         {children}
+        {/* paper grain: one fixed, non-interactive layer for the whole site */}
+        <div aria-hidden className="grain fixed inset-0 z-[var(--z-grain)]" />
       </body>
     </html>
   );

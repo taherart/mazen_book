@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./motion.css";
+@import "./night.css";
 
 /* Palette lifted from the book interior: royal blue ink on cream paper, one warm accent. */
 @theme {
@@ -202,7 +203,7 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-    animation-delay: 0s !important; /* or staggered load sequences would sit hidden for their delay */
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
