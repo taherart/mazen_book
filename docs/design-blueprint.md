@@ -325,3 +325,16 @@ Rules for using it:
 - Keyboard: focus order unchanged, focus ring visible on every control, nothing reachable only by hover.
 - Right to left: markers, slides and progress all start from the right.
 - JavaScript off: all content visible.
+
+### Notes from the second pass (removing the template look)
+
+- One printed surface: method cards, the weekly card and the primary button keep the ink outline
+  and offset shadow. Everything else is flat, with hairlines (`border-line`) and smaller corners.
+- Gone: the hero's "52" watermark, marker highlights (except the cover's «من جد» on the book page),
+  wave edges, dot fields on large areas, the stats band, the four-step route, countdown tiles
+  (now one line: «يُغلق الأحد ١٨ أكتوبر · بعد ٣ أيام»), and icon-card grids.
+- Yellow means "this week" only. Lalezar sets page and section titles, method names and figures;
+  card-level headings use IBM Plex Sans Arabic Bold.
+- Method page: the book's two facing pages (picture and three numbers; why, the numbers, the rest of
+  the method and the QR code), with running heads and folios. Home: a 52-week wall planner by month.
+- Story cards lead with the result and the member's own words instead of the method drawing.

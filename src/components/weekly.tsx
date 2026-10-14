@@ -199,7 +199,9 @@ export function WeeklyChallengeCard({ week, methods, className }: { week: WeekIn
             </div>
           </dl>
           <Countdown endsAt={week.endsAt} />
-          <Participants method={n} />
+          <Link href="/challenge" className="text-sm font-bold text-brand underline underline-offset-4">
+            المهام والجائزة وطريقة السحب
+          </Link>
           <JoinButton method={n} size="md" magnetic className="mt-auto w-full" />
         </div>
       </div>

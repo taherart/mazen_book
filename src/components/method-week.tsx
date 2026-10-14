@@ -10,18 +10,16 @@ import { cx } from "./ui";
 
 export const RAFFLE_RULES = ["انضم لتحدي الطريقة وأنجز مهامها خلال الأسبوع.", "أرسل ملخص تجربتك أو إثباتها قبل موعد الإغلاق.", "تراجع الإدارة المشاركات للتأكد من استيفاء الشروط.", "تدخل المشاركات المؤهلة فقط سحبًا عشوائيًا.", "يُعلن الفائز بعد التحقق منه والموافقة."];
 
-/** Shown on a method page only while that method is the challenge of the week. */
-export function WeekRibbon({ method, week }: { method: number; week: WeekInfo }) {
+/** A tag above the title while this method is the challenge of the week; the closing time and
+ *  the prize are in the draw section further down, so the page says them once. */
+export function WeekRibbon({ method, week, className }: { method: number; week: WeekInfo; className?: string }) {
   const current = useWeekMethod(week);
   if (current !== method) return null;
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-line bg-sun px-4 py-3">
-      <p className="flex items-center gap-2 font-display text-xl leading-none text-ink">
-        <Trophy aria-hidden className="size-5" />
-        هذه طريقة تحدي الأسبوع {week.week}
-      </p>
-      <Countdown endsAt={week.endsAt} />
-    </div>
+    <a href="#raffle" className={cx("inline-flex items-center gap-1.5 rounded-md bg-sun px-2 py-0.5 text-sm font-bold text-ink hover:bg-sun-deep", className)}>
+      <Trophy aria-hidden className="size-4" />
+      تحدي الأسبوع {week.week}
+    </a>
   );
 }
 

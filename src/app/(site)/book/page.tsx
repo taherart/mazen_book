@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Banknote, BookOpen, FileCheck2, Footprints, Laugh, QrCode, Scale, ShoppingBag } from "@/components/icons";
+import { ArrowLeft, BookOpen, QrCode, ShoppingBag } from "@/components/icons";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Container, Eyebrow, LinkButton, buttonClass } from "@/components/ui";
@@ -15,12 +15,12 @@ export const metadata: Metadata = {
 };
 
 const FEATURES = [
-  { icon: Banknote, title: "أرقام واضحة بالريال", text: "دخل متوقع ورأس مال ومدة لكل طريقة، قبل أن تقرأ أي شيء آخر." },
-  { icon: FileCheck2, title: "أرقام موثقة", text: "إحصاءات من جهات سعودية رسمية تشرح لماذا الطلب موجود." },
-  { icon: AlertTriangle, title: "تحذيرات نظامية", text: "ما التراخيص المطلوبة (مثل وثيقة العمل الحر) وما الذي يعرّضك للمخالفة." },
-  { icon: Footprints, title: "خطوات تبدأ بها اليوم", text: "لا نظريات. خطوات مرتبة تأخذك من الفكرة إلى أول عميل." },
-  { icon: Laugh, title: "لغة بسيطة ورسومات مرحة", text: "مكتوب لكل المستويات، وكل طريقة تبدأ برسمة." },
-  { icon: Scale, title: "صادق في التوقعات", text: "يوضح متى تكون الطريقة دخلًا إضافيًا ومتى تقود إلى الاستقلال المالي." },
+  { title: "أرقام واضحة بالريال", text: "دخل متوقع ورأس مال ومدة لكل طريقة، قبل أن تقرأ أي شيء آخر." },
+  { title: "أرقام موثقة", text: "إحصاءات من جهات سعودية رسمية تشرح لماذا الطلب موجود." },
+  { title: "تحذيرات نظامية", text: "ما التراخيص المطلوبة (مثل وثيقة العمل الحر) وما الذي يعرّضك للمخالفة." },
+  { title: "خطوات تبدأ بها اليوم", text: "لا نظريات. خطوات مرتبة تأخذك من الفكرة إلى أول عميل." },
+  { title: "لغة بسيطة ورسومات مرحة", text: "مكتوب لكل المستويات، وكل طريقة تبدأ برسمة." },
+  { title: "صادق في التوقعات", text: "يوضح متى تكون الطريقة دخلًا إضافيًا ومتى تقود إلى الاستقلال المالي." },
 ];
 
 const PAGE_TWO = ["ليش هذي الفرصة؟", "بعض الأرقام", "من أين تبدأ؟", "كم تكسب؟", "كيف تتميّز؟ (سرّ الصنعة)", "انتبه", "الخلاصة", "قصص نجاح واقعية", "رمز QR يفتح صفحة الطريقة هنا"];
@@ -120,17 +120,17 @@ export default function BookPage() {
           <h2 data-reveal className="font-display text-h2 text-ink">
             طرق، مو نصايح
           </h2>
-          <ul data-stagger className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(({ icon: Icon, title, text }) => (
-              <li key={title} data-reveal className="rounded-3xl border border-line bg-white p-5">
-                <span className="grid size-12 place-items-center rounded-2xl bg-brand-wash text-brand">
-                  <Icon aria-hidden className="size-6" />
-                </span>
-                <h3 className="mt-4 font-bold text-xl text-ink">{title}</h3>
-                <p className="mt-1 text-sm leading-7 text-ink-soft">{text}</p>
+          <ol data-stagger className="mt-8 grid gap-x-10 border-t border-line sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ title, text }, i) => (
+              <li key={title} data-reveal className="flex gap-4 border-b border-line py-5">
+                <span className="w-6 shrink-0 font-display text-2xl leading-none text-brand">{i + 1}</span>
+                <div>
+                  <h3 className="text-lg font-bold text-ink">{title}</h3>
+                  <p className="mt-1 text-sm leading-7 text-ink-soft">{text}</p>
+                </div>
               </li>
             ))}
-          </ul>
+          </ol>
         </Container>
       </section>
 

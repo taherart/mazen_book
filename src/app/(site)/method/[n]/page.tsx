@@ -1,16 +1,16 @@
-import { AlertTriangle, ArrowLeft, Banknote, BookOpen, ChevronLeft, Clock3, HandHeart, Lock, MessageSquareHeart, PlayCircle, Rocket, Sparkles, Wallet } from "@/components/icons";
+import { AlertTriangle, ArrowLeft, Banknote, BookOpen, ChevronLeft, HandHeart, Lock, MessageSquareHeart, Rocket, Sparkles } from "@/components/icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense, ViewTransition } from "react";
 import { ProvidersGrid, StoriesGrid } from "@/components/community-lists";
-import { LevelDots, MethodArt, MethodArtMorph, MethodNumber, MethodNumberMorph } from "@/components/method-card";
+import { MethodArt, MethodArtMorph, MethodNumber, MethodNumberMorph } from "@/components/method-card";
 import { RafflePanel, WeekRibbon } from "@/components/method-week";
 import { Qr } from "@/components/qr";
 import { ShareButtons } from "@/components/share-buttons";
 import { PageSkeleton } from "@/components/skeletons";
 import { T } from "@/components/text";
-import { Chip, Container, LinkButton, SectionHead } from "@/components/ui";
+import { Container, LinkButton, SectionHead } from "@/components/ui";
 import { JoinButton, StickyJoin } from "@/components/weekly";
 import { SITE } from "@/lib/config";
 import { challengeTasks, getMethod, getMethods, getSummaries, methodHref, parseMethodParam } from "@/lib/methods";
@@ -81,17 +81,19 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
   const base = methodHref(n);
 
   const stats = [
-    { icon: Banknote, label: "الدخل المتوقع", value: m.stats.income, tone: "text-brand-dark" },
-    { icon: Wallet, label: "رأس المال المبدئي", value: m.stats.capital, tone: "text-ink" },
-    { icon: Clock3, label: "أول ريال خلال", value: m.stats.firstRiyal, tone: "text-ink" },
+    { label: "الدخل المتوقع", value: m.stats.income, tone: "text-brand-dark" },
+    { label: "رأس المال المبدئي", value: m.stats.capital, tone: "text-ink" },
+    { label: "أول ريال خلال", value: m.stats.firstRiyal, tone: "text-ink" },
   ];
 
   return (
     <article>
       {/* reading progress: the page runs to many screens */}
-      <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-[var(--z-overlay)] h-1 bg-sun" />
+      <div aria-hidden className="scroll-progress fixed inset-x-0 top-0 z-[var(--z-overlay)] h-0.5 bg-brand" />
 
-      {/* ---------- hero ---------- */}
+      {/* ---------- the spread ----------
+          The book gives every method two facing pages: the picture with three numbers, then the
+          text. This is that spread, page one on the right as in print; on phones the pages stack. */}
       <header className="border-b border-line">
         <Container className="pb-10 pt-6">
           <nav aria-label="مسار التصفح" className="flex flex-wrap items-center gap-1 text-sm font-semibold text-ink-soft">
@@ -104,68 +106,94 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             </Link>
           </nav>
 
-          <div className="mt-5 grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
-            <div className="animate-enter">
-              <div className="flex items-center gap-3">
+          <div className="mt-5 grid animate-enter overflow-hidden rounded-panel border border-line bg-white lg:grid-cols-2">
+            {/* page one: the picture and the three numbers */}
+            <section aria-label="الصفحة الأولى من الطريقة" className="flex flex-col p-5 sm:p-8 lg:shadow-[inset_18px_0_22px_-22px_rgb(29_31_38/0.35)]">
+              <RunningHead start={`الطريقة ${m.n} من 52`} end={DOMAINS[m.domain]} />
+              <div className="mt-6 flex items-start gap-4">
                 <MethodNumberMorph n={m.n}>
-                  <MethodNumber n={m.n} size="lg" className="shadow-print-sm" />
+                  <MethodNumber n={m.n} size="lg" />
                 </MethodNumberMorph>
-                <p className="text-sm font-bold text-ink-soft">
-                  الطريقة {m.n} من 52
-                  <span className="block font-normal text-ink-mute">{DOMAINS[m.domain]}</span>
-                </p>
+                <div className="min-w-0">
+                  <WeekRibbon method={n} week={week} className="mb-2" />
+                  <h1 className="font-display text-h1 text-ink">{m.title}</h1>
+                </div>
               </div>
-              <h1 className="mt-4 font-display text-h1 text-ink">{m.title}</h1>
               {m.tagline ? <p className="mt-3 font-display text-2xl leading-snug text-brand sm:text-3xl">«{m.tagline}»</p> : null}
-              <ul className="mt-5 flex flex-wrap gap-2">
-                <li>
-                  <Chip tone="white">{KINDS[m.kind]}</Chip>
-                </li>
-                <li>
-                  <Chip tone="white">{PLACES[m.place]}</Chip>
-                </li>
-                <li>
-                  <Chip tone="white">
-                    <LevelDots level={m.level} />
-                  </Chip>
-                </li>
-              </ul>
-              {/* one grouped fact panel: the print shadow is kept for the art and the join button */}
-              <dl className="mt-6 grid divide-y divide-line rounded-card border-2 border-ink bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                {stats.map(({ icon: Icon, label, value, tone }) => (
-                  <div key={label} className="flex items-baseline justify-between gap-3 px-4 py-3 sm:block">
-                    <dt className="flex shrink-0 items-center gap-1.5 text-xs font-bold text-ink-soft">
-                      <Icon aria-hidden className="size-4 text-brand" />
-                      {label}
-                    </dt>
-                    <dd className={`text-end font-display text-xl leading-snug sm:mt-1.5 sm:text-start ${tone}`}>
+              <div className="plate mx-auto my-6 w-full max-w-sm">
+                <MethodArtMorph n={m.n}>
+                  <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 384px, 90vw" />
+                </MethodArtMorph>
+              </div>
+              <dl className="mt-auto grid grid-cols-3 divide-x divide-line border-y border-line">
+                {stats.map(({ label, value, tone }) => (
+                  <div key={label} className="px-3 py-3 first:ps-0 last:pe-0">
+                    <dt className="text-xs text-ink-mute">{label}</dt>
+                    <dd className={`mt-1 font-bold leading-snug ${tone}`}>
                       <T>{value}</T>
                     </dd>
                   </div>
                 ))}
               </dl>
-              <div id="join-hero" className="mt-7 flex flex-wrap items-center gap-3">
+              <div id="join-hero" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
                 <JoinButton method={n} magnetic />
                 <a href="#paths" className="text-sm font-bold text-ink-soft underline underline-offset-4 hover:text-brand">
                   أو اعرض خدماتك · شارك تجربتك
                 </a>
               </div>
-            </div>
-            <div className="relative mx-auto w-full max-w-md animate-enter [animation-delay:120ms]">
-              <div className="rounded-panel border-2 border-ink bg-white p-4 shadow-print">
-                <div className="plate rounded-tile">
-                  <MethodArtMorph n={m.n}>
-                    <MethodArt n={m.n} title={m.title} priority sizes="(min-width: 1024px) 420px, 90vw" />
-                  </MethodArtMorph>
-                </div>
+              <Folio method={m.n} page={1} />
+            </section>
+
+            {/* page two: why, the numbers behind it, and where the rest of the method is */}
+            <section aria-label="الصفحة الثانية من الطريقة" className="flex flex-col border-t border-line p-5 sm:p-8 lg:border-t-0 lg:shadow-[inset_-18px_0_22px_-22px_rgb(29_31_38/0.35)]">
+              <RunningHead start={SITE.bookTitle} end={SITE.author} />
+              <h2 id="why" className="mt-6 font-display text-h3 text-ink">
+                ليش هذي الفرصة؟
+              </h2>
+              <p className="mt-2 leading-8 text-ink-soft">
+                <T>{m.why}</T>
+              </p>
+              <h2 id="facts" className="mt-6 font-display text-h3 text-ink">
+                بعض الأرقام
+              </h2>
+              <ul className="mt-2 grid gap-2">
+                {m.facts.map((f) => (
+                  <li key={f} className="flex gap-2.5 text-sm leading-7 text-ink-soft">
+                    <span aria-hidden className="mt-3 h-px w-3 shrink-0 bg-brand" />
+                    <span>
+                      <T>{f}</T>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <nav aria-label="بقية الطريقة" className="mt-6 border-t border-line pt-4">
+                <p className="text-xs font-bold text-ink-mute">بقية الطريقة في هذه الصفحة</p>
+                <ol className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1 text-sm font-semibold">
+                  {[
+                    ["#steps", "من أين تبدأ؟"],
+                    ...(m.earn.length ? [["#earn", "كم تكسب؟"]] : []),
+                    ["#craft", "كيف تتميّز؟ وانتبه"],
+                    ["#summary", "الخلاصة"],
+                    ["#stories", "قصص من جرّبوها"],
+                  ].map(([href, label]) => (
+                    <li key={href}>
+                      <a href={href} className="flex items-center justify-between gap-2 border-b border-dotted border-line py-1.5 text-ink hover:text-brand">
+                        {label}
+                        <ArrowLeft aria-hidden className="size-3.5 text-ink-mute" />
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+              <div className="mt-auto flex items-center gap-4 pt-6">
+                <Qr value={`${SITE.url}${base}`} title={`رمز QR لصفحة ${m.title}`} className="size-20 shrink-0" />
+                <p className="text-sm text-ink-soft">
+                  <b className="block text-ink">رمز هذه الطريقة في الكتاب</b>
+                  يفتح <bdi dir="ltr" className="font-semibold text-brand">{`${new URL(SITE.url).host}${base}`}</bdi>
+                </p>
               </div>
-              <span aria-hidden className="absolute -bottom-4 -start-3 rotate-[-6deg] animate-land rounded-tile border-2 border-ink bg-sun px-4 py-1.5 font-display text-lg text-ink shadow-print-sm [animation-delay:600ms]">
-                جرّبها هذا الأسبوع
-              </span>
-            </div>
-          </div>
-          <div className="mt-8">
-            <WeekRibbon method={n} week={week} />
+              <Folio method={m.n} page={2} />
+            </section>
           </div>
         </Container>
       </header>
@@ -174,21 +202,21 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           Trying it leads, with this week's tasks in view; offering and sharing sit beside it. */}
       <section id="paths" className="scroll-mt-20 border-b border-line bg-white">
         <Container data-stagger className="grid gap-4 py-section-tight lg:grid-cols-3">
-          <div data-reveal className="grid items-start gap-5 rounded-panel border-2 border-ink bg-brand p-5 text-white shadow-print sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:col-span-2">
+          <div data-reveal className="grid items-start gap-5 rounded-panel border border-line bg-paper p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:col-span-2">
             <div>
-              <span className="grid size-11 place-items-center rounded-tile border-2 border-ink bg-white text-brand">
+              <span className="grid size-11 place-items-center rounded-tile bg-brand-wash text-brand">
                 <Rocket aria-hidden className="size-6" />
               </span>
-              <h2 className="mt-3 font-display text-h3">أريد تجربة هذه الطريقة</h2>
-              <p className="mt-1 text-sm leading-6 text-white/85">{count(tasks.length, TASKS)} تتابع إنجازها خلال الأسبوع، خطوة بخطوة، ثم توثّق ما حدث.</p>
+              <h2 className="mt-3 font-display text-h3 text-ink">أريد تجربة هذه الطريقة</h2>
+              <p className="mt-1 text-sm leading-6 text-ink-soft">{count(tasks.length, TASKS)} تتابع إنجازها خلال الأسبوع، خطوة بخطوة، ثم توثّق ما حدث.</p>
               <div id="join-path" className="mt-5">
-                <JoinButton method={n} size="md" variant="sun" className="w-full sm:w-auto" />
+                <JoinButton method={n} size="md" className="w-full sm:w-auto" />
               </div>
             </div>
-            <ol aria-label="مهام التحدي" className="grid grid-cols-[minmax(0,1fr)] gap-2 rounded-card bg-white p-3 text-ink">
+            <ol aria-label="مهام التحدي" className="grid grid-cols-[minmax(0,1fr)] rounded-card border border-line bg-white px-4 text-ink">
               {tasks.map((t, i) => (
-                <li key={i} className="flex items-center gap-3 rounded-tile bg-paper px-3 py-2.5">
-                  <span aria-hidden className="size-5 shrink-0 rounded-md border-2 border-ink bg-white" />
+                <li key={i} className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0">
+                  <span aria-hidden className="size-4 shrink-0 rounded border border-ink/40 bg-white" />
                   <span className="min-w-0 flex-1 truncate text-sm font-bold">
                     <T>{t.title}</T>
                   </span>
@@ -215,46 +243,15 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       {/* ---------- A. about the method ---------- */}
       <Container className="grid gap-10 py-14 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0 space-y-12">
-          <section aria-labelledby="why" data-reveal>
-            <h2 id="why" className="font-display text-h2 text-ink">
-              ليش هذي الفرصة؟
-            </h2>
-            <p className="mt-3 text-lg leading-9 text-ink-soft">
-              <T>{m.why}</T>
-            </p>
-            <div className="mt-6 flex items-center gap-4 rounded-card border-2 border-dashed border-line bg-white/70 p-4">
-              <span className="grid size-14 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">
-                <PlayCircle aria-hidden className="size-7" />
-              </span>
-              <div>
-                <p className="font-bold text-ink">الفيديو التعريفي</p>
-                <p className="text-sm text-ink-soft">مقطع قصير يشرح الفكرة يُضاف هنا مع انطلاق تحدي هذه الطريقة.</p>
-              </div>
-            </div>
-          </section>
-
-          <section aria-labelledby="facts" data-reveal>
-            <h2 id="facts" className="font-display text-h2 text-ink">
-              بعض الأرقام
-            </h2>
-            <ul className="mt-4 grid divide-y divide-line border-y border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-              {m.facts.map((f) => (
-                <li key={f} className="py-4 text-sm leading-7 text-ink-soft sm:px-4 sm:first:ps-0 sm:last:pe-0">
-                  <T>{f}</T>
-                </li>
-              ))}
-            </ul>
-          </section>
-
           <section aria-labelledby="steps">
-            <h2 id="steps" data-reveal className="font-display text-h2 text-ink">
+            <h2 id="steps" data-reveal className="scroll-mt-24 font-display text-h2 text-ink">
               من أين تبدأ؟ <span className="text-ink-mute">خطواتك إلى أول عميل</span>
             </h2>
-            <ol data-stagger className="relative mt-6 grid gap-6 before:absolute before:inset-y-5 before:start-[1.375rem] before:border-s-2 before:border-dashed before:border-ink/35">
+            <ol data-stagger className="mt-6 border-t border-line">
               {m.steps.map((s) => (
-                <li key={s.n} data-reveal className="flex gap-4">
-                  <span className="relative grid size-11 shrink-0 rotate-[-6deg] place-items-center rounded-full border-2 border-ink bg-sun pt-[0.12em] font-display text-2xl leading-none text-ink shadow-print-sm">{s.n}</span>
-                  <p className="pt-1.5 leading-8 text-ink-soft">
+                <li key={s.n} data-reveal className="flex gap-5 border-b border-line py-4">
+                  <span className="w-7 shrink-0 font-display text-3xl leading-none text-brand">{s.n}</span>
+                  <p className="leading-8 text-ink-soft">
                     {s.label ? (
                       <b className="text-ink">
                         <T>{s.label}</T>:{" "}
@@ -268,8 +265,8 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </section>
 
           {m.earn.length ? (
-            <section aria-labelledby="earn" data-reveal className="rounded-panel border-2 border-ink bg-brand-wash p-5 sm:p-7">
-              <h2 id="earn" className="font-display text-h2 text-ink">
+            <section aria-labelledby="earn" data-reveal className="rounded-panel bg-brand-wash p-5 sm:p-7">
+              <h2 id="earn" className="scroll-mt-24 font-display text-h2 text-ink">
                 كم تكسب؟
               </h2>
               <ul className="mt-3 grid gap-2.5">
@@ -286,41 +283,41 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           ) : null}
 
           {/* a taste of the two sections that stay in the book */}
-          <section aria-labelledby="craft" data-reveal className="overflow-hidden rounded-panel border-2 border-ink bg-brand-deep text-white">
+          <section id="craft" aria-labelledby="craft-title" data-reveal className="scroll-mt-24 overflow-hidden rounded-panel border border-line bg-white">
             <div className="grid gap-6 p-5 sm:p-7 md:grid-cols-2">
               <div>
-                <h2 id="craft" className="flex items-center gap-2 font-display text-2xl">
-                  <Sparkles aria-hidden className="size-5 text-sun" />
+                <h2 id="craft-title" className="flex items-center gap-2 font-display text-2xl text-ink">
+                  <Sparkles aria-hidden className="size-5 text-brand" />
                   كيف تتميّز؟ (سرّ الصنعة)
                 </h2>
-                <p className="mt-3 leading-8 text-white/90">
+                <p className="mt-3 leading-8 text-ink-soft">
                   <T>{m.tips[0]}</T>
                 </p>
               </div>
               <div>
-                <h2 className="flex items-center gap-2 font-display text-2xl">
-                  <AlertTriangle aria-hidden className="size-5 text-sun" />
+                <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
+                  <AlertTriangle aria-hidden className="size-5 text-bad" />
                   انتبه
                 </h2>
-                <p className="mt-3 leading-8 text-white/90">
+                <p className="mt-3 leading-8 text-ink-soft">
                   <T>{m.warnings[0]}</T>
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-white/20 bg-white/10 px-5 py-4 sm:px-7">
-              <p className="flex items-center gap-2 text-sm">
-                <Lock aria-hidden className="size-4 text-sun" />
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-paper px-5 py-4 sm:px-7">
+              <p className="flex items-center gap-2 text-sm text-ink-soft">
+                <Lock aria-hidden className="size-4 text-brand" />
                 في الكتاب: {count(m.tips.length - 1, ["سرّ آخر", "سرّان آخران", "أسرار أخرى"])} للتميّز{m.warnings.length > 1 ? ` و${count(m.warnings.length - 1, ["تنبيه إضافي", "تنبيهان إضافيان", "تنبيهات إضافية"])}` : ""}.
               </p>
-              <LinkButton href="/book" variant="sun" size="sm">
+              <LinkButton href="/book" variant="white" size="sm">
                 <BookOpen aria-hidden className="size-4" />
                 الطريقة كاملة في الكتاب
               </LinkButton>
             </div>
           </section>
 
-          <blockquote data-reveal="scale" className="relative rounded-panel border-2 border-ink bg-sun p-6 shadow-print sm:p-8">
-            <p className="text-sm font-bold text-ink/70">الخلاصة</p>
+          <blockquote id="summary" data-reveal className="scroll-mt-24 border-s-4 border-brand ps-5 sm:ps-7">
+            <p className="text-sm font-bold text-brand">الخلاصة</p>
             <p className="mt-2 font-display text-2xl leading-[1.6] text-ink sm:text-3xl">
               <T>{m.summary}</T>
             </p>
@@ -330,7 +327,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
         {/* ---------- sidebar ---------- */}
         <aside data-reveal="fade" className="space-y-5 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-card border border-line bg-white p-5">
-            <h2 className="font-display text-xl text-ink">لمن تناسب؟</h2>
+            <h2 className="text-lg font-bold text-ink">لمن تناسب؟</h2>
             <ul className="mt-3 grid gap-2.5 text-sm leading-6 text-ink-soft">
               {fitLines(m).map((line) => (
                 <li key={line} className="flex gap-2">
@@ -356,25 +353,16 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           </div>
 
           <div className="rounded-card border border-line bg-white p-5">
-            <h2 className="font-display text-xl text-ink">شارك هذه الطريقة</h2>
+            <h2 className="text-lg font-bold text-ink">شارك هذه الطريقة</h2>
             <p className="mt-1 text-sm text-ink-soft">أرسلها لمن تعرف أنها تناسبه.</p>
             <ShareButtons path={base} title={`الطريقة ${m.n}: ${m.title}`} className="mt-3" />
           </div>
 
-          <div className="flex items-center gap-4 rounded-card border border-line bg-white p-5">
-            <Qr value={`${SITE.url}${base}`} title={`رمز QR لصفحة ${m.title}`} className="size-24 shrink-0 rounded-lg border border-line" />
-            <div className="text-sm">
-              <p className="font-bold text-ink">رمز هذه الصفحة في الكتاب</p>
-              <p className="text-ink-soft">
-                يفتح <bdi dir="ltr" className="font-semibold text-brand">{`${new URL(SITE.url).host}${base}`}</bdi>
-              </p>
-            </div>
-          </div>
         </aside>
       </Container>
 
       {/* ---------- E. stories ---------- */}
-      <section>
+      <section id="stories" className="scroll-mt-20">
         <Container className="py-14">
           <SectionHead
             reveal
@@ -412,7 +400,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       </section>
 
       {/* ---------- G. weekly prize ---------- */}
-      <section>
+      <section id="raffle" className="scroll-mt-20">
         <Container className="py-14">
           <SectionHead reveal title="تحدي وجائزة الأسبوع" />
           <div data-reveal className="mt-6">
@@ -422,10 +410,10 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
       </section>
 
       {/* ---------- prev / next ---------- */}
-      <nav id="method-end" aria-label="طرق أخرى" className="border-t-2 border-ink bg-white">
+      <nav id="method-end" aria-label="طرق أخرى" className="border-t border-line bg-white">
         <Container className="grid grid-cols-2 gap-3 py-6">
           {prev ? (
-            <Link href={methodHref(prev.n)} prefetch transitionTypes={["nav-back"]} className="group rounded-tile border-2 border-line p-3 transition hover:border-ink">
+            <Link href={methodHref(prev.n)} prefetch transitionTypes={["nav-back"]} className="group rounded-tile border border-line p-3 transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة السابقة</span>
               <span className="block truncate font-bold text-ink group-hover:text-brand">
                 {prev.n}. {prev.title}
@@ -435,7 +423,7 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <span />
           )}
           {next ? (
-            <Link href={methodHref(next.n)} prefetch transitionTypes={["nav-forward"]} className="group rounded-tile border-2 border-line p-3 text-end transition hover:border-ink">
+            <Link href={methodHref(next.n)} prefetch transitionTypes={["nav-forward"]} className="group rounded-tile border border-line p-3 text-end transition hover:border-ink">
               <span className="text-xs text-ink-mute">الطريقة التالية</span>
               <span className="flex items-center justify-end gap-1 truncate font-bold text-ink group-hover:text-brand">
                 {next.n}. {next.title}
@@ -453,13 +441,32 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
 
 function PathCard({ icon, title, text, children }: { icon: React.ReactNode; title: string; text: string; children: React.ReactNode }) {
   return (
-    <div data-reveal className="flex flex-col gap-2 rounded-card border-2 border-ink bg-white p-4 sm:p-5">
-      <h2 className="flex items-center gap-2 font-display text-lg leading-snug text-ink">
+    <div data-reveal className="flex flex-col gap-2 rounded-card border border-line bg-white p-4 sm:p-5">
+      <h2 className="flex items-center gap-2 text-base font-bold leading-snug text-ink">
         <span className="grid size-9 shrink-0 place-items-center rounded-tile bg-brand-wash text-brand">{icon}</span>
         {title}
       </h2>
       <p className="text-sm leading-6 text-ink-soft">{text}</p>
       <div className="mt-auto pt-1">{children}</div>
     </div>
+  );
+}
+
+/** The line across the top of a printed page: where you are in the book. */
+function RunningHead({ start, end }: { start: string; end: string }) {
+  return (
+    <p className="flex items-baseline justify-between gap-4 border-b border-line pb-2 text-xs font-semibold text-ink-mute">
+      <span className="truncate">{start}</span>
+      <span className="shrink-0">{end}</span>
+    </p>
+  );
+}
+
+/** The foot of the page: which of the method's two pages this is. */
+function Folio({ method, page }: { method: number; page: 1 | 2 }) {
+  return (
+    <p className="mt-6 text-center text-xs tabular-nums text-ink-mute">
+      الطريقة {method} · {page === 1 ? "الصفحة الأولى" : "الصفحة الثانية"}
+    </p>
   );
 }

@@ -1,11 +1,11 @@
-import { ArrowLeft, BookOpen } from "@/components/icons";
+import { ArrowLeft, BookOpen, Check } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { CommunityBento, CommunityStats } from "@/components/community-lists";
 import { MethodTile } from "@/components/method-card";
 import { Container, Eyebrow, LinkButton, SectionHead } from "@/components/ui";
-import { STRIP_LEGEND } from "@/components/week-strip-tones";
-import { WeekStrip, WeeklyChallengeCard } from "@/components/weekly";
+import { WeeklyChallengeCard } from "@/components/weekly";
+import { YearWall } from "@/components/year-wall";
 import { SITE } from "@/lib/config";
 import { getSummaries } from "@/lib/methods";
 import { getCurrentWeek } from "@/lib/server/current-week";
@@ -118,23 +118,27 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ---------- the year: the signature object, full width ---------- */}
-      <section className="bg-brand text-white">
+      {/* ---------- the year: a wall planner of the 52 weeks ---------- */}
+      <section className="border-y border-line bg-paper-deep/40">
         <Container className="py-section">
           <div data-reveal className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
             <div className="max-w-2xl">
-              <h2 className="font-display text-h2">كل أسبوع طريقة، وكل طريقة فرصة</h2>
-              <p className="mt-2 text-white/85">كل مربع صفحة طريقة، وهي نفسها التي يفتحها رمز QR في الكتاب.</p>
+              <h2 className="font-display text-h2 text-ink">جدول السنة: 52 أسبوعًا، 52 طريقة</h2>
+              <p className="mt-2 text-ink-soft">كل أسبوع تحدٍّ بطريقة من الكتاب، والتاريخ يوم بدايته. افتح أي طريقة متى شئت؛ السحب والجائزة لأسبوعها.</p>
             </div>
-            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-white/85">
-              {STRIP_LEGEND.blue.map(([swatch, label]) => (
-                <li key={label} className="flex items-center gap-2">
-                  <span className={`size-4 rounded-md border-2 border-ink ${swatch}`} /> {label}
-                </li>
-              ))}
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink-soft">
+              <li className="flex items-center gap-2">
+                <span className="h-3 w-5 rounded-sm bg-sun" /> هذا الأسبوع
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-brand" /> بدأتها
+              </li>
+              <li className="flex items-center gap-2">
+                <Check aria-hidden className="size-4 text-ok" /> أكملتها
+              </li>
             </ul>
           </div>
-          <WeekStrip week={week} methods={methods} tone="blue" className="mt-8 sm:gap-2.5 sm:[&_a]:text-2xl" />
+          <YearWall week={week} methods={methods} className="mt-8" />
         </Container>
       </section>
 
