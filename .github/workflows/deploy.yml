@@ -44,8 +44,17 @@ jobs:
             exit 1
           fi
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          # Accept the key as-is, or as one base64 line (safer to copy out of a web terminal).
+          if printf '%s' "$VPS_SSH_KEY" | grep -q 'BEGIN OPENSSH PRIVATE KEY'; then
+            printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' > ~/.ssh/id_ed25519
+          else
+            printf '%s' "$VPS_SSH_KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/id_ed25519 || true
+          fi
           chmod 600 ~/.ssh/id_ed25519
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null; then
+            echo "::error::VPS_SSH_KEY is not a valid private key. On the VPS run: base64 -w0 ~/.ssh/deploy  then paste that single line as the secret."
+            exit 1
+          fi
           ssh-keyscan -t ed25519 "$VPS_HOST" >> ~/.ssh/known_hosts
 
       - name: Upload and switch release
