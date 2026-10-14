@@ -52,8 +52,11 @@ Done in step 1 (accounts): Argon2id passwords (19 MiB, 2 passes), random session
 only as SHA-256 hashes, `HttpOnly; SameSite=Lax` cookies that are `Secure` over HTTPS, server
 validation of sign-up fields, one error for unknown email and wrong password, attempt limits on
 sign-in (20 per address and 8 per email in 15 minutes) and sign-up (5 per address per hour),
-admins only by `ADMIN_EMAILS`, and account deletion. The rest of the list follows with the
-features it covers.
+admins only by `ADMIN_EMAILS`, and account deletion.
+
+Done in step 2 (challenges): every change checks the session and touches only that member's
+rows, task numbers and method numbers are validated, a sent write-up is locked, and the note is
+capped at 5,000 characters. The rest of the list follows with the features it covers.
 
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;

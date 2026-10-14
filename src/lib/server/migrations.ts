@@ -30,6 +30,23 @@ const MIGRATIONS: { id: number; sql: string }[] = [
       create index sessions_expires_at_idx on sessions (expires_at);
     `,
   },
+  {
+    id: 2,
+    sql: `
+      -- one row per member per method they joined; the write-up is the raffle entry
+      create table challenges (
+        user_id uuid not null references users (id) on delete cascade,
+        method smallint not null check (method between 1 and 52),
+        joined_at timestamptz not null default now(),
+        done smallint[] not null default '{}',
+        note text not null default '' check (length(note) <= 5000),
+        submitted_at timestamptz,
+        entry text not null default 'pending' check (entry in ('pending', 'eligible', 'rejected')),
+        primary key (user_id, method)
+      );
+      create index challenges_method_submitted_idx on challenges (method, submitted_at) where submitted_at is not null;
+    `,
+  },
 ];
 
 export async function migrate() {

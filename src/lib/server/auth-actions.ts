@@ -1,11 +1,12 @@
 "use server";
 
-import type { Intent } from "../demo/store";
+import type { ChallengeState, Intent } from "../demo/store";
 import { type SessionUser, checkPassword, clientIp, currentUser, endSession, hashPassword, overLimit, startSession, toSessionUser } from "./auth";
+import { loadChallenges } from "./challenges";
 import { backendEnabled, db } from "./db";
 
 /** `demo` means there is no database here: the caller keeps the browser-only sign-in. */
-export type AuthResult = { ok: true; user: SessionUser } | { ok: false; field: "name" | "email" | "password" | "consent"; error: string } | { ok: false; demo: true };
+export type AuthResult = { ok: true; user: SessionUser; challenges: Record<number, ChallengeState> } | { ok: false; field: "name" | "email" | "password" | "consent"; error: string } | { ok: false; demo: true };
 
 const DEMO = { ok: false, demo: true } as const;
 const INTENTS: Intent[] = ["explore", "provide", "share"];
@@ -36,7 +37,7 @@ export async function signUpAction(input: { name?: unknown; email?: unknown; pas
       values (${email}, ${name}, ${passwordHash}, ${intents})
       returning id, name, email, intents, created_at`;
     await startSession(user.id);
-    return { ok: true, user: toSessionUser(user) };
+    return { ok: true, user: toSessionUser(user), challenges: {} };
   } catch (err) {
     if ((err as { code?: string }).code === "23505") return { ok: false, field: "email", error: "هذا البريد مسجّل من قبل. سجّل دخولك بدلًا من ذلك." };
     throw err;
@@ -54,7 +55,7 @@ export async function signInAction(input: { email?: unknown; password?: unknown 
   // one message for both cases, so the form does not reveal which emails have accounts
   if (!(await checkPassword(user?.password_hash, password)) || !user) return { ok: false, field: "password", error: "البريد أو كلمة المرور غير صحيحة." };
   await startSession(user.id);
-  return { ok: true, user: toSessionUser(user) };
+  return { ok: true, user: toSessionUser(user), challenges: await loadChallenges(user.id) };
 }
 
 export async function signOutAction() {

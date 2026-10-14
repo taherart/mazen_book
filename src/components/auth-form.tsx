@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useDemo } from "@/lib/demo/hooks";
-import { actions, type DemoUser, type Intent } from "@/lib/demo/store";
+import { actions, type ChallengeState, type DemoUser, type Intent } from "@/lib/demo/store";
 import { signInAction, signUpAction } from "@/lib/server/auth-actions";
 import { Button, Field, Input, Notice, cx } from "./ui";
 import { safeRedirectPath } from "@/lib/safe-url";
@@ -31,8 +31,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const signup = mode === "signup";
   const query = next === "/dashboard" ? "" : `?next=${encodeURIComponent(next)}`;
 
-  const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }, fromServer?: DemoUser) => {
-    if (fromServer) actions.setSession(true, fromServer);
+  const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }, fromServer?: { user: DemoUser; challenges: Record<number, ChallengeState> }) => {
+    if (fromServer) actions.setSession(true, fromServer.user, fromServer.challenges);
     else actions.signIn(user);
     // arriving from "I'll try this method": join on the way in
     const join = next.match(/^\/method\/(\d{2})\/challenge$/);
@@ -59,7 +59,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     const password = String(f.get("password") ?? "");
     try {
       const res = signup ? await signUpAction({ name: get("name"), email, password, intents, consent: !!f.get("consent") }) : await signInAction({ email, password });
-      if (res.ok) return finish(res.user, res.user);
+      if (res.ok) return finish(res.user, res);
       if (!("demo" in res)) {
         setErrors({ [res.field]: res.error });
         document.getElementById(res.field)?.focus();

@@ -2,7 +2,7 @@
 
 The companion platform for the book «52 طريقة لتزيد دخلك من جد». Next.js 16 (App Router), React 19, Tailwind CSS 4, TypeScript. Arabic, right-to-left, mobile first.
 
-**The backend is being added in steps.** All pages and flows are in place, the 52 methods are real (taken from the book), and accounts are real when the server has a database (`DATABASE_URL`). Everything else a visitor does is still kept in their own browser for now. Without `DATABASE_URL` the whole site runs in that browser-only demo mode.
+**The backend is being added in steps.** All pages and flows are in place, the 52 methods are real (taken from the book), and accounts are real when the server has a database (`DATABASE_URL`). Challenge progress is saved on the server too; stories, provider profiles and admin decisions are still kept in the visitor's browser for now. Without `DATABASE_URL` the whole site runs in that browser-only demo mode.
 
 ## Run it
 
@@ -45,8 +45,8 @@ Optional environment variables (`.env.local`):
 ## What is real and what is a stand-in
 
 - **Real:** the 52 methods (titles, numbers, steps, illustrations), filters, QR codes, the weekly schedule, form validation, every screen state.
-- **Real with a database:** accounts (Argon2id passwords, HttpOnly session cookies, attempt limits, account deletion). Code in `src/lib/server`.
-- **Stand-in:** challenge progress, stories, provider profiles, contact requests, raffle entries and admin decisions live in `localStorage` (`src/lib/demo/store.ts`). The illustrative stories and providers in `src/data/samples.ts` are labelled «مثال توضيحي» wherever they appear and can be switched off from the bar at the top of the site, which shows the true empty state.
+- **Real with a database:** accounts (Argon2id passwords, HttpOnly session cookies, attempt limits, account deletion) and weekly challenge progress and write-ups. Code in `src/lib/server`; the client store saves to it after each change.
+- **Stand-in:** stories, provider profiles, contact requests, raffle entries and admin decisions live in `localStorage` (`src/lib/demo/store.ts`). The illustrative stories and providers in `src/data/samples.ts` are labelled «مثال توضيحي» wherever they appear and can be switched off from the bar at the top of the site, which shows the true empty state.
 - **Not built:** file upload, analytics, the methods CMS save, legal texts.
 
 ## Where things are

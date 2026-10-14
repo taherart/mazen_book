@@ -32,12 +32,18 @@ def call(method, path="", body=None):
         # the API's Cloudflare front rejects urllib's default User-Agent (error 1010)
         headers={"Authorization": f"Bearer {os.environ['HOSTINGER_API_TOKEN']}", "Content-Type": "application/json", "Accept": "application/json", "User-Agent": "mazen-book-deploy"},
     )
-    try:
-        with urllib.request.urlopen(req, timeout=60) as res:
-            raw = res.read()
-    except urllib.error.HTTPError as err:
-        sys.exit(f"::error::{method} {path or '/'} failed: {err.code} {err.read()[:300].decode(errors='replace')}")
-    return json.loads(raw) if raw else None
+    for attempt in range(6):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as res:
+                raw = res.read()
+            return json.loads(raw) if raw else None
+        except urllib.error.HTTPError as err:
+            body = err.read()[:300].decode(errors="replace")
+            # the Docker Manager answers "Temporary Docker Manager issue" (400) now and then
+            if attempt < 5 and (err.code >= 500 or "Temporary" in body):
+                time.sleep(10 * (attempt + 1))
+                continue
+            sys.exit(f"::error::{method} {path or '/'} failed: {err.code} {body}")
 
 
 def fresh(status, elapsed_min):

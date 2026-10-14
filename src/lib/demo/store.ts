@@ -1,6 +1,7 @@
 // Prototype state. Everything a visitor does (signing in, joining a challenge, submitting a
 // story…) is kept in this browser only, so the flows can be clicked through before the backend
 // exists. The backend phase replaces this module with real API calls.
+import { joinChallengeAction, leaveChallengeAction, setNoteAction, submitChallengeAction, toggleTaskAction } from "../server/challenge-actions";
 import type { Provider, ReviewStatus, Story } from "../types";
 
 export interface DemoUser {
@@ -144,6 +145,21 @@ function update(change: (s: DemoState) => DemoState) {
   listeners.forEach((l) => l());
 }
 
+const noteTimers = new Map<number, ReturnType<typeof setTimeout>>();
+
+/** With a database, a member's change is sent to the server after the local update; if the server
+ *  turns it down, the store reloads the server's copy so the screen never shows unsaved work. */
+function toServer(send: () => Promise<{ ok: boolean }>) {
+  if (!state.backend || !state.user) return;
+  send()
+    .then((res) => (res.ok ? null : resync()))
+    .catch(() => resync());
+}
+async function resync() {
+  const { refreshSession } = await import("../session-client");
+  await refreshSession();
+}
+
 const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 const now = () => new Date().toISOString();
 
@@ -152,11 +168,12 @@ export const actions = {
     update((s) => ({ ...s, user: { id: s.user?.email === input.email ? s.user.id : uid(), name: input.name, email: input.email, admin: !!input.admin, joinedAt: s.user?.joinedAt ?? now(), intents: input.intents ?? s.user?.intents ?? [] } }));
   },
   signOut() {
-    update((s) => ({ ...s, user: null }));
+    // with real accounts, a member's challenges belong to the account, not to this device
+    update((s) => ({ ...s, user: null, challenges: s.backend ? {} : s.challenges }));
   },
-  /** The server's answer about who is signed in (see lib/session-client.ts). */
-  setSession(backend: boolean, user: DemoUser | null) {
-    update((s) => (backend ? { ...s, backend, user } : { ...s, backend }));
+  /** The server's answer about who is signed in and their challenges (see lib/session-client.ts). */
+  setSession(backend: boolean, user: DemoUser | null, challenges?: Record<number, ChallengeState>) {
+    update((s) => (backend ? { ...s, backend, user, challenges: challenges ?? (user ? s.challenges : {}) } : { ...s, backend }));
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples }));
@@ -167,8 +184,10 @@ export const actions = {
 
   joinChallenge(method: number) {
     update((s) => (s.challenges[method] ? s : { ...s, challenges: { ...s.challenges, [method]: { joinedAt: now(), done: [], note: "", submittedAt: null, entry: "pending" } } }));
+    toServer(() => joinChallengeAction(method));
   },
   leaveChallenge(method: number) {
+    toServer(() => leaveChallengeAction(method));
     update((s) => {
       const rest = { ...s.challenges };
       delete rest[method];
@@ -182,12 +201,19 @@ export const actions = {
       const done = c.done.includes(task) ? c.done.filter((t) => t !== task) : [...c.done, task].sort((a, b) => a - b);
       return { ...s, challenges: { ...s.challenges, [method]: { ...c, done } } };
     });
+    toServer(() => toggleTaskAction(method, task));
   },
   setNote(method: number, note: string) {
     update((s) => (s.challenges[method] ? { ...s, challenges: { ...s.challenges, [method]: { ...s.challenges[method], note } } } : s));
+    // typing fires on every key: save once the member pauses
+    clearTimeout(noteTimers.get(method));
+    noteTimers.set(method, setTimeout(() => toServer(() => setNoteAction(method, note)), 800));
   },
   submitChallenge(method: number) {
+    clearTimeout(noteTimers.get(method));
+    const note = state.challenges[method]?.note ?? "";
     update((s) => (s.challenges[method] ? { ...s, challenges: { ...s.challenges, [method]: { ...s.challenges[method], submittedAt: now(), entry: "pending" } } } : s));
+    toServer(() => submitChallengeAction(method, note));
   },
 
   addStory(input: Omit<Story, "id" | "createdAt" | "status" | "ownerId">) {
