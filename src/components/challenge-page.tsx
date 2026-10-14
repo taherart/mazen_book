@@ -2,7 +2,7 @@
 
 import { CalendarDays, Medal, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
-import { useDemo, useEntries } from "@/lib/demo/hooks";
+import { useDemo, useEntries, useEntryCounts } from "@/lib/demo/hooks";
 import { methodHref } from "@/lib/methods";
 import { ENTRIES, count } from "@/lib/taxonomy";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
@@ -21,6 +21,7 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
   const tasks = taskTitles[n - 1];
   const { admin } = useDemo();
   const entries = useEntries(n, tasks.length);
+  const counts = useEntryCounts(entries);
   const winners = Object.entries(admin.winners)
     .filter(([, w]) => w.announced)
     .sort((a, b) => Number(b[0]) - Number(a[0]));
@@ -138,9 +139,9 @@ export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; m
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h3 className="font-display text-xl text-ink">مشاركات هذا الأسبوع</h3>
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <Chip tone="paper">{count(entries.length, ENTRIES)}</Chip>
-                <Chip tone="ok">{entries.filter((e) => e.status === "eligible").length} مؤهلة</Chip>
-                <Chip tone="sun">{entries.filter((e) => e.status === "pending").length} بانتظار المراجعة</Chip>
+                <Chip tone="paper">{count(counts.total, ENTRIES)}</Chip>
+                <Chip tone="ok">{counts.eligible} مؤهلة</Chip>
+                <Chip tone="sun">{counts.pending} بانتظار المراجعة</Chip>
                 {entries.some((e) => e.sample) ? <SampleTag /> : null}
               </div>
             </div>

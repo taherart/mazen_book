@@ -15,6 +15,8 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 export function AdminWeek({ methods, week }: AdminProps) {
   const { admin } = useDemo();
   const active = admin.weekMethod ?? week.week;
+  // the draw is for one method; once it has run, the method stays
+  const drawn = !!admin.winners[week.week];
   const m = methods[active - 1];
   const schedule = [0, 1, 2, 3, 4, 5].map((k) => ({ week: ((week.week - 1 + k) % 52) + 1, starts: new Date(new Date(week.startsAt).getTime() + k * WEEK_MS).toISOString() }));
 
@@ -29,8 +31,8 @@ export function AdminWeek({ methods, week }: AdminProps) {
               <MethodArt n={m.n} title={m.title} sizes="160px" />
             </div>
             <div className="space-y-4">
-              <Field label="طريقة هذا الأسبوع" htmlFor="week-method" hint={admin.weekMethod ? `اخترتها يدويًا. بحسب الجدول كانت الطريقة ${week.week}.` : "بحسب الجدول: الطريقة رقم الأسبوع. اختر غيرها إن أردت."}>
-                <Select id="week-method" value={active} onChange={(e) => actions.setWeekMethod(Number(e.target.value) === week.week ? null : Number(e.target.value))}>
+              <Field label="طريقة هذا الأسبوع" htmlFor="week-method" hint={drawn ? "جرى سحب هذا الأسبوع، فلا يمكن تغيير طريقته." : admin.weekMethod ? `اخترتها يدويًا. بحسب الجدول كانت الطريقة ${week.week}.` : "بحسب الجدول: الطريقة رقم الأسبوع. اختر غيرها إن أردت."}>
+                <Select id="week-method" value={active} disabled={drawn} onChange={(e) => actions.setWeekMethod(week.startsAt, Number(e.target.value) === week.week ? null : Number(e.target.value))}>
                   {methods.map((x) => (
                     <option key={x.n} value={x.n}>
                       {x.n}. {x.title}
@@ -38,8 +40,8 @@ export function AdminWeek({ methods, week }: AdminProps) {
                   ))}
                 </Select>
               </Field>
-              {admin.weekMethod ? (
-                <Button variant="soft" size="sm" onClick={() => actions.setWeekMethod(null)}>
+              {admin.weekMethod && !drawn ? (
+                <Button variant="soft" size="sm" onClick={() => actions.setWeekMethod(week.startsAt, null)}>
                   <RotateCcw aria-hidden className="size-4" />
                   عُد لجدول الكتاب
                 </Button>
@@ -56,7 +58,7 @@ export function AdminWeek({ methods, week }: AdminProps) {
 
         <Panel title="الجائزة">
           <Field label="وصف الجائزة كما يظهر للأعضاء" htmlFor="prize" hint="يظهر في صفحة التحدي وصفحة الطريقة. اتركه فارغًا ليظهر «تُعلن الجائزة مع بداية التحدي».">
-            <Input id="prize" value={admin.prize} placeholder="مثال: نسخة موقّعة من الكتاب وجلسة استشارية" onChange={(e) => actions.setPrize(e.target.value)} />
+            <Input id="prize" value={admin.prize} placeholder="مثال: نسخة موقّعة من الكتاب وجلسة استشارية" maxLength={200} onChange={(e) => actions.setPrize(week.startsAt, e.target.value)} />
           </Field>
           <Notice tone="sun" className="mt-4" title="قبل أول سحب">
             الجوائز والسحوبات تحتاج مراجعة المتطلبات النظامية ونشر شروط واضحة للمشاركة والاختيار.

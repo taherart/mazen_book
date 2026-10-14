@@ -63,8 +63,15 @@ length limits, portfolio and contact links must be http(s), nothing is public un
 approves it, review and report decisions check `ADMIN_EMAILS` on the server, contact requests
 only reach approved profiles and only their owner (and admins) can read them, owner ids are not
 sent with public lists, and submissions are limited (5 stories and 5 profiles per member per
-hour, 5 contact requests and 10 reports per address per hour). The rest of the list follows with
-the features it covers.
+hour, 5 contact requests and 10 reports per address per hour).
+
+Done in step 4 (raffle): every raffle decision checks `ADMIN_EMAILS` on the server and can only
+touch this week's or last week's draw; the winner is picked on the server with
+`crypto.randomInt` from the eligible entries sent during that week; the week's method and the
+entry decisions are fixed once it has been drawn; every draw, announcement and undo is appended
+to `raffle_events` with the candidate list, the winner and the admin; other members' entries
+stay private (the public page gets only counts), and an unannounced winner is shown to admins
+only. The rest of the list follows with the features it covers.
 
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;

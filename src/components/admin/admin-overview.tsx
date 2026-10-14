@@ -2,7 +2,7 @@
 
 import { ArrowLeft, BarChart3, ClipboardCheck, Flag, PlugZap } from "@/components/icons";
 import { SAMPLE_ENTRIES } from "@/data/samples";
-import { useDemo, useEntries, useProviders, useStories } from "@/lib/demo/hooks";
+import { useDemo, useEntries, useEntryCounts, useProviders, useStories } from "@/lib/demo/hooks";
 import { SampleTag } from "../ui";
 import { useWeekMethod } from "../weekly";
 import { AdminHead, Panel, type AdminProps, type AdminTab } from "./shared";
@@ -13,6 +13,7 @@ export function AdminOverview({ methods, week, go }: AdminProps & { go: (tab: Ad
   const published = useStories().length;
   const listed = useProviders().length;
   const entries = useEntries(weekMethod, methods[weekMethod - 1].tasks);
+  const counts = useEntryCounts(entries);
 
   const mine = Object.entries(challenges);
   const started = mine.length + (showSamples ? SAMPLE_ENTRIES.length : 0);
@@ -21,11 +22,11 @@ export function AdminOverview({ methods, week, go }: AdminProps & { go: (tab: Ad
   const queue = [
     { label: "تجارب بانتظار المراجعة", value: stories.filter((s) => s.status === "pending").length, tab: "review" as const },
     { label: "ملفات خدمات بانتظار الموافقة", value: providers.filter((p) => p.status === "pending").length, tab: "review" as const },
-    { label: "مشاركات سحب بانتظار التأهيل", value: entries.filter((e) => e.status === "pending").length, tab: "raffle" as const },
+    { label: "مشاركات سحب بانتظار التأهيل", value: counts.pending, tab: "raffle" as const },
     { label: "بلاغات مفتوحة", value: reports.filter((r) => !r.resolved).length, tab: "people" as const },
   ];
   const counted = [
-    { label: "المشاركون في تحدي الأسبوع", value: entries.length + (challenges[weekMethod] && !challenges[weekMethod].submittedAt ? 1 : 0) },
+    { label: "المشاركون في تحدي الأسبوع", value: counts.total + (challenges[weekMethod] && !challenges[weekMethod].submittedAt ? 1 : 0) },
     { label: "نسبة إكمال التحديات", value: started ? `${Math.round((finished / started) * 100)}%` : "—" },
     { label: "التجارب المنشورة", value: published },
     { label: "مقدمو الخدمات", value: listed },

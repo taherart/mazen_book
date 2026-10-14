@@ -52,7 +52,7 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
   for (const s of stories) if (s.status !== "pending") notes.push({ icon: MessageSquareHeart, text: <>تجربتك «{s.title}» {s.status === "approved" ? <b>نُشرت</b> : <b>لم تُقبل</b>}.</>, href: `/stories/${s.id}` });
   for (const p of providers) if (p.status !== "pending") notes.push({ icon: HandHeart, text: <>ملف خدماتك «{p.name}» {p.status === "approved" ? <b>ظهر في الدليل</b> : <b>لم يُقبل</b>}.</>, href: `/providers/${p.id}` });
   if (myRequests.length) notes.push({ icon: Inbox, text: <>طلبات تواصل جديدة على خدماتك: <b>{myRequests.length}</b>.</>, href: "#services" });
-  const win = Object.entries(admin.winners).find(([, w]) => w.announced && w.name === user.name);
+  const win = Object.entries(admin.winners).find(([, w]) => w.announced && (w.mine ?? w.name === user.name));
   if (win) notes.unshift({ icon: Trophy, text: <>مبروك! فزت بسحب الأسبوع <b>{win[0]}</b>.</>, href: "/challenge" });
 
   return (

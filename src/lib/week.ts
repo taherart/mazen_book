@@ -15,6 +15,13 @@ export function weekAt(now: Date): WeekInfo {
   };
 }
 
+/** The draws the team can still act on: this week's and, once there is one, last week's. */
+export function openDraws(now: Date): WeekInfo[] {
+  const current = weekAt(now);
+  const previous = weekAt(new Date(new Date(current.startsAt).getTime() - WEEK_MS));
+  return previous.startsAt === current.startsAt ? [current] : [current, previous];
+}
+
 export function formatDate(iso: string) {
   return new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Riyadh" }).format(new Date(iso));
 }

@@ -122,6 +122,37 @@ const MIGRATIONS: { id: number; sql: string }[] = [
       );
     `,
   },
+  {
+    id: 4,
+    sql: `
+      -- the team's settings and result for one week's draw; no row = the calendar method, no prize yet
+      create table weeks (
+        starts_at timestamptz primary key,
+        week smallint not null check (week between 1 and 52),
+        method smallint check (method between 1 and 52),
+        prize text not null default '' check (char_length(prize) <= 200),
+        winner_id uuid references users (id) on delete set null,
+        winner_name text,
+        drawn_at timestamptz,
+        announced boolean not null default false
+      );
+
+      -- every draw, announcement and undo, so a result can be checked afterwards; only ever appended
+      create table raffle_events (
+        id bigint generated always as identity primary key,
+        week_starts_at timestamptz not null,
+        action text not null check (action in ('draw', 'announce', 'withdraw', 'cancel')),
+        method smallint not null,
+        candidates uuid[] not null default '{}',
+        winner_id uuid,
+        winner_name text,
+        admin_id uuid references users (id) on delete set null,
+        admin_email text not null,
+        created_at timestamptz not null default now()
+      );
+      create index raffle_events_week_idx on raffle_events (week_starts_at, created_at);
+    `,
+  },
 ];
 
 export async function migrate() {

@@ -3,7 +3,9 @@
 import { useMemo, useSyncExternalStore } from "react";
 import { SAMPLE_ENTRIES, SAMPLE_PROVIDERS, SAMPLE_STORIES } from "@/data/samples";
 import type { Provider, Story } from "../types";
-import { getServerSnapshot, getSnapshot, subscribe, type EntryStatus } from "./store";
+import { getServerSnapshot, getSnapshot, subscribe, type EntryCounts, type RaffleEntry } from "./store";
+
+export type { RaffleEntry };
 
 export function useDemo() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -40,17 +42,6 @@ export function useProviders(method?: number): Provider[] {
   }, [providers, showSamples, method]);
 }
 
-export interface RaffleEntry {
-  id: string;
-  name: string;
-  method: number;
-  done: number;
-  total: number;
-  note: string;
-  status: EntryStatus;
-  sample: boolean;
-}
-
 /** Entries for one method's weekly draw: the member's own write-up plus the illustrative ones. */
 export function useEntries(method: number, totalTasks: number): RaffleEntry[] {
   const { user, challenges, showSamples, admin } = useDemo();
@@ -67,4 +58,19 @@ export function useEntries(method: number, totalTasks: number): RaffleEntry[] {
     }
     return list;
   }, [user, challenges, showSamples, admin.entries, method, totalTasks]);
+}
+
+/** How big this week's draw is. With a database other members' entries stay private, so the
+ *  server sends only their number; the samples are counted on top. */
+export function useEntryCounts(entries: RaffleEntry[]): EntryCounts {
+  const { backend, admin } = useDemo();
+  return useMemo(() => {
+    const local = backend ? entries.filter((e) => e.sample) : entries;
+    const base = backend ? admin.entryCounts : { total: 0, eligible: 0, pending: 0 };
+    return {
+      total: base.total + local.length,
+      eligible: base.eligible + local.filter((e) => e.status === "eligible").length,
+      pending: base.pending + local.filter((e) => e.status === "pending").length,
+    };
+  }, [backend, admin.entryCounts, entries]);
 }

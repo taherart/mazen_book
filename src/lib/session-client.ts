@@ -9,8 +9,14 @@ export async function refreshSession() {
   try {
     const res = await fetch("/api/session", { cache: "no-store" });
     if (!res.ok) return;
-    const data = (await res.json()) as { backend: boolean; user?: DemoUser | null; challenges?: Record<number, ChallengeState>; community?: Parameters<typeof actions.setSession>[3] };
-    actions.setSession(data.backend, data.user ?? null, data.challenges, data.community);
+    const data = (await res.json()) as {
+      backend: boolean;
+      user?: DemoUser | null;
+      challenges?: Record<number, ChallengeState>;
+      community?: Parameters<typeof actions.setSession>[3];
+      raffle?: Parameters<typeof actions.setSession>[4];
+    };
+    actions.setSession(data.backend, data.user ?? null, data.challenges, data.community, data.raffle);
   } catch {
     // offline: keep what the store already has
   }

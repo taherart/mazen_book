@@ -3,6 +3,7 @@
 // exists. The backend phase replaces this module with real API calls.
 import { joinChallengeAction, leaveChallengeAction, setNoteAction, submitChallengeAction, toggleTaskAction } from "../server/challenge-actions";
 import { addProviderAction, addReportAction, addRequestAction, addStoryAction, resolveReportAction, reviewProviderAction, reviewStoryAction, toggleHelpfulAction } from "../server/community-actions";
+import { announceWinnerAction, drawWinnerAction, reviewEntryAction, setPrizeAction, setWeekMethodAction, undoWinnerAction } from "../server/raffle-actions";
 import type { Provider, ReviewStatus, Story } from "../types";
 
 export interface DemoUser {
@@ -53,6 +54,35 @@ export interface Winner {
   method: number;
   drawnAt: string;
   announced: boolean;
+  /** With a database: whether the signed-in member is this winner. */
+  mine?: boolean;
+}
+
+export interface RaffleEntry {
+  id: string;
+  name: string;
+  method: number;
+  done: number;
+  total: number;
+  note: string;
+  status: EntryStatus;
+  sample: boolean;
+}
+
+export interface EntryCounts {
+  total: number;
+  eligible: number;
+  pending: number;
+}
+
+/** One week's draw as the server sends it to admins. */
+export interface RaffleWeek {
+  weekStart: string;
+  week: number;
+  method: number;
+  /** How many times this week has been drawn; every draw is kept in the audit log. */
+  draws: number;
+  entries: RaffleEntry[];
 }
 
 export interface DemoState {
@@ -75,6 +105,10 @@ export interface DemoState {
     /** Review decisions on sample raffle entries, keyed by entry id. */
     entries: Record<string, EntryStatus>;
     winners: Record<number, Winner>;
+    /** With a database: the size of this week's draw (the entries themselves are for admins). */
+    entryCounts: EntryCounts;
+    /** With a database, for admins: this week's and last week's draws. */
+    raffle: RaffleWeek[];
   };
 }
 
@@ -88,7 +122,7 @@ export const initialState: DemoState = {
   reports: [],
   helpful: [],
   showSamples: true,
-  admin: { weekMethod: null, prize: "", entries: {}, winners: {} },
+  admin: { weekMethod: null, prize: "", entries: {}, winners: {}, entryCounts: { total: 0, eligible: 0, pending: 0 }, raffle: [] },
 };
 
 const KEY = "m52.demo.v1";
@@ -147,6 +181,7 @@ function update(change: (s: DemoState) => DemoState) {
 }
 
 const noteTimers = new Map<number, ReturnType<typeof setTimeout>>();
+let prizeTimer: ReturnType<typeof setTimeout> | undefined;
 
 /** With a database, a member's change is sent to the server after the local update; if the server
  *  turns it down, the store reloads the server's copy so the screen never shows unsaved work. */
@@ -177,11 +212,17 @@ export const actions = {
   },
   signOut() {
     // with real accounts, a member's challenges belong to the account, not to this device
-    update((s) => ({ ...s, user: null, challenges: s.backend ? {} : s.challenges }));
+    update((s) => ({ ...s, user: null, challenges: s.backend ? {} : s.challenges, admin: s.backend ? { ...s.admin, raffle: [] } : s.admin }));
   },
   /** The server's answer about who is signed in and their challenges (see lib/session-client.ts). */
-  setSession(backend: boolean, user: DemoUser | null, challenges?: Record<number, ChallengeState>, community?: Pick<DemoState, "stories" | "providers" | "requests" | "reports" | "helpful">) {
-    update((s) => (backend ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}) } : { ...s, backend }));
+  setSession(
+    backend: boolean,
+    user: DemoUser | null,
+    challenges?: Record<number, ChallengeState>,
+    community?: Pick<DemoState, "stories" | "providers" | "requests" | "reports" | "helpful">,
+    raffle?: Omit<DemoState["admin"], "entries">,
+  ) {
+    update((s) => (backend ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}), admin: { ...s.admin, ...raffle } } : { ...s, backend }));
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples }));
@@ -264,11 +305,19 @@ export const actions = {
     update((s) => ({ ...s, providers: s.providers.map((x) => (x.id === id ? { ...x, status } : x)) }));
     toServer(() => reviewProviderAction(id, status));
   },
-  setWeekMethod(weekMethod: number | null) {
+  setWeekMethod(weekStart: string, weekMethod: number | null) {
     update((s) => ({ ...s, admin: { ...s.admin, weekMethod } }));
+    // the raffle tab lists the new method's entries, which only the server has
+    toServer(async () => {
+      const res = await setWeekMethodAction(weekStart, weekMethod);
+      if (res.ok) await resync();
+      return res;
+    });
   },
-  setPrize(prize: string) {
+  setPrize(weekStart: string, prize: string) {
     update((s) => ({ ...s, admin: { ...s.admin, prize } }));
+    clearTimeout(prizeTimer);
+    prizeTimer = setTimeout(() => toServer(() => setPrizeAction(weekStart, prize)), 800);
   },
   reviewEntry(id: string, status: EntryStatus) {
     update((s) => {
@@ -277,8 +326,21 @@ export const actions = {
         const c = s.challenges[m];
         return c ? { ...s, challenges: { ...s.challenges, [m]: { ...c, entry: status } } } : s;
       }
+      if (isId(id.split(":")[0])) {
+        const raffle = s.admin.raffle.map((w) => ({ ...w, entries: w.entries.map((e) => (e.id === id ? { ...e, status } : e)) }));
+        return { ...s, admin: { ...s.admin, raffle } };
+      }
       return { ...s, admin: { ...s.admin, entries: { ...s.admin.entries, [id]: status } } };
     });
+    if (isId(id.split(":")[0])) toServer(() => reviewEntryAction(id, status));
+  },
+  /** With a database the server draws, announces and undoes the result; the store then reloads
+   *  its answer. Resolves to whether the server accepted. */
+  async decideRaffle(step: "draw" | "announce" | "undo", weekStart: string) {
+    const send = { draw: drawWinnerAction, announce: announceWinnerAction, undo: undoWinnerAction }[step];
+    const { ok } = await send(weekStart).catch(() => ({ ok: false }));
+    await resync();
+    return ok;
   },
   setWinner(week: number, winner: Winner | null) {
     update((s) => {
