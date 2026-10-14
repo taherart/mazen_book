@@ -55,6 +55,8 @@ jobs:
             echo "::error::VPS_SSH_KEY is not a valid private key. On the VPS run: base64 -w0 ~/.ssh/deploy  then paste that single line as the secret."
             exit 1
           fi
+          # public fingerprint only: compare with `ssh-keygen -lf ~/.ssh/deploy.pub` on the VPS
+          ssh-keygen -lf ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 "$VPS_HOST" >> ~/.ssh/known_hosts
 
       - name: Upload and switch release
