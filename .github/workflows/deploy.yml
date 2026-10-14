@@ -37,7 +37,12 @@ jobs:
         env:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
         run: |
+          if [ -z "$VPS_SSH_KEY" ] || [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ]; then
+            echo "::error::Add VPS_SSH_KEY, VPS_HOST and VPS_USER under Settings > Secrets and variables > Actions > Repository secrets."
+            exit 1
+          fi
           install -m 700 -d ~/.ssh
           printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
