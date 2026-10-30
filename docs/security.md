@@ -45,6 +45,8 @@ dependencies have no known vulnerabilities (`pnpm audit --prod`).
 - [ ] Optional: restrict the firewall's SSH rule to your own IP address.
 - [ ] Optional: hPanel → VPS → Malware scanner (Monarx), free on Hostinger VPS.
 - [ ] Rotate the Hostinger API token if it was ever shared outside this environment.
+- [ ] Run `pnpm audit` before each release and after a quiet month; Next.js 16.4.0 shipped two
+      critical remote-code-execution flaws that 16.4.1 fixed, and the site runs on 16.4.3 now.
 
 ## Backend phase: required before real accounts
 
