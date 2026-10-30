@@ -31,6 +31,8 @@ By hand, a deploy is one API call: send `deploy/docker-compose.yml` with the env
 | `DB_PASSWORD` | Database password. `deploy/hostinger.py` generates it on the first deploy that needs it; never change it afterwards (the database keeps the one it was created with) |
 | `ADMIN_EMAILS` | Comma-separated emails whose accounts can open `/admin` |
 | `BACKUP_KEEP_DAYS` | Optional. Days of database dumps to keep on the server (default 30) |
+| `RESEND_API_KEY` | Optional. Lets the site email password-reset links through [Resend](https://resend.com). Set it as a **repository secret**; the workflow passes it on. Without it the link is only written to the web container's log |
+| `MAIL_FROM` | Optional. The sender, e.g. `52 طريقة <no-reply@example.com>`, once that domain is verified in Resend. Set it as a **repository variable**. Until then the default `onboarding@resend.dev` works, but Resend delivers it only to the Resend account's own address |
 
 ```bash
 # HOSTINGER_API_TOKEN: hPanel → Account → API. VM id 2059641.
@@ -50,6 +52,14 @@ curl -sS -H "Authorization: Bearer $HOSTINGER_API_TOKEN" \
 curl -sS -H "Authorization: Bearer $HOSTINGER_API_TOKEN" \
   https://developers.hostinger.com/api/vps/v1/virtual-machines/2059641/docker/mazen-book/logs
 ```
+
+## Password-reset email
+
+`/forgot` emails a one-hour, single-use link to `/reset?token=…` (only the token's hash is stored;
+using it signs the member out everywhere else). The email goes through Resend when
+`RESEND_API_KEY` is set. **Resend's sandbox only delivers to the account owner's address**: to reach
+members, add the site's domain in Resend, publish the DNS records it gives you, then set
+`MAIL_FROM` to an address on that domain and deploy again.
 
 ## Backups and restore
 

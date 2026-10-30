@@ -6,7 +6,8 @@
 # backup: dumps the database into the pgbackups volume at start and then daily, keeps BACKUP_KEEP_DAYS
 #        of them; admins download a copy from /admin (web mounts the volume read-only).
 # Env: GIT_REF (commit SHA), SITE_HOST, SITE_IP, DB_PASSWORD (required, URL-safe), ADMIN_EMAILS
-#      (comma-separated), GITHUB_TOKEN (read-only; only for a private repo), BACKUP_KEEP_DAYS (30).
+#      (comma-separated), GITHUB_TOKEN (read-only; only for a private repo), BACKUP_KEEP_DAYS (30),
+#      RESEND_API_KEY and MAIL_FROM (password-reset email; see deploy/README.md).
 
 name: mazen-book
 
@@ -69,6 +70,9 @@ services:
       DATABASE_URL: postgres://mazen:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/mazen
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
       BACKUP_DIR: /backups
+      # password-reset email: a Resend API key and the verified sender; without them the link is only logged
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      MAIL_FROM: ${MAIL_FROM:-}
       NEXT_TELEMETRY_DISABLED: "1"
     volumes: ["releases:/releases:ro", "pgbackups:/backups:ro"]
     working_dir: /releases

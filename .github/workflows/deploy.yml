@@ -33,4 +33,7 @@ jobs:
       - name: Deploy through Hostinger's Docker Manager
         env:
           HOSTINGER_API_TOKEN: ${{ secrets.HOSTINGER_API_TOKEN }}
+          # optional: lets the site send password-reset emails (deploy/README.md)
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
         run: python3 deploy/hostinger.py "$GITHUB_SHA"

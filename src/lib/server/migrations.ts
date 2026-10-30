@@ -153,6 +153,20 @@ const MIGRATIONS: { id: number; sql: string }[] = [
       create index raffle_events_week_idx on raffle_events (week_starts_at, created_at);
     `,
   },
+  {
+    id: 5,
+    sql: `
+      -- a password-reset link: id is the SHA-256 of the token in the link, good for one hour, once
+      create table password_resets (
+        id text primary key,
+        user_id uuid not null references users (id) on delete cascade,
+        created_at timestamptz not null default now(),
+        expires_at timestamptz not null,
+        used_at timestamptz
+      );
+      create index password_resets_user_idx on password_resets (user_id);
+    `,
+  },
 ];
 
 export async function migrate() {

@@ -89,6 +89,12 @@ verifies every dump and keeps 30 days; admins download copies from `/admin`, whe
 flagged. The dumps are not encrypted at rest and sit on the same machine as the database, so the
 off-server copy is the owner's download (or a VPS snapshot in hPanel).
 
+Done (password reset): the link's token is random (256 bits) and stored only as a SHA-256 hash,
+expires in an hour, works once, and a new request replaces the old link; the form answers the same
+for known and unknown addresses; requests are limited to 5 per address and 3 per email an hour, and
+10 reset attempts per address per quarter hour; a reset ends every other session of the account.
+Without `RESEND_API_KEY` the link is written to the server log instead of being emailed.
+
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;
   CSRF protection on every state-changing request (Server Actions check the Origin header).

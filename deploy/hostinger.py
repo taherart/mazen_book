@@ -4,7 +4,8 @@
     HOSTINGER_API_TOKEN=... python3 deploy/hostinger.py <full commit sha>
 
 Sends deploy/docker-compose.yml with the project's current environment, changing only GIT_REF
-(SITE_HOST, SITE_IP and an optional GITHUB_TOKEN stay as the owner set them). Then waits until the
+(SITE_HOST, SITE_IP and an optional GITHUB_TOKEN stay as the owner set them) and any of the
+PASSTHROUGH variables that are set here (repository secrets and variables). Then waits until the
 builder reports that commit and the web container is healthy again. Used by
 .github/workflows/deploy.yml on every push to main.
 """
@@ -20,6 +21,8 @@ import urllib.request
 from pathlib import Path
 
 API = "https://developers.hostinger.com/api/vps/v1/virtual-machines/2059641/docker"
+# repository secrets/variables the workflow hands on to the project when they are set
+PASSTHROUGH = ("RESEND_API_KEY", "MAIL_FROM")
 PROJECT = "mazen-book"
 TIMEOUT_S = 20 * 60
 
@@ -59,7 +62,9 @@ def main(sha):
         sys.exit(f"::error::expected a full commit SHA, got {sha!r}")
 
     current = call("GET", f"/{PROJECT}")
-    env = [line for line in current["environment"].splitlines() if line and not line.startswith("GIT_REF=")]
+    carried = tuple(f"{k}=" for k in PASSTHROUGH if os.environ.get(k))
+    env = [line for line in current["environment"].splitlines() if line and not line.startswith(("GIT_REF=", *carried))]
+    env.extend(f"{k}={os.environ[k]}" for k in PASSTHROUGH if os.environ.get(k))
     if not any(line.startswith("DB_PASSWORD=") for line in env):
         # first deploy with the database: Postgres keeps whatever password it is created with, so
         # this is generated once and then carried forward with the rest of the environment

@@ -103,6 +103,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             </button>
           </div>
         </Field>
+        {signup ? null : (
+          <p className="-mt-2 text-end text-sm">
+            <Link href="/forgot" className="font-semibold text-ink-soft underline underline-offset-4 hover:text-brand">
+              نسيت كلمة المرور؟
+            </Link>
+          </p>
+        )}
 
         {signup ? (
           <>
