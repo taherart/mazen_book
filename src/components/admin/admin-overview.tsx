@@ -5,6 +5,7 @@ import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useEntries, useEntryCounts, useProviders, useStories } from "@/lib/demo/hooks";
 import { SampleTag } from "../ui";
 import { useWeekMethod } from "../weekly";
+import { AdminBackups } from "./admin-backups";
 import { AdminHead, Panel, type AdminProps, type AdminTab } from "./shared";
 
 export function AdminOverview({ methods, week, go }: AdminProps & { go: (tab: AdminTab) => void }) {
@@ -122,6 +123,7 @@ export function AdminOverview({ methods, week, go }: AdminProps & { go: (tab: Ad
             </li>
           </ul>
         </Panel>
+        <AdminBackups />
       </div>
     </>
   );

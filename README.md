@@ -49,6 +49,7 @@ Optional environment variables (`.env.local`):
 - **Real:** the 52 methods (titles, numbers, steps, illustrations), filters, QR codes, the weekly schedule, form validation, every screen state.
 - **Real with a database:** accounts (Argon2id passwords, HttpOnly session cookies, attempt limits, account deletion), weekly challenge progress and write-ups, stories, provider profiles, contact requests, "helpful" marks, reports, the admin review queue, and the weekly raffle (challenge of the week, prize, entry review, a server-side draw with an audit log, announced winners). Code in `src/lib/server`; the client store saves to it after each change.
 - **Prototype builds only:** without a database everything above lives in `localStorage` (`src/lib/demo/store.ts`). The illustrative stories and providers in `src/data/samples.ts` are labelled «مثال توضيحي» wherever they appear and can be switched off from the preview bar, which shows the true empty state. Production keeps the labelled samples (without the switch) until `SAMPLES=0`.
+- **Operations:** the database is dumped daily on the server (30 days kept) and admins download copies from `/admin`; restore steps are in `deploy/README.md`.
 - **Not built:** file upload, analytics, the methods CMS save, legal texts.
 
 ## Where things are

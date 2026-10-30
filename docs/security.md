@@ -82,6 +82,11 @@ they filed stay with the recipient or the team without the link to the account; 
 winner's name stays in that week's result and in `raffle_events`. The rest of the list follows
 with the features it covers.
 
+Done (backups): the `backup` service dumps the database daily into its own volume on the VPS,
+verifies every dump and keeps 30 days; admins download copies from `/admin`, where a missed run is
+flagged. The dumps are not encrypted at rest and sit on the same machine as the database, so the
+off-server copy is the owner's download (or a VPS snapshot in hPanel).
+
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;
   CSRF protection on every state-changing request (Server Actions check the Origin header).

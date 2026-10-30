@@ -3,8 +3,10 @@
 # web:   runs the built release as a non-root user on a read-only filesystem.
 # caddy: HTTPS for SITE_HOST, plain HTTP on SITE_IP, security headers and timeouts.
 # db:    PostgreSQL for accounts and everything members add; reachable only from web.
+# backup: dumps the database into the pgbackups volume at start and then daily, keeps BACKUP_KEEP_DAYS
+#        of them; admins download a copy from /admin (web mounts the volume read-only).
 # Env: GIT_REF (commit SHA), SITE_HOST, SITE_IP, DB_PASSWORD (required, URL-safe), ADMIN_EMAILS
-#      (comma-separated), GITHUB_TOKEN (read-only; only for a private repo).
+#      (comma-separated), GITHUB_TOKEN (read-only; only for a private repo), BACKUP_KEEP_DAYS (30).
 
 name: mazen-book
 
@@ -66,8 +68,9 @@ services:
       HOSTNAME: 0.0.0.0
       DATABASE_URL: postgres://mazen:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/mazen
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      BACKUP_DIR: /backups
       NEXT_TELEMETRY_DISABLED: "1"
-    volumes: ["releases:/releases:ro"]
+    volumes: ["releases:/releases:ro", "pgbackups:/backups:ro"]
     working_dir: /releases
     command: ["sh", "-c", "mkdir -p /tmp/next-cache && cd /releases/$$GIT_REF && exec node server.js"]
     depends_on:
@@ -114,6 +117,43 @@ services:
       retries: 5
       start_period: 20s
 
+  backup:
+    <<: *base
+    image: postgres:17-alpine
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PGHOST: db
+      PGUSER: mazen
+      PGDATABASE: mazen
+      PGPASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-30}
+      # 03:00 UTC is 06:00 in Riyadh, the quietest hour
+      HOUR_UTC: "3"
+    volumes: ["pgbackups:/backups"]
+    mem_limit: 128m
+    pids_limit: 64
+    command:
+      - sh
+      - -ec
+      - |
+        dump() {
+          f="/backups/mazen-$$(date -u +%Y-%m-%d-%H%M).dump"
+          if pg_dump -Fc -Z 6 -f "$$f.part" && pg_restore -l "$$f.part" >/dev/null; then
+            mv "$$f.part" "$$f" && chmod 644 "$$f"
+            find /backups -name 'mazen-*.dump' -mtime +"$$KEEP_DAYS" -delete
+            echo "backup ok $$f $$(stat -c %s "$$f") bytes, $$(ls /backups/mazen-*.dump | wc -l) kept"
+          else
+            rm -f "$$f.part"; echo "backup FAILED $$(date -u +%FT%TZ)"
+          fi
+        }
+        dump
+        while :; do
+          now=$$(date -u +%s); next=$$(date -u -d "$$(date -u +%F) $$HOUR_UTC:00:00" +%s)
+          [ "$$next" -le "$$now" ] && next=$$((next + 86400))
+          sleep $$((next - now)); dump
+        done
+
 configs:
   caddyfile:
     content: |
@@ -152,5 +192,6 @@ configs:
 volumes:
   releases:
   pgdata:
+  pgbackups:
   caddy_data:
   caddy_config:
