@@ -90,9 +90,18 @@ To restore a dump you downloaded, copy it into the volume first:
 
 ## Connecting the real domain
 
-Point the domain's A record at `191.215.47.95`, set `SITE_HOST` to the domain and deploy again.
-Caddy fetches the certificate on its own. `NEXT_PUBLIC_SITE_URL` (QR codes, canonical links, social
-previews) follows `SITE_HOST`, so the rebuild picks it up.
+The checklist for the day the domain is chosen:
+
+1. DNS: an `A` record for the domain (and `www`, if wanted) → `191.215.47.95`.
+2. Hostinger project environment: set `SITE_HOST` to the domain and deploy again (any push to
+   `main`, or `workflow_dispatch`). Caddy fetches the certificate on its own; `NEXT_PUBLIC_SITE_URL`
+   (QR codes, canonical links, social previews) follows `SITE_HOST`, so the rebuild picks it up.
+3. Email: add the domain in Resend, publish the DNS records it gives, then set the repository
+   variable `MAIL_FROM` to `52 طريقة <no-reply@DOMAIN>` and deploy again. Test `/forgot` with an
+   address that is not the Resend account's own.
+4. Redirect the old addresses (`srv2059641.hstgr.cloud` and the bare IP) to the domain in the
+   Caddyfile, so printed QR codes and shared links keep working.
+5. At launch: `SAMPLES=0` in the project environment to remove the illustrative content.
 
 ## Building locally
 
