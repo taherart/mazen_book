@@ -40,6 +40,29 @@ export function getSummaries(): MethodSummary[] {
   return all.map(toSummary);
 }
 
+/** The five methods open to everyone, each picked by a rule so the reason shown with it is true.
+ *  Each pick prefers a domain not chosen yet. */
+const FREE_RULES: { reason: string; test: (m: Method) => boolean }[] = [
+  { reason: "ابدأ من هنا", test: (m) => m.level === 1 && m.capitalBand === "zero" && m.place !== "field" },
+  { reason: "بلا رأس مال", test: (m) => m.capitalBand === "zero" },
+  { reason: "أول ريال خلال أسبوعين", test: (m) => m.timeBand === "week" },
+  { reason: "تبدأ من بيتك", test: (m) => m.place === "home" },
+  { reason: "لأصحاب الخبرة", test: (m) => m.level === 3 },
+];
+export const FREE_PICKS: { n: number; reason: string }[] = (() => {
+  const used = new Set<number>();
+  const domains = new Set<string>();
+  return FREE_RULES.flatMap(({ reason, test }) => {
+    const pool = all.filter((m) => !used.has(m.n) && test(m));
+    const m = pool.find((x) => !domains.has(x.domain)) ?? pool[0];
+    if (!m) return [];
+    used.add(m.n);
+    domains.add(m.domain);
+    return [{ n: m.n, reason }];
+  });
+})();
+export const FREE_METHODS = FREE_PICKS.map((p) => p.n);
+
 export const methodHref = (n: number) => `/method/${String(n).padStart(2, "0")}`;
 export const methodImage = (n: number) => `/methods/${String(n).padStart(2, "0")}.webp`;
 

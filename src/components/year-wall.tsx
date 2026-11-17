@@ -1,8 +1,9 @@
 "use client";
 
-import { Check } from "@/components/icons";
+import { Check, Lock } from "@/components/icons";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { isOpen } from "@/lib/access";
 import { useDemo } from "@/lib/demo/hooks";
 import { methodHref } from "@/lib/methods";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
@@ -26,7 +27,7 @@ interface Row {
  */
 export function YearWall({ week, methods, className }: { week: WeekInfo; methods: MethodSummary[]; className?: string }) {
   const current = useWeekMethod(week);
-  const { challenges } = useDemo();
+  const { challenges, access } = useDemo();
   const rail = useRef<HTMLOListElement>(null);
   const yearStart = new Date(week.startsAt).getTime() - (week.week - 1) * WEEK_MS;
 
@@ -74,7 +75,7 @@ export function YearWall({ week, methods, className }: { week: WeekInfo; methods
                   >
                     <span className={cx("w-5 shrink-0 font-display text-base leading-none", now ? "text-ink" : past ? "text-ink-mute" : "text-brand")}>{k}</span>
                     <span className={cx("min-w-0 flex-1 truncate", now ? "font-bold text-ink" : !past && "text-ink")}>{m.title}</span>
-                    {done ? <Check aria-label="أكملتها" className="size-4 shrink-0 text-ok" /> : mine ? <span aria-label="بدأتها" className="size-2 shrink-0 self-center rounded-full bg-brand" /> : null}
+                    {done ? <Check aria-label="أكملتها" className="size-4 shrink-0 text-ok" /> : mine ? <span aria-label="بدأتها" className="size-2 shrink-0 self-center rounded-full bg-brand" /> : access.loaded && !isOpen(access, m.n) ? <Lock aria-label="مقفلة" className="size-3.5 shrink-0 self-center text-ink-mute" /> : null}
                     <span className="shrink-0 text-xs tabular-nums text-ink-mute">{day}</span>
                   </Link>
                 </li>

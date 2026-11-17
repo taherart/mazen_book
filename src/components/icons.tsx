@@ -51,7 +51,9 @@ import {
   LightbulbIcon,
   LinkSimpleIcon,
   ListIcon,
+  KeyIcon,
   LockIcon,
+  LockOpenIcon,
   MagnifyingGlassIcon,
   MagnifyingGlassMinusIcon,
   MapPinIcon,
@@ -96,6 +98,7 @@ import {
   WarningIcon,
   WifiHighIcon,
   XIcon,
+  StarIcon,
 } from "@phosphor-icons/react/ssr";
 
 const LARGE = /(?:^|\s)size-(?:[6-9]|[1-9]\d)(?:\s|$)/;
@@ -155,7 +158,9 @@ export const Lightbulb = icon(LightbulbIcon, "Lightbulb");
 export const Link2 = icon(LinkSimpleIcon, "Link2");
 export const List = icon(ListIcon, "List");
 export const LoaderCircle = icon(CircleNotchIcon, "LoaderCircle");
+export const Key = icon(KeyIcon, "Key");
 export const Lock = icon(LockIcon, "Lock");
+export const LockOpen = icon(LockOpenIcon, "LockOpen");
 export const LogIn = icon(SignInIcon, "LogIn");
 export const LogOut = icon(SignOutIcon, "LogOut");
 export const Mail = icon(EnvelopeIcon, "Mail");
@@ -201,3 +206,4 @@ export const Users = icon(UsersIcon, "Users");
 export const Wallet = icon(WalletIcon, "Wallet");
 export const Wifi = icon(WifiHighIcon, "Wifi");
 export const X = icon(XIcon, "X");
+export const Star = icon(StarIcon, "Star");

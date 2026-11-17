@@ -6,6 +6,7 @@ import { methodHref, methodImage } from "@/lib/methods";
 import { DOMAINS, LEVELS, PLACES } from "@/lib/taxonomy";
 import type { Level, MethodSummary } from "@/lib/types";
 import { T } from "./text";
+import { LockMark } from "./unlock";
 import { Chip, cx } from "./ui";
 
 export function MethodNumber({ n, size = "md", inverted, className }: { n: number; size?: "xs" | "sm" | "md" | "lg" | "xl"; inverted?: boolean; className?: string }) {
@@ -61,6 +62,7 @@ export function MethodCard({ method, className, priority }: { method: MethodSumm
         <MethodArtMorph n={method.n}>
           <MethodArt n={method.n} title={method.title} priority={priority} className="art-drift misprint mx-auto max-w-[15rem] p-3" />
         </MethodArtMorph>
+        <LockMark method={method.n} className="absolute end-3 top-3 z-10" />
       </div>
       <div className="flex flex-1 flex-col border-t-2 border-ink p-4">
         <Chip tone="brand" className="self-start">
@@ -133,6 +135,7 @@ export function MethodListItem({ method, className }: { method: MethodSummary; c
           <Chip>{PLACES[method.place]}</Chip>
         </p>
       </div>
+      <LockMark method={method.n} className="shrink-0" />
       <ArrowLeft aria-hidden className="size-5 shrink-0 text-brand transition group-hover:-translate-x-1" />
     </Link>
   );

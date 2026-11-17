@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowLeft, Check, Users } from "@/components/icons";
+import { ArrowLeft, Check, Lock, Users } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type CSSProperties, useEffect, useState, useSyncExternalStore } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";
+import { isOpen } from "@/lib/access";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
 import { methodHref } from "@/lib/methods";
@@ -63,9 +64,19 @@ export const JOIN_LABEL = "سأجرّب هذه الطريقة";
  *  `magnetic` marks the single primary action in view (desktop pointer only). */
 export function JoinButton({ method, size = "lg", variant = "primary", className, magnetic }: { method: number; size?: "md" | "lg"; variant?: "primary" | "sun"; className?: string; magnetic?: boolean }) {
   const router = useRouter();
-  const { user, challenges } = useDemo();
+  const { user, challenges, access } = useDemo();
   const hydrated = useHydrated();
   const target = `${methodHref(method)}/challenge`;
+
+  // a challenge opens with its method: until then the button leads to the way to open it
+  if (hydrated && access.loaded && !isOpen(access, method)) {
+    return (
+      <Link href={`${methodHref(method)}#unlock`} className={buttonClass("primary", size, className)}>
+        <Lock aria-hidden className="size-5" />
+        افتح هذه الطريقة
+      </Link>
+    );
+  }
 
   if (hydrated && user && challenges[method]) {
     return (

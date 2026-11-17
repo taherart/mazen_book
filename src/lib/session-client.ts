@@ -15,8 +15,10 @@ export async function refreshSession() {
       challenges?: Record<number, ChallengeState>;
       community?: Parameters<typeof actions.setSession>[3];
       raffle?: Parameters<typeof actions.setSession>[4];
+      access?: Parameters<typeof actions.setSession>[5];
+      ratings?: Parameters<typeof actions.setSession>[6];
     };
-    actions.setSession(data.backend, data.user ?? null, data.challenges, data.community, data.raffle);
+    actions.setSession(data.backend, data.user ?? null, data.challenges, data.community, data.raffle, data.access, data.ratings);
   } catch {
     // offline: keep what the store already has
   }

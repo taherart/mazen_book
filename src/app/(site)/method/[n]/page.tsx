@@ -6,6 +6,7 @@ import { Suspense, ViewTransition } from "react";
 import { ProvidersGrid, StoriesGrid } from "@/components/community-lists";
 import { MethodArt, MethodArtMorph, MethodNumber, MethodNumberMorph } from "@/components/method-card";
 import { RafflePanel, WeekRibbon } from "@/components/method-week";
+import { RatingBox, RatingSummary, UnlockPanel } from "@/components/unlock";
 import { Qr } from "@/components/qr";
 import { ShareButtons } from "@/components/share-buttons";
 import { PageSkeleton } from "@/components/skeletons";
@@ -14,6 +15,7 @@ import { Container, LinkButton, SectionHead } from "@/components/ui";
 import { JoinButton, StickyJoin } from "@/components/weekly";
 import { SITE } from "@/lib/config";
 import { challengeTasks, getMethod, getMethods, getSummaries, methodHref, parseMethodParam } from "@/lib/methods";
+import { methodOpen } from "@/lib/server/access";
 import { getCurrentWeek } from "@/lib/server/current-week";
 import { CAPITAL, DOMAINS, KINDS, LEVELS, PLACES, TASKS, TIME, count } from "@/lib/taxonomy";
 import type { Method } from "@/lib/types";
@@ -137,9 +139,16 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
               </dl>
               <div id="join-hero" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
                 <JoinButton method={n} magnetic />
-                <a href="#paths" className="text-sm font-bold text-ink-soft underline underline-offset-4 hover:text-brand">
-                  أو اعرض خدماتك · شارك تجربتك
-                </a>
+                <span className="text-sm font-bold text-ink-soft">
+                  أو{" "}
+                  <Link href={`${base}/offer`} className="underline underline-offset-4 hover:text-brand">
+                    اعرض خدماتك
+                  </Link>{" "}
+                  ·{" "}
+                  <Link href={`${base}/share`} className="underline underline-offset-4 hover:text-brand">
+                    شارك تجربتك
+                  </Link>
+                </span>
               </div>
               <Folio method={m.n} page={1} />
             </section>
@@ -147,6 +156,11 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             {/* page two: why, the numbers behind it, and where the rest of the method is */}
             <section aria-label="الصفحة الثانية من الطريقة" className="flex flex-col border-t border-line p-5 sm:p-8 lg:border-t-0 lg:shadow-[inset_-18px_0_22px_-22px_rgb(29_31_38/0.35)]">
               <RunningHead start={SITE.bookTitle} end={SITE.author} />
+              <Suspense fallback={<div aria-busy="true" className="skeleton mt-6 min-h-80 flex-1" />}>
+                <Gate
+                  method={n}
+                  locked={<UnlockPanel method={n} parts={["ليش هذي الفرصة؟", "بعض الأرقام", `من أين تبدأ؟ (${count(m.steps.length, ["خطوة", "خطوتان", "خطوات"])})`, ...(m.earn.length ? ["كم تكسب؟"] : []), "كيف تتميّز؟ وانتبه", "الخلاصة", "مهام التحدي"]} className="mt-6 flex-1" />}
+                >
               <h2 id="why" className="mt-6 font-display text-h3 text-ink">
                 ليش هذي الفرصة؟
               </h2>
@@ -192,12 +206,18 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
                   يفتح <bdi dir="ltr" className="font-semibold text-brand">{`${new URL(SITE.url).host}${base}`}</bdi>
                 </p>
               </div>
+                </Gate>
+              </Suspense>
               <Folio method={m.n} page={2} />
             </section>
           </div>
         </Container>
       </header>
 
+      {/* everything from here to the stories belongs to the method's second page: it is sent only
+          to visitors the method is open to (lib/access.ts), decided per request */}
+      <Suspense fallback={null}>
+        <Gate method={n} locked={null}>
       {/* ---------- the three ways in (what the book's QR code opens onto) ----------
           Trying it leads, with this week's tasks in view; offering and sharing sit beside it. */}
       <section id="paths" className="scroll-mt-20 border-b border-line bg-white">
@@ -358,8 +378,11 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
             <ShareButtons path={base} title={`الطريقة ${m.n}: ${m.title}`} className="mt-3" />
           </div>
 
+          <RatingBox method={n} />
         </aside>
       </Container>
+        </Gate>
+      </Suspense>
 
       {/* ---------- E. stories ---------- */}
       <section id="stories" className="scroll-mt-20">
@@ -367,7 +390,11 @@ async function MethodContent({ params }: Pick<PageProps<"/method/[n]">, "params"
           <SectionHead
             reveal
             title="تجارب الآخرين مع هذه الطريقة"
-            lead="قصص موثّقة بالمدة والتكلفة والدخل، تُنشر بعد المراجعة."
+            lead={
+              <>
+                قصص موثّقة بالمدة والتكلفة والدخل، تُنشر بعد المراجعة. <RatingSummary method={n} />
+              </>
+            }
             action={
               <LinkButton href={`${base}/share`} variant="white">
                 جرّبتها؟ شارك تجربتك
@@ -469,4 +496,10 @@ function Folio({ method, page }: { method: number; page: 1 | 2 }) {
       الطريقة {method} · {page === 1 ? "الصفحة الأولى" : "الصفحة الثانية"}
     </p>
   );
+}
+
+/** Sends its children only when the method is open to this request; otherwise what stands in for
+ *  them. A server component, so locked content never reaches the browser. */
+async function Gate({ method, locked, children }: { method: number; locked: React.ReactNode; children: React.ReactNode }) {
+  return (await methodOpen(method)) ? children : locked;
 }

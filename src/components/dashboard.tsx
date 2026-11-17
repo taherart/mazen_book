@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Bell, Flag, HandHeart, Inbox, LogOut, MessageSquareHeart, Rocket, ShieldCheck, Sparkles, Ticket, Trash2, Trophy } from "@/components/icons";
+import { Award, Bell, Flag, HandHeart, Inbox, LockOpen, LogOut, MessageSquareHeart, Rocket, ShieldCheck, Sparkles, Ticket, Trash2, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -28,7 +28,7 @@ export function Dashboard({ methods, week }: { methods: MethodSummary[]; week: W
 
 function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary[]; week: WeekInfo }) {
   const router = useRouter();
-  const { challenges, stories, providers, requests, admin, backend } = useDemo();
+  const { challenges, stories, providers, requests, admin, backend, access } = useDemo();
   const weekMethod = useWeekMethod(week);
   const mine = Object.entries(challenges)
     .map(([n, c]) => ({ m: methods[Number(n) - 1], c }))
@@ -80,6 +80,17 @@ function Board({ user, methods, week }: { user: DemoUser; methods: MethodSummary
           ))}
         </dl>
       </header>
+
+      {access.loaded && !access.all ? (
+        <Link href="/unlock" className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-white px-4 py-3 text-ink transition hover:border-brand">
+          <LockOpen aria-hidden className="size-5 shrink-0 text-brand" />
+          <span className="min-w-0 flex-1 font-bold">
+            فتحت {access.open.length} من 52 طريقة
+            <span className="block text-sm font-normal text-ink-soft">{access.survey ? (access.credits ? `رصيدك يفتح ${access.credits} أخرى الآن.` : "أرسل ملخص تحدٍّ أو قيّم طريقة جرّبتها لتفتح المزيد.") : "أجب عن خمسة أسئلة لنفتح لك خمس طرق تناسبك."}</span>
+          </span>
+          <span className="text-sm font-bold text-brand">{access.survey ? "رصيدي وما فتحته" : "ابدأ الاستبيان"}</span>
+        </Link>
+      ) : null}
 
       {user.admin ? (
         <Link href="/admin" className="flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 font-bold text-ink hover:border-ink">

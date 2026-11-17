@@ -1,6 +1,7 @@
 "use server";
 
 import { getMethod } from "../methods";
+import { loadAccess } from "./access";
 import { currentUser } from "./auth";
 import { backendEnabled, db } from "./db";
 
@@ -22,6 +23,9 @@ const taskCount = (method: number) => getMethod(method)!.steps.length + 1;
 export async function joinChallengeAction(method: number): Promise<Result> {
   const user = await member(method);
   if (!user) return { ok: false };
+  // a challenge can only be joined on a method that is open to the member
+  const access = await loadAccess(user);
+  if (!access.all && !access.open.includes(method)) return { ok: false };
   await db()`insert into challenges (user_id, method) values (${user.id}, ${method}) on conflict do nothing`;
   return { ok: true };
 }

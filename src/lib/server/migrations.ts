@@ -167,6 +167,55 @@ const MIGRATIONS: { id: number; sql: string }[] = [
       create index password_resets_user_idx on password_resets (user_id);
     `,
   },
+  {
+    id: 6,
+    sql: `
+      -- opening methods step by step (lib/access.ts has the rules)
+      alter table users
+        add column invite_code text not null default substr(replace(gen_random_uuid()::text, '-', ''), 1, 10),
+        add column invited_by uuid references users (id) on delete set null,
+        add column book_owner boolean not null default false;
+      create unique index users_invite_code_key on users (invite_code);
+      create index users_invited_by_idx on users (invited_by) where invited_by is not null;
+
+      -- the member's answers; the consent they gave is the row itself (no row without it)
+      create table surveys (
+        user_id uuid primary key references users (id) on delete cascade,
+        capital text not null check (capital in ('zero', 'low', 'high')),
+        time_band text not null check (time_band in ('week', 'month', 'more')),
+        place text not null check (place in ('home', 'field', 'both')),
+        level smallint not null check (level between 1 and 3),
+        goal text not null check (goal in ('side', 'main', 'skill', 'explore')),
+        created_at timestamptz not null default now()
+      );
+
+      -- a method a member opened: 'survey' rows are the fitted picks, 'credit' rows cost one credit
+      create table unlocks (
+        user_id uuid not null references users (id) on delete cascade,
+        method smallint not null check (method between 1 and 52),
+        source text not null check (source in ('survey', 'credit')),
+        created_at timestamptz not null default now(),
+        primary key (user_id, method)
+      );
+
+      -- a reader's opinion of a method they tried: the stars are public as an average, the comment goes to the author
+      create table ratings (
+        user_id uuid not null references users (id) on delete cascade,
+        method smallint not null check (method between 1 and 52),
+        stars smallint not null check (stars between 1 and 5),
+        comment text not null default '' check (char_length(comment) <= 300),
+        created_at timestamptz not null default now(),
+        primary key (user_id, method)
+      );
+      create index ratings_method_idx on ratings (method);
+
+      -- small site-wide values the team sets from the admin pages (the book code)
+      create table settings (
+        key text primary key,
+        value text not null
+      );
+    `,
+  },
 ];
 
 export async function migrate() {

@@ -8,7 +8,7 @@ export interface AdminProps {
   siteUrl: string;
 }
 
-export type AdminTab = "overview" | "review" | "week" | "raffle" | "methods" | "people" | "qr";
+export type AdminTab = "overview" | "review" | "week" | "raffle" | "readers" | "methods" | "people" | "qr";
 
 export function AdminHead({ title, lead, children }: { title: string; lead?: string; children?: ReactNode }) {
   return (

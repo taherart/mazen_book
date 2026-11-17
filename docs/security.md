@@ -95,6 +95,17 @@ for known and unknown addresses; requests are limited to 5 per address and 3 per
 10 reset attempts per address per quarter hour; a reset ends every other session of the account.
 Without `RESEND_API_KEY` the link is written to the server log instead of being emailed.
 
+Done (opening the methods): what a visitor may read is worked out on the server for every
+request, and a locked method's second page, body and challenge checklist are not rendered at all,
+so they are in neither the HTML nor the data sent on navigation (only the 180-character description
+for search engines is). Joining a challenge, spending a credit and rating are checked on the
+server against the member's own records; credits are counted from those records, never stored, so
+they cannot be edited. Two tabs cannot spend one credit (row lock). The book code is compared in
+constant time and limited to 6 tries an hour per member. Known limits: sign-ups are not verified by
+email, so invitations count only after the friend answers the survey and stop at five; the book
+code is one shared code, which the team can change if it spreads. Survey answers are kept only with
+the member's consent and are deleted with the account; rating comments go to admins only.
+
 
 - Passwords hashed with Argon2id or bcrypt; sessions in `HttpOnly; Secure; SameSite=Lax` cookies;
   CSRF protection on every state-changing request (Server Actions check the Origin header).

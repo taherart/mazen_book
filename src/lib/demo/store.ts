@@ -4,7 +4,10 @@
 import { joinChallengeAction, leaveChallengeAction, setNoteAction, submitChallengeAction, toggleTaskAction } from "../server/challenge-actions";
 import { addProviderAction, addReportAction, addRequestAction, addStoryAction, resolveReportAction, reviewProviderAction, reviewStoryAction, toggleHelpfulAction } from "../server/community-actions";
 import { announceWinnerAction, drawWinnerAction, reviewEntryAction, setPrizeAction, setWeekMethodAction, undoWinnerAction } from "../server/raffle-actions";
+import { type Access, OPEN_ACCESS } from "../access";
 import { PROTOTYPE, SAMPLES } from "../config";
+import { rateMethodAction } from "../server/access-actions";
+import type { Ratings } from "../server/ratings";
 import type { Provider, ReviewStatus, Story } from "../types";
 
 export interface DemoUser {
@@ -97,6 +100,10 @@ export interface DemoState {
   reports: Report[];
   /** Stories the member marked as helpful. */
   helpful: string[];
+  /** Which methods are open to this visitor, and what they have earned (lib/access.ts). */
+  access: Access;
+  /** Readers' stars per method, and the member's own ratings. */
+  ratings: Ratings;
   /** Show the illustrative stories, providers and counters. Off = the real, empty launch state. */
   showSamples: boolean;
   admin: {
@@ -122,6 +129,9 @@ export const initialState: DemoState = {
   requests: [],
   reports: [],
   helpful: [],
+  // without a database every method is open; with one, the server says which are
+  access: PROTOTYPE ? OPEN_ACCESS : { ...OPEN_ACCESS, loaded: false, all: false },
+  ratings: { methods: {}, mine: {} },
   showSamples: SAMPLES,
   admin: { weekMethod: null, prize: "", entries: {}, winners: {}, entryCounts: { total: 0, eligible: 0, pending: 0 }, raffle: [] },
 };
@@ -224,8 +234,24 @@ export const actions = {
     challenges?: Record<number, ChallengeState>,
     community?: Pick<DemoState, "stories" | "providers" | "requests" | "reports" | "helpful">,
     raffle?: Omit<DemoState["admin"], "entries">,
+    access?: Access,
+    ratings?: Ratings,
   ) {
-    update((s) => (backend ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}), admin: { ...s.admin, ...raffle } } : { ...s, backend }));
+    update((s) =>
+      backend
+        ? { ...s, ...community, backend, user, challenges: challenges ?? (user ? s.challenges : {}), admin: { ...s.admin, ...raffle }, access: access ? { ...access, loaded: true } : s.access, ratings: ratings ?? s.ratings }
+        : { ...s, backend, access: OPEN_ACCESS },
+    );
+  },
+  /** Stars and an optional line for a method the member tried. */
+  rateMethod(method: number, stars: number, comment: string) {
+    update((s) => ({ ...s, ratings: { ...s.ratings, mine: { ...s.ratings.mine, [method]: { stars, comment } } } }));
+    // the server recounts the credits, so the store reloads either way
+    toServer(async () => {
+      const res = await rateMethodAction(method, stars, comment);
+      if (res.ok) await resync();
+      return res;
+    });
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples: SAMPLES && showSamples }));
@@ -265,7 +291,12 @@ export const actions = {
     clearTimeout(noteTimers.get(method));
     const note = state.challenges[method]?.note ?? "";
     update((s) => (s.challenges[method] ? { ...s, challenges: { ...s.challenges, [method]: { ...s.challenges[method], submittedAt: now(), entry: "pending" } } } : s));
-    toServer(() => submitChallengeAction(method, note));
+    // a sent write-up earns credits, so the store reloads the member's access
+    toServer(async () => {
+      const res = await submitChallengeAction(method, note);
+      if (res.ok) await resync();
+      return res;
+    });
   },
 
   addStory(input: Omit<Story, "id" | "createdAt" | "status" | "ownerId">) {

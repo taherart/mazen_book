@@ -1,10 +1,10 @@
 "use client";
 
-import { BookOpen, Compass, Home, LayoutGrid, Menu, MessagesSquare, Moon, Sun, Trophy, UserRound, X } from "@/components/icons";
+import { BookOpen, Compass, Home, LayoutGrid, LockOpen, Menu, MessagesSquare, Moon, Sun, Trophy, UserRound, X } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
-import { useHydrated, useUser } from "@/lib/demo/hooks";
+import { useDemo, useHydrated, useUser } from "@/lib/demo/hooks";
 import { THEME_KEY } from "@/lib/pre-paint";
 import { FooterPile } from "./footer-pile";
 import { Logo } from "./logo";
@@ -25,6 +25,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const user = useUser();
   const hydrated = useHydrated();
+  const { access } = useDemo();
+  // "12/52": shown once the server has said what is open, and only while something is still locked
+  const progress = hydrated && access.loaded && !access.all ? `${access.open.length}/52` : null;
 
   return (
     // anchored: content slides under it during page transitions
@@ -39,6 +42,15 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="ms-auto flex items-center gap-2 lg:ms-0">
+          {progress ? (
+            <Link href="/unlock" title="الطرق المفتوحة لك" className="tap inline-flex h-10 items-center gap-1.5 rounded-full bg-brand-wash px-3 text-sm font-bold text-brand-dark transition hover:bg-brand hover:text-white max-sm:hidden">
+              <LockOpen aria-hidden className="size-4" />
+              <span className="tabular-nums" dir="ltr">
+                {progress}
+              </span>
+              <span className="sr-only">طريقة مفتوحة لك</span>
+            </Link>
+          ) : null}
           {!hydrated ? (
             <span className="skeleton block h-10 w-24" />
           ) : user ? (
@@ -72,6 +84,16 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
+            {progress ? (
+              <li>
+                <Link href="/unlock" onClick={() => setOpen(false)} className={cx("flex items-center justify-between rounded-2xl px-4 py-3 font-bold", isActive(pathname, "/unlock") ? "bg-brand-wash text-brand-dark" : "text-ink hover:bg-paper")}>
+                  افتح الطرق
+                  <span className="text-sm tabular-nums text-brand" dir="ltr">
+                    {progress}
+                  </span>
+                </Link>
+              </li>
+            ) : null}
             <li>
               <ThemeMenuItem />
             </li>
@@ -203,6 +225,7 @@ export function SiteFooter() {
             { href: "/challenge", label: "تحدي وجائزة الأسبوع", icon: Trophy },
             { href: "/stories", label: "تجارب المجتمع", icon: MessagesSquare },
             { href: "/providers", label: "أصحاب المهارات", icon: UserRound },
+            { href: "/unlock", label: "افتح الطرق", icon: LockOpen },
             { href: "/book", label: "عن الكتاب والمؤلف", icon: BookOpen },
           ]}
         />

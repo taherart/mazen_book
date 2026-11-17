@@ -7,32 +7,9 @@ import { Container, Eyebrow, LinkButton, SectionHead } from "@/components/ui";
 import { WeeklyChallengeCard } from "@/components/weekly";
 import { YearWall } from "@/components/year-wall";
 import { SITE } from "@/lib/config";
-import { getSummaries } from "@/lib/methods";
+import { FREE_PICKS, getSummaries } from "@/lib/methods";
 import { getCurrentWeek } from "@/lib/server/current-week";
 import type { MethodSummary } from "@/lib/types";
-
-/** The bento's five cells, each picked by a rule rather than by hand, so the reason on the card is
- *  always true. The first rule fills the large cell. Each pick prefers a domain not shown yet. */
-const PICKS: { reason: string; test: (m: MethodSummary) => boolean }[] = [
-  { reason: "ابدأ من هنا", test: (m) => m.level === 1 && m.capitalBand === "zero" && m.place !== "field" },
-  { reason: "بلا رأس مال", test: (m) => m.capitalBand === "zero" },
-  { reason: "أول ريال خلال أسبوعين", test: (m) => m.timeBand === "week" },
-  { reason: "تبدأ من بيتك", test: (m) => m.place === "home" },
-  { reason: "لأصحاب الخبرة", test: (m) => m.level === 3 },
-];
-
-function pickMethods(methods: MethodSummary[], skip: number) {
-  const used = new Set([skip]); // this week's method already leads the hero
-  const domains = new Set<string>();
-  return PICKS.flatMap(({ reason, test }) => {
-    const pool = methods.filter((m) => !used.has(m.n) && test(m));
-    const m = pool.find((x) => !domains.has(x.domain)) ?? pool[0];
-    if (!m) return [];
-    used.add(m.n);
-    domains.add(m.domain);
-    return [{ method: m, reason }];
-  });
-}
 
 export default async function HomePage() {
   const week = await getCurrentWeek();
@@ -41,7 +18,8 @@ export default async function HomePage() {
   const zero = count((m) => m.capitalBand === "zero");
   const fast = count((m) => m.timeBand === "week");
   const home = count((m) => m.place !== "field");
-  const [lead, ...picks] = pickMethods(methods, week.week);
+  // the five methods open to everyone, each with the rule that picked it (lib/methods.ts)
+  const [lead, ...picks] = FREE_PICKS.map((p) => ({ method: methods[p.n - 1], reason: p.reason }));
   // the same filters the guide uses, so each shortcut opens it already narrowed
   const shortcuts = [
     { href: "/methods?capital=zero", label: "رأس مال صفر", n: zero },
@@ -85,11 +63,11 @@ export default async function HomePage() {
         <Container className="py-section">
           <SectionHead
             reveal
-            title="خمس طرق نقترح أن تبدأ بها"
-            lead="كل واحدة لسبب مكتوب عليها. والبقية في دليل الطرق الـ52."
+            title="خمس طرق مفتوحة للجميع"
+            lead="اقرأها كاملة الآن، كل واحدة لسبب مكتوب عليها. والبقية تفتحها خطوة خطوة."
             action={
-              <LinkButton href="/methods" variant="white">
-                كل الطرق
+              <LinkButton href="/unlock" variant="white">
+                افتح بقية الطرق
                 <ArrowLeft aria-hidden className="size-4" />
               </LinkButton>
             }

@@ -17,7 +17,7 @@ const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 // strip control characters so a name always renders as one plain line
 const cleanName = (v: unknown) => text(v).replace(/[\u0000-\u001f\u007f]/g, "").replace(/\s+/g, " ");
 
-export async function signUpAction(input: { name?: unknown; email?: unknown; password?: unknown; intents?: unknown; consent?: unknown }): Promise<AuthResult> {
+export async function signUpAction(input: { name?: unknown; email?: unknown; password?: unknown; intents?: unknown; consent?: unknown; ref?: unknown }): Promise<AuthResult> {
   if (!backendEnabled()) return DEMO;
   const name = cleanName(input.name);
   const email = text(input.email).toLowerCase();
@@ -31,10 +31,12 @@ export async function signUpAction(input: { name?: unknown; email?: unknown; pas
   if (overLimit(`signup:${await clientIp()}`, 5, 60)) return TOO_MANY;
 
   const passwordHash = await hashPassword(password);
+  // the friend whose link brought them here, if the code is a real one
+  const ref = typeof input.ref === "string" && /^[0-9a-f]{10}$/.test(input.ref) ? input.ref : null;
   try {
     const [user] = await db()<{ id: string; name: string; email: string; intents: string[]; created_at: Date }[]>`
-      insert into users (email, name, password_hash, intents)
-      values (${email}, ${name}, ${passwordHash}, ${intents})
+      insert into users (email, name, password_hash, intents, invited_by)
+      values (${email}, ${name}, ${passwordHash}, ${intents}, (select id from users where invite_code = ${ref}))
       returning id, name, email, intents, created_at`;
     await startSession(user.id);
     return { ok: true, user: toSessionUser(user), challenges: {} };

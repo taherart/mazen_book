@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardCheck, ExternalLink, Gauge, LayoutList, QrCode, ShieldAlert, Ticket, Trophy, Users } from "@/components/icons";
+import { ClipboardCheck, ExternalLink, Gauge, LayoutList, LockOpen, QrCode, ShieldAlert, Ticket, Trophy, Users } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
@@ -12,6 +12,7 @@ import { AdminOverview } from "./admin-overview";
 import { AdminPeople } from "./admin-people";
 import { AdminQr } from "./admin-qr";
 import { AdminRaffle } from "./admin-raffle";
+import { AdminReaders } from "./admin-readers";
 import { AdminReview } from "./admin-review";
 import { AdminWeek } from "./admin-week";
 import type { AdminProps, AdminTab } from "./shared";
@@ -21,6 +22,7 @@ const TABS: { id: AdminTab; label: string; icon: typeof Gauge }[] = [
   { id: "review", label: "المراجعة", icon: ClipboardCheck },
   { id: "week", label: "تحدي الأسبوع", icon: Trophy },
   { id: "raffle", label: "السحب والفائز", icon: Ticket },
+  { id: "readers", label: "القرّاء والفتح", icon: LockOpen },
   { id: "methods", label: "الطرق الـ52", icon: LayoutList },
   { id: "people", label: "الأعضاء والبلاغات", icon: Users },
   { id: "qr", label: "رموز QR", icon: QrCode },
@@ -95,6 +97,7 @@ export function Admin(props: AdminProps) {
         {tab === "review" ? <AdminReview {...props} /> : null}
         {tab === "week" ? <AdminWeek {...props} /> : null}
         {tab === "raffle" ? <AdminRaffle {...props} /> : null}
+        {tab === "readers" ? <AdminReaders {...props} /> : null}
         {tab === "methods" ? <AdminMethods {...props} /> : null}
         {tab === "people" ? <AdminPeople {...props} /> : null}
         {tab === "qr" ? <AdminQr {...props} /> : null}

@@ -23,14 +23,21 @@ type Errors = Partial<Record<"name" | "email" | "password" | "consent", string>>
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
-  const next = safeRedirectPath(useSearchParams().get("next"), "/dashboard");
+  const params = useSearchParams();
+  // new members go straight to the survey that opens their first methods
+  const home = mode === "signup" ? "/unlock" : "/dashboard";
+  const next = safeRedirectPath(params.get("next"), home);
+  const ref = params.get("ref");
   const { user: existing, backend } = useDemo();
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [show, setShow] = useState(false);
   const [intents, setIntents] = useState<Intent[]>(["explore"]);
   const signup = mode === "signup";
-  const query = next === "/dashboard" ? "" : `?next=${encodeURIComponent(next)}`;
+  const carried = new URLSearchParams();
+  if (params.get("next")) carried.set("next", next);
+  if (ref) carried.set("ref", ref);
+  const query = carried.size ? `?${carried}` : "";
 
   const finish = (user: { name: string; email: string; admin?: boolean; intents?: Intent[] }, fromServer?: { user: DemoUser; challenges: Record<number, ChallengeState> }) => {
     if (fromServer) {
@@ -63,7 +70,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     const email = get("email").toLowerCase();
     const password = String(f.get("password") ?? "");
     try {
-      const res = signup ? await signUpAction({ name: get("name"), email, password, intents, consent: !!f.get("consent") }) : await signInAction({ email, password });
+      const res = signup ? await signUpAction({ name: get("name"), email, password, intents, consent: !!f.get("consent"), ref }) : await signInAction({ email, password });
       if (res.ok) return finish(res.user, res);
       if (!("demo" in res)) {
         setErrors({ [res.field]: res.error });
