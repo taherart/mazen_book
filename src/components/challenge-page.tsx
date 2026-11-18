@@ -3,22 +3,22 @@
 import { CalendarDays, Medal, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useDemo, useEntries, useEntryCounts } from "@/lib/demo/hooks";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { ENTRIES, count } from "@/lib/taxonomy";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
-import { formatDay } from "@/lib/week";
+import { formatDay, WEEK_MS } from "@/lib/week";
 import { MethodArt, MethodNumber, MethodRow } from "./method-card";
 import { RAFFLE_RULES, RafflePanel } from "./method-week";
 import { T } from "./text";
 import { Chip, Container, EmptyState, Eyebrow, Notice, SampleTag, SectionHead } from "./ui";
 import { Countdown, JoinButton, Participants, useWeekMethod } from "./weekly";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; methods: MethodSummary[]; taskTitles: string[][] }) {
+export function ChallengePage({ week, methods, taskTitles }: { week: WeekInfo; methods: MethodSummary[]; taskTitles: Record<number, string[]> }) {
   const n = useWeekMethod(week);
   const m = methods[n - 1];
-  const tasks = taskTitles[n - 1];
+  // only the week's own method is sent (app/(site)/challenge/page.tsx)
+  const tasks = taskTitles[n] ?? [];
   const { admin } = useDemo();
   const entries = useEntries(n, tasks.length);
   const counts = useEntryCounts(entries);

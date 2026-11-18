@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { CREDIT, isOpen } from "@/lib/access";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { unlockMethodAction } from "@/lib/server/access-actions";
 import { refreshSession } from "@/lib/session-client";
 import { count } from "@/lib/taxonomy";
@@ -34,7 +34,7 @@ export function LockMark({ method, className }: { method: number; className?: st
 
 const WAYS: [string, number][] = [
   ["أرسل ملخص تحدٍّ لطريقة مفتوحة لك", CREDIT.challenge],
-  ["قيّم طريقة جرّبتها", CREDIT.rating],
+  ["قيّم طريقة أرسلت ملخص تحديها", CREDIT.rating],
   ["انشر تجربتك مع إحدى الطرق", CREDIT.story],
   ["ادعُ صديقًا يسجّل ويجيب عن الاستبيان", CREDIT.invite],
 ];
@@ -185,7 +185,7 @@ export function RatingBox({ method }: { method: number }) {
   const mine = ratings.mine[method];
   const [stars, setStars] = useState(0);
   const [comment, setComment] = useState<string>();
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<"ok" | "failed" | "sending">();
   const tried = (challenges[method]?.done.length ?? 0) > 0;
   const chosen = stars || mine?.stars || 0;
 
@@ -203,21 +203,21 @@ export function RatingBox({ method }: { method: number }) {
         </p>
       ) : !tried ? (
         <p className="mt-1 text-sm leading-6 text-ink-soft">
-          أنجز مهمة واحدة من تحديها ثم قيّمها.{backend ? ` كل تقييم يفتح لك ${count(CREDIT.rating, ["طريقة", "طريقتين", "طرق"])}.` : ""}
+          أنجز مهمة واحدة من تحديها ثم قيّمها.{backend ? ` وحين ترسل ملخص تحديها، يفتح لك تقييمها ${count(CREDIT.rating, ["طريقة", "طريقتين", "طرق"])}.` : ""}
         </p>
       ) : (
         <form
           className="mt-3"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!chosen) return;
-            actions.rateMethod(method, chosen, (comment ?? mine?.comment ?? "").trim());
-            setSent(true);
+            setSent("sending");
+            setSent((await actions.rateMethod(method, chosen, (comment ?? mine?.comment ?? "").trim())) ? "ok" : "failed");
           }}
         >
           <div role="radiogroup" aria-label="تقييمك من خمس نجوم" className="flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button key={n} type="button" role="radio" aria-checked={chosen === n} aria-label={`${n} من 5`} onClick={() => (setStars(n), setSent(false))} className="tap grid size-10 place-items-center rounded-full transition hover:bg-paper">
+              <button key={n} type="button" role="radio" aria-checked={chosen === n} aria-label={`${n} من 5`} onClick={() => (setStars(n), setSent(undefined))} className="tap grid size-10 place-items-center rounded-full transition hover:bg-paper">
                 <Star aria-hidden weight={n <= chosen ? "fill" : "regular"} className={cx("size-6", n <= chosen ? "text-sun-deep" : "text-ink-mute")} />
               </button>
             ))}
@@ -225,13 +225,13 @@ export function RatingBox({ method }: { method: number }) {
           <label htmlFor={`rate-${method}`} className="mt-3 block text-sm font-bold text-ink">
             سطر للمؤلف <span className="text-xs font-normal text-ink-mute">اختياري</span>
           </label>
-          <Input id={`rate-${method}`} className="mt-1.5 h-11" maxLength={300} value={comment ?? mine?.comment ?? ""} onChange={(e) => (setComment(e.target.value), setSent(false))} placeholder="ما الذي أفادك أو نقصك؟" />
+          <Input id={`rate-${method}`} className="mt-1.5 h-11" maxLength={300} value={comment ?? mine?.comment ?? ""} onChange={(e) => (setComment(e.target.value), setSent(undefined))} placeholder="ما الذي أفادك أو نقصك؟" />
           <p className="mt-2 text-xs leading-5 text-ink-mute">النجوم تظهر للجميع كمتوسط. سطرك يصل للمؤلف فقط ولا يُنشر.</p>
           <div className="mt-3 flex items-center gap-3">
-            <Button type="submit" size="sm" disabled={!chosen}>
+            <Button type="submit" size="sm" disabled={!chosen || sent === "sending"}>
               {mine ? "حدّث تقييمي" : "أرسل التقييم"}
             </Button>
-            {sent ? <span className="text-sm font-semibold text-ok">وصل، شكرًا لك.</span> : null}
+            {sent === "ok" ? <span className="text-sm font-semibold text-ok">وصل، شكرًا لك.</span> : sent === "failed" ? <span className="text-sm font-semibold text-bad">لم يُحفظ. أنجز مهمة من تحديها ثم أعد المحاولة.</span> : null}
           </div>
         </form>
       )}

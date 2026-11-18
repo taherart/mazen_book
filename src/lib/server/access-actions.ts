@@ -5,7 +5,7 @@ import { CREDIT, GOALS, type Goal, type SurveyAnswers, bestFits } from "../acces
 import { getMethod, getSummaries } from "../methods";
 import type { CapitalBand, Level, Place, TimeBand } from "../types";
 import { loadAccess } from "./access";
-import { currentUser, overLimit } from "./auth";
+import { currentAdmin, currentUser, overLimit } from "./auth";
 import { backendEnabled, db } from "./db";
 
 /** Opening methods: the survey, spending a credit, rating a method, the book code. Each action
@@ -42,7 +42,7 @@ export async function submitSurveyAction(input: Record<string, unknown>): Promis
       values (${user.id}, ${a.capital}, ${a.time}, ${a.place}, ${a.level}, ${a.goal})
       on conflict (user_id) do nothing returning user_id`;
     if (!saved.length) return { ok: false, error: "أجبت عن الاستبيان من قبل." } as const;
-    const { open, all } = await loadAccess(user);
+    const { open, all } = await loadAccess(user, tx);
     const unlocked = all ? [] : bestFits(getSummaries(), a, open, CREDIT.survey);
     for (const method of unlocked) await tx`insert into unlocks (user_id, method, source) values (${user.id}, ${method}, 'survey') on conflict do nothing`;
     return { ok: true, unlocked } as const;
@@ -57,7 +57,7 @@ export async function unlockMethodAction(method: unknown): Promise<Result> {
   return db().begin(async (tx) => {
     // one unlock at a time per member, so two tabs cannot spend the same credit
     await tx`select id from users where id = ${user.id} for update`;
-    const access = await loadAccess(user);
+    const access = await loadAccess(user, tx);
     if (access.all || access.open.includes(n) || access.credits < 1) return NO;
     await tx`insert into unlocks (user_id, method, source) values (${user.id}, ${n}, 'credit')`;
     return YES;
@@ -97,8 +97,8 @@ export async function redeemBookCodeAction(code: unknown): Promise<{ ok: true } 
 
 /** Admin: set or clear the book code. An empty value hides the form from members. */
 export async function setBookCodeAction(code: unknown): Promise<Result> {
-  const user = await member();
-  if (!user?.admin || typeof code !== "string") return NO;
+  const user = await currentAdmin();
+  if (!user || typeof code !== "string") return NO;
   const value = normal(code);
   if (value && !/^[A-Z0-9-]{6,32}$/.test(value)) return NO;
   await db()`insert into settings (key, value) values ('book_code', ${value}) on conflict (key) do update set value = excluded.value`;

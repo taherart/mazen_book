@@ -3,7 +3,7 @@ import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { Readable } from "node:stream";
 import { connection } from "next/server";
-import { currentUser } from "@/lib/server/auth";
+import { currentAdmin } from "@/lib/server/auth";
 import { backendEnabled } from "@/lib/server/db";
 
 /** The database dumps the backup service writes (deploy/docker-compose.yml), for admins only:
@@ -15,8 +15,7 @@ export async function GET(request: Request) {
   await connection();
   const dir = process.env.BACKUP_DIR;
   if (!backendEnabled() || !dir) return Response.json({ error: "no-backups" }, { status: 404, headers });
-  const user = await currentUser();
-  if (!user?.admin) return Response.json({ error: "forbidden" }, { status: 403, headers });
+  if (!(await currentAdmin())) return Response.json({ error: "forbidden" }, { status: 403, headers });
 
   const file = new URL(request.url).searchParams.get("file");
   if (file !== null) {

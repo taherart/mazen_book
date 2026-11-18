@@ -7,7 +7,7 @@ import { useState } from "react";
 import { SAMPLE_STORIES } from "@/data/samples";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { methodHref, methodImage } from "@/lib/methods";
+import { methodHref, methodImage } from "@/lib/method-links";
 import type { MethodSummary } from "@/lib/types";
 import { formatDate } from "@/lib/week";
 import { OutcomeChip, StoryFigures } from "./community";

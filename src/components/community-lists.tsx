@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { SAMPLE_ENTRIES } from "@/data/samples";
 import { useDemo, useProviders, useStories } from "@/lib/demo/hooks";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { OUTCOMES } from "@/lib/taxonomy";
 import type { MethodSummary, Outcome } from "@/lib/types";
 import { ProviderCard, StoryCard, StoryRow } from "./community";

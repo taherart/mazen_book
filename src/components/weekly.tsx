@@ -8,7 +8,7 @@ import { SAMPLE_ENTRIES } from "@/data/samples";
 import { isOpen } from "@/lib/access";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { count } from "@/lib/taxonomy";
 import { formatDay } from "@/lib/week";
 import type { MethodSummary, WeekInfo } from "@/lib/types";

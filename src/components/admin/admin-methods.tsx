@@ -3,7 +3,7 @@
 import { ExternalLink, Pencil, Search, X } from "@/components/icons";
 import Link from "next/link";
 import { useState } from "react";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { CAPITAL, DOMAINS, KINDS, LEVELS, PLACES, TIME } from "@/lib/taxonomy";
 import type { MethodSummary } from "@/lib/types";
 import { MethodNumber } from "../method-card";

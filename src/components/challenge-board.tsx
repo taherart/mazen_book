@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useId, useState } from "react";
 import { useDemo } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { TASKS, count } from "@/lib/taxonomy";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { AuthGate } from "./auth-gate";

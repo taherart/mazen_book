@@ -91,6 +91,13 @@ export async function currentUser({ renew = false } = {}): Promise<SessionUser |
   return toSessionUser(row);
 }
 
+/** The signed-in admin, or null: the one check every admin action and endpoint uses. */
+export async function currentAdmin() {
+  if (!process.env.DATABASE_URL) return null;
+  const user = await currentUser();
+  return user?.admin ? user : null;
+}
+
 /* ---------- rate limiting: in memory, which is enough for the single web container ---------- */
 
 const hits = new Map<string, { count: number; until: number }>();

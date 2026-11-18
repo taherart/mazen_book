@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { currentUser } from "@/lib/server/auth";
+import { currentAdmin } from "@/lib/server/auth";
 import { backendEnabled, db } from "@/lib/server/db";
 
 /** For admins: how far members get through the unlock steps, what the survey says about them, and
@@ -9,8 +9,7 @@ const headers = { "Cache-Control": "no-store" };
 export async function GET() {
   await connection();
   if (!backendEnabled()) return Response.json({ error: "no-backend" }, { status: 404, headers });
-  const user = await currentUser();
-  if (!user?.admin) return Response.json({ error: "forbidden" }, { status: 403, headers });
+  if (!(await currentAdmin())) return Response.json({ error: "forbidden" }, { status: 403, headers });
   const sql = db();
 
   const [[funnel], survey, ratings, comments, unlocked, [code]] = await Promise.all([

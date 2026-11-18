@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { actions, type DemoUser } from "@/lib/demo/store";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { OUTCOMES } from "@/lib/taxonomy";
 import type { MethodSummary, Outcome } from "@/lib/types";
 import { AuthGate } from "./auth-gate";

@@ -2,7 +2,7 @@ import { ArrowLeft, Banknote, Clock3, Home, MapPin, Wallet } from "@/components/
 import Image from "next/image";
 import Link from "next/link";
 import { ViewTransition } from "react";
-import { methodHref, methodImage } from "@/lib/methods";
+import { methodHref, methodImage } from "@/lib/method-links";
 import { DOMAINS, LEVELS, PLACES } from "@/lib/taxonomy";
 import type { Level, MethodSummary } from "@/lib/types";
 import { T } from "./text";

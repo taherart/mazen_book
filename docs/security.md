@@ -19,6 +19,8 @@ attack surface small: no database, no sessions, no uploads, no server-side forms
 | 4 | Low | Containers ran with default privileges | Non-root, read-only root filesystem, all Linux capabilities dropped (Caddy keeps only `NET_BIND_SERVICE`), `no-new-privileges`, memory and process limits, health check, log rotation |
 | 5 | Low | Every port of the server reachable | Hostinger network firewall: only 22 (SSH), 80, 443 (TCP and UDP) accepted |
 | 6 | Info | Member and admin screens indexable | `robots.txt` disallows them; they were already `noindex` |
+| 7 | High | **Locked method text shipped to every browser.** Client components imported `lib/methods.ts`, so the whole book (steps, tips, challenge tasks of all 52 methods) was in the public JavaScript and anyone could read it without unlocking | `lib/methods.ts` is `server-only`; client code takes addresses from `lib/method-links.ts`; `/challenge` sends task titles only for the open week's method. Verified: no locked text in `.next/static` (270 probes) |
+| 8 | Medium | **Rating credits could be farmed.** A rating earned +2 once one task was ticked, without a sent write-up; rejected write-ups also earned credit | A rating counts only with a sent, not-rejected write-up for the same method; rejected write-ups earn nothing |
 
 Checked and clean: no secrets anywhere in the git history; no `dangerouslySetInnerHTML` with user
 data (the only one is a fixed pre-paint script); `window.open` uses `noopener,noreferrer`; React
@@ -46,7 +48,7 @@ dependencies have no known vulnerabilities (`pnpm audit --prod`).
 - [ ] Optional: hPanel → VPS → Malware scanner (Monarx), free on Hostinger VPS.
 - [ ] Rotate the Hostinger API token if it was ever shared outside this environment.
 - [ ] Run `pnpm audit` before each release and after a quiet month; Next.js 16.4.0 shipped two
-      critical remote-code-execution flaws that 16.4.1 fixed, and the site runs on 16.4.3 now.
+      critical remote-code-execution flaws that 16.4.1 fixed, and the site runs on 16.4.6 now.
 
 ## Backend phase: required before real accounts
 

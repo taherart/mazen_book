@@ -1,7 +1,7 @@
 "use client";
 
 import { Download } from "@/components/icons";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { Qr } from "../qr";
 import { Notice } from "../ui";
 import { AdminHead, Panel, type AdminProps } from "./shared";

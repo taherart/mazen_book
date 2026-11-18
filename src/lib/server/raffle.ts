@@ -2,13 +2,12 @@ import "server-only";
 import type { DemoState, EntryStatus, RaffleWeek, Winner } from "../demo/store";
 import { getMethod } from "../methods";
 import type { WeekInfo } from "../types";
-import { openDraws } from "../week";
+import { openDraws, WEEK_MS } from "../week";
 import type { SessionUser } from "./auth";
 import { db } from "./db";
 
 export type Raffle = Omit<DemoState["admin"], "entries">;
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface WeekRow {
   starts_at: Date;

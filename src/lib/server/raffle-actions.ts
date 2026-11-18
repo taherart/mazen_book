@@ -3,8 +3,8 @@
 import { randomInt } from "node:crypto";
 import type { EntryStatus } from "../demo/store";
 import { openDraws } from "../week";
-import { currentUser } from "./auth";
-import { backendEnabled, db } from "./db";
+import { currentAdmin } from "./auth";
+import { db } from "./db";
 import { inWeek } from "./raffle";
 
 /** Raffle decisions. Each one checks the admin list on the server, and only this week's or last
@@ -13,11 +13,7 @@ type Result = { ok: boolean };
 const NO = { ok: false } as const;
 const YES = { ok: true } as const;
 
-async function admin() {
-  if (!backendEnabled()) return null;
-  const user = await currentUser();
-  return user?.admin ? user : null;
-}
+const admin = currentAdmin;
 
 /** The open week an action names, or null for any other value. */
 function openWeek(weekStart: unknown, { currentOnly = false } = {}) {

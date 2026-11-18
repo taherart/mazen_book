@@ -1,7 +1,7 @@
 import { ChevronLeft } from "@/components/icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import type { MethodSummary } from "@/lib/types";
 import { MethodNumber } from "./method-card";
 import { Container, cx } from "./ui";

@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { isOpen } from "@/lib/access";
 import { useDemo } from "@/lib/demo/hooks";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { cx } from "./ui";
 import { useWeekMethod } from "./weekly";
+import { WEEK_MS } from "@/lib/week";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const MONTH = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { month: "long", year: "numeric", timeZone: "Asia/Riyadh" });
 const DAY = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", timeZone: "Asia/Riyadh" });
 

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useDemo } from "@/lib/demo/hooks";
 import type { DemoUser } from "@/lib/demo/store";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { deleteAccount, signOut } from "@/lib/session-client";
 import type { MethodSummary, WeekInfo } from "@/lib/types";
 import { AuthGate } from "./auth-gate";

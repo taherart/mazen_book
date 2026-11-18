@@ -4,21 +4,28 @@ import { Check, Link2, Share2 } from "@/components/icons";
 import { useState } from "react";
 import { cx } from "./ui";
 
-/** Share intents where the network has one; TikTok and Instagram have none on the web, so they get copy / the phone's share sheet. */
-export function ShareButtons({ path, title, className }: { path: string; title: string; className?: string }) {
+/** Copies a site path as a full link; `copied` stays true for two seconds. Where the clipboard is
+ *  refused (plain HTTP, old browsers) the link is offered in a prompt to copy by hand. */
+export function useCopyLink(path: string) {
   const [copied, setCopied] = useState(false);
-  const url = () => new URL(path, window.location.origin).toString();
-  const open = (make: (u: string, t: string) => string) => window.open(make(encodeURIComponent(url()), encodeURIComponent(title)), "_blank", "noopener,noreferrer");
-
   const copy = async () => {
+    const url = new URL(path, window.location.origin).toString();
     try {
-      await navigator.clipboard.writeText(url());
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt("انسخ الرابط:", url());
+      window.prompt("انسخ الرابط:", url);
     }
   };
+  return { copied, copy };
+}
+
+/** Share intents where the network has one; TikTok and Instagram have none on the web, so they get copy / the phone's share sheet. */
+export function ShareButtons({ path, title, className }: { path: string; title: string; className?: string }) {
+  const { copied, copy } = useCopyLink(path);
+  const url = () => new URL(path, window.location.origin).toString();
+  const open = (make: (u: string, t: string) => string) => window.open(make(encodeURIComponent(url()), encodeURIComponent(title)), "_blank", "noopener,noreferrer");
   const native = async () => {
     if (navigator.share) {
       try {

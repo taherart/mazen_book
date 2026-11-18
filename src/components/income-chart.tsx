@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { CAPITAL, count } from "@/lib/taxonomy";
 import type { CapitalBand, MethodSummary } from "@/lib/types";
 import { cx } from "./ui";

@@ -1,7 +1,7 @@
 import { LAUNCH_DATE } from "./config";
 import type { WeekInfo } from "./types";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+export const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Which of the 52 weeks a moment falls in. Before launch it reports week 1. */
 export function weekAt(now: Date): WeekInfo {

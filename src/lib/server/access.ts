@@ -4,13 +4,18 @@ import { connection } from "next/server";
 import { type Access, CREDIT, INVITE_CAP, OPEN_ACCESS } from "../access";
 import { FREE_METHODS } from "../methods";
 import { openDraws } from "../week";
+import type postgres from "postgres";
 import { type SessionUser, currentUser } from "./auth";
 import { backendEnabled, db } from "./db";
 
+/** The pool, or the transaction an action is running in: inside a transaction everything is read on
+ *  its own connection, so a busy moment cannot use up the pool while transactions wait for it. */
+type Sql = postgres.Sql | postgres.TransactionSql;
+
 /** The method on this week's challenge: the calendar's, unless the team picked another. */
-export async function currentWeekMethod() {
+export async function currentWeekMethod(sql: Sql = db()) {
   const [week] = openDraws(new Date());
-  const [row] = await db()<{ method: number | null }[]>`select method from weeks where starts_at = ${new Date(week.startsAt)}`;
+  const [row] = await sql<{ method: number | null }[]>`select method from weeks where starts_at = ${new Date(week.startsAt)}`;
   return row?.method ?? week.week;
 }
 
@@ -21,17 +26,20 @@ const uniq = (list: number[]) => [...new Set(list)].sort((a, b) => a - b);
  * A member adds the methods they unlocked and every method whose challenge they joined (so joining
  * the weekly challenge keeps its method). Book owners and the team have everything.
  */
-export async function loadAccess(user: SessionUser | null): Promise<Access> {
-  const sql = db();
-  const [weekMethod, [code]] = await Promise.all([currentWeekMethod(), sql<{ on: boolean }[]>`select exists (select 1 from settings where key = 'book_code' and value <> '') as on`]);
+export async function loadAccess(user: SessionUser | null, sql: Sql = db()): Promise<Access> {
+  const [weekMethod, [code]] = await Promise.all([currentWeekMethod(sql), sql<{ on: boolean }[]>`select exists (select 1 from settings where key = 'book_code' and value <> '') as on`]);
   const base = { ...OPEN_ACCESS, all: false, bookCode: code.on, open: uniq([...FREE_METHODS, weekMethod]) };
   if (!user) return base;
 
   const [[me], unlocked, joined] = await Promise.all([
     sql<{ submitted: number; ratings: number; stories: number; survey: number; invited: number; spent: number; book_owner: boolean; invite_code: string; was_invited: boolean }[]>`
       select
-        (select count(*) from challenges where user_id = u.id and submitted_at is not null)::int as submitted,
-        (select count(*) from ratings where user_id = u.id)::int as ratings,
+        -- a write-up the team rejected earns nothing
+        (select count(*) from challenges where user_id = u.id and submitted_at is not null and entry <> 'rejected')::int as submitted,
+        -- a rating earns only for a method whose write-up was sent: a ticked box alone is not a try,
+        -- and without this, ratings would pay for more methods than they cost to open
+        (select count(*) from ratings r join challenges c on c.user_id = r.user_id and c.method = r.method
+           where r.user_id = u.id and c.submitted_at is not null and c.entry <> 'rejected')::int as ratings,
         (select count(*) from stories where user_id = u.id and status = 'approved')::int as stories,
         (select count(*) from surveys where user_id = u.id)::int as survey,
         (select count(*) from users f join surveys s on s.user_id = f.id where f.invited_by = u.id)::int as invited,

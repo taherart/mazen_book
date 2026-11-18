@@ -2,7 +2,7 @@
 
 import type { ReviewStatus } from "../types";
 import { safeHttpUrl } from "../safe-url";
-import { clientIp, currentUser, overLimit } from "./auth";
+import { clientIp, currentAdmin, currentUser, overLimit } from "./auth";
 import { backendEnabled, db } from "./db";
 
 /** The same rules the forms show, checked again here because a request can skip the form. */
@@ -127,11 +127,7 @@ export async function addReportAction(input: { kind?: unknown; targetId?: unknow
 
 /* ---------- admin: every decision checks the admin list on the server ---------- */
 
-async function admin() {
-  if (!backendEnabled()) return null;
-  const user = await currentUser();
-  return user?.admin ? user : null;
-}
+const admin = currentAdmin;
 const STATUSES: ReviewStatus[] = ["pending", "approved", "rejected"];
 
 export async function reviewStoryAction(id: unknown, status: unknown): Promise<Result> {

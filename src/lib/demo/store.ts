@@ -150,7 +150,7 @@ function load() {
       const parsed = JSON.parse(saved) as Partial<DemoState>;
       // in production a copy left by the browser-only preview is not this visitor's account;
       // only the preview has a switch for the samples
-      if (PROTOTYPE || parsed.backend) state = { ...initialState, ...parsed, showSamples: SAMPLES && (!PROTOTYPE || (parsed.showSamples ?? true)), admin: { ...initialState.admin, ...parsed.admin } };
+      if (PROTOTYPE || parsed.backend) state = { ...initialState, ...parsed, access: initialState.access, showSamples: SAMPLES && (!PROTOTYPE || (parsed.showSamples ?? true)), admin: { ...initialState.admin, ...parsed.admin } };
     }
   } catch {
     // private mode or corrupt data: start clean
@@ -186,7 +186,8 @@ function update(change: (s: DemoState) => DemoState) {
   load();
   state = change(state);
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
+    // what is open is the server's answer for this visit: a stored copy would show stale locks next time
+    window.localStorage.setItem(KEY, JSON.stringify({ ...state, access: undefined }));
   } catch {
     // storage unavailable: keep working in memory
   }
@@ -244,14 +245,14 @@ export const actions = {
     );
   },
   /** Stars and an optional line for a method the member tried. */
-  rateMethod(method: number, stars: number, comment: string) {
+  /** Resolves to whether the server kept the rating; either way the store then holds the server's copy. */
+  async rateMethod(method: number, stars: number, comment: string) {
+    if (!state.backend || !state.user) return false;
     update((s) => ({ ...s, ratings: { ...s.ratings, mine: { ...s.ratings.mine, [method]: { stars, comment } } } }));
-    // the server recounts the credits, so the store reloads either way
-    toServer(async () => {
-      const res = await rateMethodAction(method, stars, comment);
-      if (res.ok) await resync();
-      return res;
-    });
+    const { ok } = await rateMethodAction(method, stars, comment).catch(() => ({ ok: false }));
+    // the server recounts the credits, and drops a rating it refused
+    await resync();
+    return ok;
   },
   setShowSamples(showSamples: boolean) {
     update((s) => ({ ...s, showSamples: SAMPLES && showSamples }));

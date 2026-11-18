@@ -3,14 +3,13 @@
 import { CalendarClock, RotateCcw } from "@/components/icons";
 import { useDemo } from "@/lib/demo/hooks";
 import { actions } from "@/lib/demo/store";
-import { formatDay } from "@/lib/week";
+import { formatDay, WEEK_MS } from "@/lib/week";
 import { MethodArt, MethodRow } from "../method-card";
 import { RAFFLE_RULES } from "../method-week";
 import { Button, Field, Input, Notice, Select } from "../ui";
 import { Countdown } from "../weekly";
 import { AdminHead, Panel, type AdminProps } from "./shared";
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function AdminWeek({ methods, week }: AdminProps) {
   const { admin } = useDemo();

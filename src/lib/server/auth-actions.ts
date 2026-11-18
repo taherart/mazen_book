@@ -17,7 +17,7 @@ const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 // strip control characters so a name always renders as one plain line
 const cleanName = (v: unknown) => text(v).replace(/[\u0000-\u001f\u007f]/g, "").replace(/\s+/g, " ");
 
-export async function signUpAction(input: { name?: unknown; email?: unknown; password?: unknown; intents?: unknown; consent?: unknown; ref?: unknown }): Promise<AuthResult> {
+export async function signUpAction(input: { name?: unknown; email?: unknown; password?: unknown; intents?: unknown; consent?: unknown; ref?: unknown; retried?: boolean }): Promise<AuthResult> {
   if (!backendEnabled()) return DEMO;
   const name = cleanName(input.name);
   const email = text(input.email).toLowerCase();
@@ -41,7 +41,10 @@ export async function signUpAction(input: { name?: unknown; email?: unknown; pas
     await startSession(user.id);
     return { ok: true, user: toSessionUser(user), challenges: {} };
   } catch (err) {
-    if ((err as { code?: string }).code === "23505") return { ok: false, field: "email", error: "هذا البريد مسجّل من قبل. سجّل دخولك بدلًا من ذلك." };
+    const e = err as { code?: string; constraint_name?: string };
+    if (e.code === "23505" && e.constraint_name === "users_email_key") return { ok: false, field: "email", error: "هذا البريد مسجّل من قبل. سجّل دخولك بدلًا من ذلك." };
+    // any other clash (in practice a repeated random invite code): one more try draws a new one
+    if (e.code === "23505" && !input.retried) return signUpAction({ ...input, retried: true });
     throw err;
   }
 }

@@ -1,3 +1,6 @@
+// The book's full text: server only. A client component that imported this module would ship every
+// locked method to the browser, so the build fails instead (client code uses lib/method-links.ts).
+import "server-only";
 import raw from "@/data/methods.json";
 import type { Method, MethodSummary } from "./types";
 
@@ -63,8 +66,7 @@ export const FREE_PICKS: { n: number; reason: string }[] = (() => {
 })();
 export const FREE_METHODS = FREE_PICKS.map((p) => p.n);
 
-export const methodHref = (n: number) => `/method/${String(n).padStart(2, "0")}`;
-export const methodImage = (n: number) => `/methods/${String(n).padStart(2, "0")}.webp`;
+export { methodHref, methodImage } from "./method-links";
 
 /** A step the book left unlabelled is named by its opening clause. */
 function headline(text: string) {

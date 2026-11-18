@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { CREDIT, GOALS, INVITE_CAP, isOpen } from "@/lib/access";
 import { useDemo, useHydrated } from "@/lib/demo/hooks";
-import { methodHref } from "@/lib/methods";
+import { methodHref } from "@/lib/method-links";
 import { redeemBookCodeAction, submitSurveyAction, unlockMethodAction } from "@/lib/server/access-actions";
 import { refreshSession } from "@/lib/session-client";
 import { CAPITAL, LEVELS, PLACES, TIME, count } from "@/lib/taxonomy";
 import type { MethodSummary } from "@/lib/types";
 import { MethodNumber } from "./method-card";
+import { useCopyLink } from "./share-buttons";
 import { T } from "./text";
 import { Button, Container, Eyebrow, Input, Notice, Progress, buttonClass, cx } from "./ui";
 
@@ -108,7 +109,7 @@ export function UnlockHub({ methods }: { methods: MethodSummary[] }) {
                 <p className="text-ink-soft">كل نقطة رصيد تفتح طريقة تختارها أنت.</p>
                 <ul className="mt-4 border-t border-line">
                   <Way worth={CREDIT.challenge} earned={access.earned.challenges} title="أرسل ملخص تحدٍّ" text="انضم لتحدي طريقة مفتوحة لك، أنجز مهامها، ثم أرسل ما حدث." href="/challenge" action="تحدي هذا الأسبوع" />
-                  <Way worth={CREDIT.rating} earned={access.earned.ratings} title="قيّم طريقة جرّبتها" text="نجوم وسطر واحد للمؤلف، بعد إنجاز مهمة من تحديها. تجد التقييم في صفحة الطريقة." />
+                  <Way worth={CREDIT.rating} earned={access.earned.ratings} title="قيّم طريقة جرّبتها" text="نجوم وسطر واحد للمؤلف في صفحة الطريقة. يُحسب لك حين ترسل ملخص تحديها." />
                   <Way worth={CREDIT.story} earned={access.earned.stories} title="انشر تجربتك" text="تجربة حقيقية بأرقامها، تُحسب بعد أن يراجعها الفريق وينشرها." href="/methods" action="اختر الطريقة التي جرّبتها" />
                   <Way worth={CREDIT.invite} earned={access.earned.invites + access.earned.welcome} title="ادعُ صديقًا" text={`لك وله، حين يسجّل برابطك ويجيب عن الاستبيان. حتى ${INVITE_CAP} أصدقاء.`} />
                 </ul>
@@ -281,17 +282,7 @@ function Fitted({ methods, unlocked }: { methods: MethodSummary[]; unlocked: num
 }
 
 function Invite({ code, invited }: { code: string; invited: number }) {
-  const [copied, setCopied] = useState(false);
-  const url = () => `${window.location.origin}/signup?ref=${code}`;
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url());
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      window.prompt("انسخ الرابط:", url());
-    }
-  };
+  const { copied, copy } = useCopyLink(`/signup?ref=${code}`);
   return (
     <div className="mt-5 flex flex-wrap items-center gap-3 rounded-card bg-brand-wash p-4">
       <Gift aria-hidden className="size-6 shrink-0 text-brand" />

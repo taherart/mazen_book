@@ -3,7 +3,7 @@
 import { CalendarClock, Gift, ScrollText, Trophy } from "@/components/icons";
 import Link from "next/link";
 import { useDemo } from "@/lib/demo/hooks";
-import { formatDay } from "@/lib/week";
+import { formatDay, WEEK_MS } from "@/lib/week";
 import type { WeekInfo } from "@/lib/types";
 import { Countdown, useWeekMethod } from "./weekly";
 import { cx } from "./ui";
@@ -23,7 +23,6 @@ export function WeekRibbon({ method, week, className }: { method: number; week: 
   );
 }
 
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Section G of the method page: this week's draw, or when this method's week comes up. */
 export function RafflePanel({ method, week, className }: { method: number; week: WeekInfo; className?: string }) {
